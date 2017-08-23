@@ -28,3 +28,6 @@ weights:
   - docker-tools: 3
   - tools_jenkins: 8
   - ecomworker: 4
+  - notes: 2
+  - notifier: 2
+  - mongo: 1

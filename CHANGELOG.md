@@ -1,3 +1,7 @@
+- Role: mongo_3_2
+  - Added role for mongo 3.2, not yet in use.
+  - Removed MONGO_CLUSTERED variable. In this role mongo replication is always configured, even if there is only one node.
+
 - Role: edxapp
   - Added a new EDXAPP_MYSQL_CONN_MAX_AGE, default to 0.  Adjust it to change how long a connection is kept open
   for reuse before it is closed.
