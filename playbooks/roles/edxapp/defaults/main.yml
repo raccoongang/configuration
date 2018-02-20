@@ -31,6 +31,7 @@ EDXAPP_ASU_API_KEY: 'ASU_API_KEY-SET-ME-PLEASE'
 
 EDXAPP_BETTA_TESTERS_ENABLE: false
 
+EDXAPP_ADDL_CMS_MIDDLEWARE_CLASSES: []
 ## END RACCOONGANG ##
 
 # Bucket used for xblock file storage
@@ -1489,6 +1490,9 @@ cms_env_config:
   COURSE_IMPORT_EXPORT_BUCKET: "{{ EDXAPP_IMPORT_EXPORT_BUCKET }}"
   STATIC_URL_BASE: "{{ EDXAPP_CMS_STATIC_URL_BASE }}"
 
+  ## BEGIN RACCOONGANG ##
+  ADDL_CMS_MIDDLEWARE_CLASSES: "{{ EDXAPP_ADDL_CMS_MIDDLEWARE_CLASSES }}"
+  ## END RACCOONGANG ##
 # install dir for the edx-platform repo
 edxapp_code_dir: "{{ edxapp_app_dir }}/edx-platform"
 
