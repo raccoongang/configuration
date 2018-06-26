@@ -1,0 +1,60 @@
+---
+
+# Example sandbox configuration
+# for single server community
+# installs
+
+- name: Bootstrap instance(s)
+  hosts: all
+  gather_facts: no
+  become: True
+  roles:
+    - python
+
+- name: Configure instance(s)
+  hosts: all
+  become: True
+  gather_facts: True
+  roles:
+    - role: swapfile
+      SWAPFILE_SIZE: 8GB
+    - role: nginx
+      nginx_sites:
+      - certs
+      - cms
+      - lms
+      - forum
+      - xqueue
+      nginx_default_sites:
+      - lms
+    - role: edxlocal
+      when: EDXAPP_MYSQL_HOST == 'localhost' or EDXAPP_MYSQL_HOST == '127.0.0.1'
+    - role: memcache
+    - role: mongo
+    - role: rabbitmq
+      rabbitmq_ip: 127.0.0.1
+    - role: edxapp
+      celery_worker: True
+    - edxapp
+    - role: celeryd
+      when: "{{ EDXAPP_CUSTOM_CELERYD_ENABLE | default(False) }}"
+    - role: analytics_api
+      when: "{{ RUN_INSIGHTS_ROLES | default(False) }}"
+    - role: insights
+      when: "{{ RUN_INSIGHTS_ROLES | default(False) }}"
+    - role: nginx
+      nginx_sites:
+      - analytics_api
+      - insights
+      when: "{{ RUN_INSIGHTS_ROLES | default(False) }}"
+    - oauth_client_setup
+    - oraclejdk
+    - role: elasticsearch
+    - forum
+    - role: notifier
+      NOTIFIER_DIGEST_TASK_INTERVAL: 5
+    - role: xqueue
+      update_users: True
+    - certs
+    - role: datadog
+      when: COMMON_ENABLE_DATADOG
