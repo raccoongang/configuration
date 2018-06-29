@@ -36,8 +36,6 @@
     - role: edxapp
       celery_worker: True
     - edxapp
-    - role: celeryd
-      when: "{{ EDXAPP_CUSTOM_CELERYD_ENABLE | default(False) }}"
     - role: analytics_api
       when: "{{ RUN_INSIGHTS_ROLES | default(False) }}"
     - role: insights
