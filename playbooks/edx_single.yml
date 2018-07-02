@@ -20,7 +20,6 @@
       nginx_default_sites:
       - lms
     - role: edxlocal
-    - role: memcache
     - role: mongo
     - role: rabbitmq
       rabbitmq_ip: 127.0.0.1
