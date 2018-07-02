@@ -1,41 +1,40 @@
----
-
-# Example sandbox configuration
-# for single server community
-# installs
-
 - name: Configure instance(s)
   hosts: all
-  become: True
+  sudo: True
   gather_facts: True
   roles:
     - role: swapfile
-      SWAPFILE_SIZE: 8GB
+      SWAPFILE_SIZE: 2GB
     - role: nginx
       nginx_sites:
       - certs
       - cms
       - lms
       - forum
+      - xqueue
       nginx_default_sites:
       - lms
-    - role: edxlocal
+    - role: mysql
+    - edxlocal
     - role: mongo
-    - role: rabbitmq
-      rabbitmq_ip: 127.0.0.1
-    - role: edxapp
+    - role: edxapp 
       celery_worker: True
     - edxapp
-    - demo
+    - notifier
+    - edx_notes_api
     - oauth_client_setup
+    - role: rabbitmq
+      rabbitmq_ip: 127.0.0.1
     - oraclejdk
     - role: elasticsearch
     - forum
     - role: notifier
       NOTIFIER_DIGEST_TASK_INTERVAL: 5
     - certs
-    - role: newrelic
-      when: COMMON_ENABLE_NEWRELIC
+    - edx_ansible
     - role: datadog
       when: COMMON_ENABLE_DATADOG
-
+    - role: splunkforwarder
+      when: COMMON_ENABLE_SPLUNKFORWARDER
+    - role: newrelic
+      when: COMMON_ENABLE_NEWRELIC
