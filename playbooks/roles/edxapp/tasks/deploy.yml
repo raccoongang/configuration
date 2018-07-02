@@ -424,6 +424,7 @@
     chdir: "{{ edxapp_code_dir }}"
     responses:
       "Do you want to continue": "y"
+    timeout: 600
   become_user: "{{ common_web_user }}"
   tags:
     - manage
@@ -434,6 +435,7 @@
     chdir: "{{ edxapp_code_dir }}"
     responses:
       "Do you want to continue": "y"
+    timeout: 600
   become_user: "{{ common_web_user }}"
   tags:
     - manage
