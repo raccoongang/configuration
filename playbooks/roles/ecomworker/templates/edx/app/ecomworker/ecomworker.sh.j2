@@ -14,5 +14,20 @@ export NEW_RELIC_APP_NAME='{{ ECOMMERCE_WORKER_NEWRELIC_APPNAME }}'
 export NEW_RELIC_LICENSE_KEY='{{ NEWRELIC_LICENSE_KEY }}'
 {% endif -%}
 
+shutdown() {
+  # Get our process group id
+  PGID=$(ps -o pgid= $$ | grep -o [0-9]* | grep -v $$)
+  if [ x = x$PGID ]; then
+    exit 0
+  fi
+  echo "$0: killing child $PGID..."
+
+  # Kill it in a new new process group
+  setsid kill -- -$PGID
+  exit 0
+}
+
+trap "shutdown" SIGINT SIGTERM
+
 source {{ ecommerce_worker_home }}/{{ ecommerce_worker_service_name }}_env
-{{ executable }} -A ecommerce_worker worker --app ecommerce_worker.celery_app:app --concurrency={{ ECOMMERCE_WORKER_CONCURRENCY }} --loglevel=info --queue=fulfillment,email_marketing
+stdbuf -o0 -e0 {{ executable }} -A ecommerce_worker worker --app ecommerce_worker.celery_app:app --concurrency={{ ECOMMERCE_WORKER_CONCURRENCY }} --loglevel=info --queue=fulfillment,email_marketing
