@@ -13,6 +13,12 @@ upstream lms-backend {
     {% endif %}
 }
 
+{% if lms_nginx_media_redirect[inventory_hostname] %}
+upstream lms-media-forward {
+  server {{ lms_nginx_media_redirect[inventory_hostname] }}:{{ EDXAPP_LMS_NGINX_PORT }};
+}
+{% endif %}
+
 {%- if EDXAPP_ENABLE_RATE_LIMITING -%}
 # Make Zone
 limit_req_zone $cookie_{{ EDXAPP_SESSION_COOKIE_NAME }} zone=cookies:10m rate={{ EDXAPP_COURSES_REQUEST_RATE }};
@@ -253,10 +259,29 @@ error_page {{ k }} {{ v }};
     try_files $uri @proxy_to_lms_app;
   }
 
-location {{ EDXAPP_MEDIA_URL }} {
+{% if lms_nginx_media_redirect[inventory_hostname] %}
+  location @proxy_to_multitenant_media2 {
+    if ($http_x_media = 'yes') { return 404; }
+    proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+    proxy_set_header X-Forwarded-Port $http_x_forwarded_port;
+    proxy_set_header X-Forwarded-For $http_x_forwarded_for;
+    proxy_set_header X-Media yes;
+    proxy_set_header Host $http_host;
+
+    proxy_redirect off;
+    proxy_pass http://lms-media-forward;
+  }
+  location {{ EDXAPP_MEDIA_URL }} {
+    root {{ edxapp_data_dir }}/;
+    try_files $uri @proxy_to_multitenant_media2;
+    expires {{ EDXAPP_PROFILE_IMAGE_MAX_AGE }}s;
+  }
+{% else %}
+  location {{ EDXAPP_MEDIA_URL }} {
     alias {{ edxapp_media_dir }}/;
     expires {{ EDXAPP_PROFILE_IMAGE_MAX_AGE }}s;
-}
+  }
+{% endif %}
 
   {% include "robots.j2" %}
   {% include "static-files.j2" %}

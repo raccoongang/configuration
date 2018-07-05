@@ -29,7 +29,8 @@
     instance_id: "{{ ansible_ec2_instance_id }}"
     state: absent
     ec2_elbs: "{{ MULTITENANT_VAR_AWS_EC2_TAGS_PREFIX }}-frontend-ELB"
-  when: (NODE_STATE is defined) and ("{{ NODE_STATE }}"=='absent') and (elb_attached is defined) and (elb_attached)
+  when: (NODE_STATE is defined) and NODE_STATE == 'absent' and (elb_attached is defined) and elb_attached
+  ignore_errors: yes
 
 - name: Pause for ELB health checks
   pause:
@@ -44,5 +45,6 @@
     instance_id: "{{ ansible_ec2_instance_id }}"
     state: present
     ec2_elbs: "{{ MULTITENANT_VAR_AWS_EC2_TAGS_PREFIX }}-frontend-ELB"
-  when: (NODE_STATE is defined) and ("{{ NODE_STATE }}"=='present') and (elb_attached is defined) and (elb_attached)
+  when: (NODE_STATE is defined) and NODE_STATE == 'present' and (elb_attached is defined) and elb_attached
+  ignore_errors: yes
 
