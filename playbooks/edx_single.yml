@@ -33,14 +33,16 @@
       rabbitmq_ip: 127.0.0.1
     - role: edxapp
       celery_worker: True
-    - edxapp
-    - demo
-    - oauth_client_setup
-    - oraclejdk
+    - role: edxapp
+    - role: demo
+    - role: oauth_client_setup
+    - role: oraclejdk
     - role: elasticsearch
-    - forum
+    - role: forum
     - role: notifier
-    - certs
+    - role: certs
+    - role: edx_notes_api
+      when: EDXAPP_ENABLE_EDXNOTES
     - role: newrelic
       when: COMMON_ENABLE_NEWRELIC
     - role: datadog
