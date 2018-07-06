@@ -108,6 +108,7 @@ error_page {{ k }} {{ v }};
 
     proxy_set_header Host $http_host;
 
+    proxy_read_timeout 300;
     proxy_redirect off;
     proxy_pass http://cms-backend;
   }

@@ -20,8 +20,16 @@
   shell: "curl -b gpw_e24=http%3A%2F%2Fwww.oracle.com -b oraclelicense=accept-securebackup-cookie -O -L {{ oraclejdk_url }}"
   args:
     executable: /bin/bash
-    chdir: /var/tmp
-    creates: "/var/tmp/{{ oraclejdk_file }}"
+    chdir: "{{ oraclejdk_tmp_dir }}"
+    creates: "{{ oraclejdk_tmp_dir }}/{{ oraclejdk_file }}"
+  when: not oraclejdk_file_from_raccoongang_s3
+
+- name: Download Oracle Java from raccoongang S3 - "{{ s3_production_packages_bucket }}"
+  get_url:
+    url: "{{ oraclejdk_s3_url }}"
+    dest: "{{ oraclejdk_tmp_dir }}/{{ oraclejdk_s3_file }}"
+    force: yes
+  when: oraclejdk_file_from_raccoongang_s3
 
 - name: Create jvm dir
   file:
@@ -31,7 +39,7 @@
     group: root
 
 - name: Untar Oracle Java
-  shell: "tar -C /usr/lib/jvm -zxvf /var/tmp/{{ oraclejdk_file }}"
+  shell: "tar -C /usr/lib/jvm -zxvf {{ oraclejdk_tmp_dir }}/{{ oraclejdk_file }}"
   args:
     executable: /bin/bash
     creates: "/usr/lib/jvm/{{ oraclejdk_base }}"
