@@ -1,0 +1,12 @@
+---
+
+- hosts: elasticsearch
+  become: true
+  become_method: sudo
+  become_user: root
+  gather_facts: True
+  roles:
+    - oraclejdk
+    - common
+    - elasticsearch
+

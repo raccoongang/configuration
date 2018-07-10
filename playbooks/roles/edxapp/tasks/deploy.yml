@@ -1,12 +1,14 @@
 ---
 
-- name: create {{ EDXAPP_COMPREHENSIVE_THEME_DIRS }}
+- name: create EDXAPP_COMPREHENSIVE_THEME_DIRS
   file:
-    path: "{{ EDXAPP_COMPREHENSIVE_THEME_DIRS }}/{{ edxapp_theme_name }}"
+    path: "{{ item }}/{{ edxapp_theme_name }}"
     state: directory
     owner: "{{ edxapp_user }}"
     group: "www-data"
     mode: "0755"
+  with_items:
+    - "{{ EDXAPP_COMPREHENSIVE_THEME_DIRS }}"
   tags:
     - install
     - install:base

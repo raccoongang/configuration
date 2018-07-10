@@ -1,0 +1,103 @@
+---
+
+  database_connection: &default_connection
+    login_host: "{{ MYSQL_LOGIN_HOST }}"
+    login_user: "{{ EDXAPP_MYSQL_USER_ADMIN }}"
+    login_password: "{{ EDXAPP_MYSQL_PASSWORD_ADMIN }}"
+
+  databases:
+    - name: "{{ EDXAPP_MYSQL_DB_NAME }}"
+      state: "present"
+      encoding: "utf8"
+      <<: *default_connection
+    - name: "{{ EDXAPP_MYSQL_CSMH_DB_NAME }}"
+      state: "present"
+      encoding: "utf8"
+      <<: *default_connection
+    - name: "{{ XQUEUE_MYSQL_DB_NAME }}"
+      state: "present"
+      encoding: "utf8"
+      <<: *default_connection
+
+  database_users:
+    - name: "{{ COMMON_MYSQL_MIGRATE_USER }}"
+      state: "present"
+      password: "{{ COMMON_MYSQL_MIGRATE_PASS }}"
+      host: "%"
+      privileges:
+        - '{{ EDXAPP_MYSQL_DB_NAME }}.*:ALL'
+        - '{{ EDXAPP_MYSQL_CSMH_DB_NAME }}.*:ALL'
+      <<: *default_connection
+    - name: "{{ COMMON_MYSQL_MIGRATE_USER }}"
+      state: "present"
+      password: "{{ COMMON_MYSQL_MIGRATE_PASS }}"
+      host: "%"
+      privileges:
+        - '{{ EDXAPP_MYSQL_DB_NAME }}.*:ALL'
+        - '{{ EDXAPP_MYSQL_CSMH_DB_NAME }}.*:ALL'
+      <<: *default_connection
+    - name: "{{ COMMON_MYSQL_MIGRATE_USER }}"
+      state: "present"
+      password: "{{ COMMON_MYSQL_MIGRATE_PASS }}"
+      host: "%"
+      privileges:
+        - '{{ EDXAPP_MYSQL_DB_NAME }}.*:ALL'
+        - '{{ EDXAPP_MYSQL_CSMH_DB_NAME }}.*:ALL'
+      <<: *default_connection
+    - name: "{{ COMMON_MYSQL_MIGRATE_USER }}"
+      state: "present"
+      password: "{{ COMMON_MYSQL_MIGRATE_PASS }}"
+      host: "%"
+      privileges:
+        - '{{ XQUEUE_MYSQL_DB_NAME }}.*:ALL'
+      <<: *default_connection
+    - name: "{{ EDXAPP_MYSQL_USER }}"
+      state: "present"
+      password: "{{ EDXAPP_MYSQL_PASSWORD }}"
+      host: "%"
+      privileges:
+        - '{{EDXAPP_MYSQL_DB_NAME}}.*:ALL'
+      <<: *default_connection
+    - name: "{{ EDXAPP_MYSQL_USER }}"
+      state: "present"
+      password: "{{ EDXAPP_MYSQL_PASSWORD }}"
+      host: "%"
+      privileges:
+        - '{{EDXAPP_MYSQL_DB_NAME}}.*:ALL'
+      <<: *default_connection
+    - name: "{{ EDXAPP_MYSQL_USER }}"
+      state: "present"
+      password: "{{ EDXAPP_MYSQL_PASSWORD }}"
+      host: "%"
+      privileges:
+        - '{{EDXAPP_MYSQL_DB_NAME}}.*:ALL'
+      <<: *default_connection
+    - name: "{{ EDXAPP_MYSQL_USER }}"
+      state: "present"
+      password: "{{ EDXAPP_MYSQL_PASSWORD }}"
+      host: "%"
+      privileges:
+        - '{{EDXAPP_MYSQL_DB_NAME}}.*:ALL'
+      <<: *default_connection
+    - name: "{{ XQUEUE_MYSQL_USER }}"
+      state: "present"
+      password: "{{ XQUEUE_MYSQL_PASSWORD }}"
+      host: "%"
+      privileges:
+        - '{{XQUEUE_MYSQL_DB_NAME}}.*:ALL'
+      <<: *default_connection
+    - name: "{{ COMMON_MYSQL_READ_ONLY_USER }}"
+      state: "present"
+      password: "{{ COMMON_MYSQL_READ_ONLY_PASS }}"
+      host: "%"
+      privileges:
+        - '*.*:SELECT'
+      <<: *default_connection
+    - name: "{{ COMMON_MYSQL_ADMIN_USER }}"
+      state: "present"
+      password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
+      host: "%"
+      privileges:
+        - '*.*:CREATE USER'
+      <<: *default_connection
+

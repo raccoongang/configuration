@@ -1,0 +1,9 @@
+---
+
+- hosts: mongo_all
+  become: true
+  become_method: sudo
+  become_user: root
+  gather_facts: True
+  roles:
+    - mongo_3_0_harambee

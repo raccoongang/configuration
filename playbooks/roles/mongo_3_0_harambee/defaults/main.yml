@@ -1,0 +1,52 @@
+#common vars
+COMMON_BASE_DIR: /mongo
+COMMON_DATA_DIR: "{{ COMMON_BASE_DIR }}/var"
+COMMON_LOG_DIR: "{{ COMMON_DATA_DIR }}/log"
+COMMON_PYPI_MIRROR_URL: 'https://pypi.python.org/simple'
+#common vars
+
+mongo_logappend: true
+mongo_version: 3.0.15
+mongo_port: "27017"
+mongo_extra_conf: ''
+mongo_key_file: '/etc/mongodb_key'
+mongo_repl_set: rs0
+mongo_cluster_members: []
+mongo_cluster_arbiters: []
+pymongo_version: 3.1
+
+mongo_data_dir: "{{ COMMON_DATA_DIR }}/mongo"
+mongo_log_dir: "{{ COMMON_LOG_DIR }}/mongo"
+mongo_journal_dir: "{{ COMMON_DATA_DIR }}/mongo/mongodb/journal"
+mongo_user: mongodb
+
+MONGODB_REPO: "deb http://repo.mongodb.org/apt/ubuntu precise/mongodb-org/3.0 multiverse"
+MONGODB_APT_KEY: "7F0CEB10"
+MONGODB_APT_KEYSERVER: "keyserver.ubuntu.com"
+
+# Vars Meant to be overridden
+MONGO_ADMIN_USER: 'admin'
+MONGO_ADMIN_PASSWORD: 'password'
+MONGO_USERS:
+  # - user: test
+  #   password: password
+  #   database: test
+  #   roles: readWrite
+
+
+MONGO_CLUSTERED: false
+MONGO_BIND_IP: 127.0.0.1
+MONGO_AUTH: false
+
+MONGO_USE_SMALLFILES: true
+
+##
+
+mongo_logpath: "{{ mongo_log_dir }}/mongodb.log"
+mongo_dbpath: "{{ mongo_data_dir }}/mongodb"
+
+# In environments that do not require durability (devstack / Jenkins)
+# you can disable the journal to reduce disk usage
+mongo_enable_journal: True
+
+

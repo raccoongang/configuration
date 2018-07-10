@@ -274,75 +274,33 @@
     - install
     - install:configuration
     
-- name: initial copy of ssl cert
-  copy:
-    src: "/edx/var/deployment/ssh/{{ NGINX_SSL_CERTIFICATE_NAME }}"
-    dest: "{{ NGINX_SSL_CERTIFICATE }}"
-    owner: root
-    group: root
-    mode: 0644
-  when: NGINX_ENABLE_SSL and NGINX_SSL_CERTIFICATE != 'ssl-cert-snakeoil.pem'
-  tags:
-    - install
-    - install:configuration
+# - name: initial copy of ssl cert
+#   copy:
+#     src: "/edx/var/deployment/ssh/{{ NGINX_SSL_CERTIFICATE_NAME }}"
+#     dest: "{{ NGINX_SSL_CERTIFICATE }}"
+#     owner: root
+#     group: root
+#     mode: 0644
+#   when: NGINX_ENABLE_SSL and NGINX_SSL_CERTIFICATE != 'ssl-cert-snakeoil.pem'
+#   tags:
+#     - install
+#     - install:configuration
     
-- name: initial copy of ssl key
-  copy:
-    src: "/edx/var/deployment/ssh/{{ NGINX_SSL_KEY_NAME }}"
-    dest: "{{ NGINX_SSL_KEY }}"
-    owner: root
-    group: root
-    mode: 0644
-  when: NGINX_ENABLE_SSL and NGINX_SSL_KEY != 'ssl-cert-snakeoil.key'
-  tags:
-    - install
-    - install:configuration
+# - name: initial copy of ssl key
+#   copy:
+#     src: "/edx/var/deployment/ssh/{{ NGINX_SSL_KEY_NAME }}"
+#     dest: "{{ NGINX_SSL_KEY }}"
+#     owner: root
+#     group: root
+#     mode: 0644
+#   when: NGINX_ENABLE_SSL and NGINX_SSL_KEY != 'ssl-cert-snakeoil.key'
+#   tags:
+#     - install
+#     - install:configuration
 
 # Check to see if the ssl cert/key exists before copying.
 # This extra check is done to prevent failures when
 # ansible-playbook is run locally
-- local_action:
-    module: stat
-    path: "{{ NGINX_SSL_CERTIFICATE }}"
-  become: False
-  register: ssl_cert
-  tags:
-    - install
-    - install:configuration
-
-- local_action:
-    module: stat
-    path: "{{ NGINX_SSL_KEY }}"
-  become: False
-  register: ssl_key
-  tags:
-    - install
-    - install:configuration
-
-- name: copy ssl cert
-  copy:
-    src: "{{ NGINX_SSL_CERTIFICATE }}"
-    dest: "/etc/ssl/certs/"
-    owner: root
-    group: root
-    mode: 0644
-  when: ssl_cert.stat.exists and NGINX_ENABLE_SSL and NGINX_SSL_CERTIFICATE != 'ssl-cert-snakeoil.pem'
-  tags:
-    - install
-    - install:configuration
-
-- name: copy ssl key
-  copy:
-    src: "{{ NGINX_SSL_KEY }}"
-    dest: "/etc/ssl/private/"
-    owner: root
-    group: root
-    mode: 0640
-  when: ssl_key.stat.exists and NGINX_ENABLE_SSL and NGINX_SSL_KEY != 'ssl-cert-snakeoil.key'
-  no_log: True
-  tags:
-    - install
-    - install:configuration
 
 # removing default link
 - name: Removing default nginx config and restart (enabled)
