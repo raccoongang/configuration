@@ -44,12 +44,9 @@
       - analytics_api
       - insights
       when: "{{ RUN_INSIGHTS_ROLES | default(False) }}"
-    - oauth_client_setup
-    - oraclejdk
-    - role: elasticsearch
-    - forum
-    - role: notifier
       NOTIFIER_DIGEST_TASK_INTERVAL: 5
     - certs
+    - role: newrelic
+      when: COMMON_ENABLE_NEWRELIC
     - role: datadog
       when: COMMON_ENABLE_DATADOG
