@@ -24,7 +24,6 @@
       - cms
       - lms
       - forum
-      - xqueue
       nginx_default_sites:
       - lms
     - role: edxlocal
@@ -51,8 +50,6 @@
     - forum
     - role: notifier
       NOTIFIER_DIGEST_TASK_INTERVAL: 5
-    - role: xqueue
-      update_users: True
     - certs
     - role: datadog
       when: COMMON_ENABLE_DATADOG
