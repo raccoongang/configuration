@@ -53,6 +53,12 @@
       - analytics_api
       - insights
       when: "{{ RUN_INSIGHTS_ROLES | default(False) }}"
+    - role: nginx
+      nginx_sites:
+        - edx_notes_api
+      when: "{{ EDXAPP_ENABLE_EDXNOTES }}"
+    - role: edx_notes_api
+      when: "{{ EDXAPP_ENABLE_EDXNOTES }}"
     - oauth_client_setup
     - oraclejdk
     - role: elasticsearch
