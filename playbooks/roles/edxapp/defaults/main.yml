@@ -16,6 +16,9 @@
 # when the edxapp config is written to disk.
 
 # Bucket used for xblock file storage
+EDXAPP_THIRD_PARTY_AUTH_BACKENDS:
+ -  'social_core.backends.live.LiveOAuth2'
+
 EDXAPP_XBLOCK_FS_STORAGE_BUCKET: "None"
 EDXAPP_XBLOCK_FS_STORAGE_PREFIX: "None"
 EDXAPP_DJFS:
@@ -1412,6 +1415,9 @@ lms_env_config:
   ANALYTICS_API_URL: "{{ EDXAPP_LMS_ANALYTICS_API_URL }}"
   GOOGLE_SITE_VERIFICATION_ID: "{{ EDXAPP_GOOGLE_SITE_VERIFICATION_ID }}"
   STATIC_URL_BASE: "{{ EDXAPP_LMS_STATIC_URL_BASE }}"
+  ## BEGIN RACCOONGANG ##
+  THIRD_PARTY_AUTH_BACKENDS: "{{ EDXAPP_THIRD_PARTY_AUTH_BACKENDS }}"
+  ## END RACCOONGANG ##
 
 cms_auth_config:
   <<: *edxapp_generic_auth
