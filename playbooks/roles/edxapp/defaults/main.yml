@@ -18,6 +18,7 @@
 # Bucket used for xblock file storage
 EDXAPP_THIRD_PARTY_AUTH_BACKENDS:
  -  'social_core.backends.live.LiveOAuth2'
+ -  'social_core.backends.azuread.AzureADOAuth2'
 
 EDXAPP_XBLOCK_FS_STORAGE_BUCKET: "None"
 EDXAPP_XBLOCK_FS_STORAGE_PREFIX: "None"
