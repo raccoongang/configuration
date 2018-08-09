@@ -418,14 +418,6 @@
   tags:
     - manage
 
-- name: update rg_analytics precollection data
-  shell: "{{ edxapp_venv_bin }}/python {{ edxapp_code_dir }}/manage.py lms --settings={{ edxapp_settings }} update_rg_analytics_precollection_data"
-  args:
-    chdir: "{{ edxapp_code_dir }}"
-  become_user: "{{ common_web_user }}"
-  tags:
-    - manage
-
 - name: build service worker users list
   set_fact:
     service_worker_users: "{{ [SERVICE_WORKER_USERS] }}"
