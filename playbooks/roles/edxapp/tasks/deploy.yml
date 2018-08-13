@@ -250,6 +250,32 @@
     - install
     - install:app-requirements
 
+- name: install custom node dependencies
+  shell: "{{ edxapp_nodeenv_bin }}/npm install"
+  args:
+    chdir: "{{ item }}"
+  environment: "{{ edxapp_environment }}"
+  become_user: "{{ edxapp_user }}"
+  with_items:
+    - "{{ custom_node_dependencies_path }}"
+  tags:
+    - install
+    - install:app-requirements
+    - install:custom-node-dependencies
+
+- name: build custom node dependencies
+  shell: "{{ edxapp_nodeenv_bin }}/npm run build"
+  args:
+    chdir: "{{ item }}"
+  environment: "{{ edxapp_environment }}"
+  become_user: "{{ edxapp_user }}"
+  with_items:
+    - "{{ custom_node_dependencies_path }}"
+  tags:
+    - install
+    - install:app-requirements
+    - install:custom-node-dependencies
+
 # The next few tasks set up the python code sandbox
 
 # need to disable this profile, otherwise the pip inside the sandbox venv has no permissions

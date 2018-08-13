@@ -16,6 +16,8 @@
 # when the edxapp config is written to disk.
 
 ## BEGIN RACCOONGANG ##
+custom_node_dependencies_path: []
+
 EDXAPP_XLOG_MONGO_DB_NAME: 'xlog'
 
 EDXAPP_S3_USE_SIGV4: false
