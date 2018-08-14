@@ -1,0 +1,11 @@
+---
+
+- hosts: insights
+  become: true
+  become_method: sudo
+  become_user: root
+  gather_facts: True
+  roles:
+    - insights
+    - analytics_api
+

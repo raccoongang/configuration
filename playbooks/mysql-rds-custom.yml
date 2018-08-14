@@ -20,6 +20,14 @@
       <<: *default_connection
 
   database_users:
+    - name: "{{ EDXAPP_MYSQL_USER }}"
+      state: "present"
+      password: "{{ EDXAPP_MYSQL_PASSWORD }}"
+      host: "%"
+      privileges:
+        - '{{ EDXAPP_MYSQL_DB_NAME }}.*:ALL'
+        - '{{ EDXAPP_MYSQL_CSMH_DB_NAME }}.*:ALL'
+      <<: *default_connection
     - name: "{{ COMMON_MYSQL_MIGRATE_USER }}"
       state: "present"
       password: "{{ COMMON_MYSQL_MIGRATE_PASS }}"
