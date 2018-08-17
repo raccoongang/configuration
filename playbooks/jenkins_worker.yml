@@ -3,7 +3,7 @@
 # but not the Jenkins Java app.
 
 - name: Configure instance(s)
-  hosts: jenkins_worker
+  hosts: all
   become: True
   gather_facts: True
   vars:
@@ -20,7 +20,6 @@
     - roles/xserver/defaults/main.yml
     - roles/forum/defaults/main.yml
   roles:
-    - aws
     - mysql
     - edxlocal
     - memcache
