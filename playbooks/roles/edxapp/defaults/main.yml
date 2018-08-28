@@ -34,6 +34,14 @@ EDXAPP_LMS_SESSION_COOKIE_NAME: "{{ EDXAPP_SESSION_COOKIE_NAME }}"
 EDXAPP_CMS_SESSION_COOKIE_NAME: "{{ EDXAPP_SESSION_COOKIE_NAME }}"
 
 EDXAPP_ADDL_INSTALLED_APPS: []
+EDXAPP_THIRD_PARTY_AUTH_BACKENDS:
+ - social_core.backends.google.GoogleOAuth2
+ - social_core.backends.linkedin.LinkedinOAuth2
+ - social_core.backends.facebook.FacebookOAuth2
+ - social_core.backends.azuread.AzureADOAuth2
+ - social_core.backends.vk.VKOAuth2
+ - third_party_auth.saml.SAMLAuthBackend
+ - third_party_auth.lti.LTIAuthBackend
 ## END RACCOONGANG ##
 
 # Bucket used for xblock file storage
@@ -1197,10 +1205,14 @@ lms_env_config:
   ALTERNATE_WORKER_QUEUES: "cms"
   ENTERPRISE_COURSE_ENROLLMENT_AUDIT_MODES: "{{ EDXAPP_ENTERPRISE_COURSE_ENROLLMENT_AUDIT_MODES }}"
   ## BEGIN RACCOONGANG ##
+<<<<<<< HEAD
   ASU_TRACKER_BUFFER_SIZE: "{{ EDXAPP_ASU_TRACKER_BUFFER_SIZE }}"
   ASU_TRACKER_BUFFER_LIFE_TIME: "{{ EDXAPP_ASU_TRACKER_BUFFER_LIFE_TIME }}"
   BETTA_TESTERS_ENABLE: "{{ EDXAPP_BETTA_TESTERS_ENABLE }}"
   CMS_SESSION_COOKIE_NAME: "{{ EDXAPP_CMS_SESSION_COOKIE_NAME }}"
+=======
+  THIRD_PARTY_AUTH_BACKENDS: "{{ EDXAPP_THIRD_PARTY_AUTH_BACKENDS }}"
+>>>>>>> ginkgo-rg
   ## END RACCOONGANG ##
 
 cms_auth_config:
