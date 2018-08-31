@@ -1,4 +1,4 @@
 RABBITMQ_USE_LONGNAME=true
-NODENAME=rabbit@services.uat.harambee
+NODENAME=rabbit@{{ RABBITMQ_NODENAME }}
 RABBITMQ_NODE_PORT={{ rabbitmq_port }}
 RABBITMQ_NODE_IP_ADDRESS={{ rabbitmq_ip }}

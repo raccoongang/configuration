@@ -10,7 +10,7 @@
 #
 # Defaults for role rabbitmq
 # 
-
+RABBITMQ_NODENAME: localhost 
 RABBITMQ_DISK_FREE_LIMIT: 2GB
 RABBITMQ_CHANNEL_MAX: 0
 
