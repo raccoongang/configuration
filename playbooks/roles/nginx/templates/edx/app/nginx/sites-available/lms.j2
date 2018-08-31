@@ -44,8 +44,11 @@ geo $http_x_forwarded_for $embargo {
 {%- endif %}
 
 server {
+  server_name {{ EDXAPP_LMS_BASE }} {{ EDXAPP_PREVIEW_LMS_BASE }};
   # LMS configuration file for nginx, templated by ansible
-
+  if ($http_x_forwarded_proto = 'http') {
+         return 301 https://$server_name$request_uri;
+  }
   # error pages
   {% if NGINX_EDXAPP_ENABLE_S3_MAINTENANCE %}
   {% for k, v in NGINX_EDXAPP_ERROR_PAGES.iteritems() %}
@@ -93,6 +96,11 @@ error_page {{ k }} {{ v }};
    set $do_redirect_to_https "true";
   }
      {% endif %}
+
+  if ($uri = "/heartbeat")
+  {
+   set $do_redirect_to_https "false";
+  }
 
   # Execute the actual redirect
   if ($do_redirect_to_https = "true")
