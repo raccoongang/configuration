@@ -6,5 +6,7 @@
    Note: That these names should include the node name prefix. eg. 'rabbit@hostname'
 #}
   {cluster_nodes, {['{{ RABBITMQ_CLUSTERED_HOSTS|join("\',\'") }}'], disc}},
-  {vm_memory_high_watermark, {{ RABBITMQ_VM_MEMORY_HIGH_WATERMARK }} }
+  {vm_memory_high_watermark, {{ RABBITMQ_VM_MEMORY_HIGH_WATERMARK }} },
+  {disk_free_limit, "{{ RABBITMQ_DISK_FREE_LIMIT }}" },
+  {channel_max, {{ RABBITMQ_CHANNEL_MAX }} }
 ]}].
