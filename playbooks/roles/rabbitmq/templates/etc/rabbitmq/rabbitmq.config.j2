@@ -8,5 +8,6 @@
   {cluster_nodes, {['{{ RABBITMQ_CLUSTERED_HOSTS|join("\',\'") }}'], disc}},
   {vm_memory_high_watermark, {{ RABBITMQ_VM_MEMORY_HIGH_WATERMARK }} },
   {disk_free_limit, "{{ RABBITMQ_DISK_FREE_LIMIT }}" },
-  {channel_max, {{ RABBITMQ_CHANNEL_MAX }} }
+  {channel_max, {{ RABBITMQ_CHANNEL_MAX }} },
+  {tcp_listeners, [{"0.0.0.0", 5672}, {"::", 5672}]}
 ]}].

@@ -1,4 +1,6 @@
-RABBITMQ_USE_LONGNAME=true
+RABBITMQ_SERVER_ERL_ARGS="+K true +A30 +P 1048576 -kernel inet_default_connect_options [{nodelay,true},{raw,6,18,<<5000:64/native>>}] -kernel inet_default_listen_options [{raw,6,18,<<5000:64/native>>}]"
+RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS="-setcookie {{rabbitmq_auth_config.erlang_cookie}}"
+RABBITMQ_USE_LONGNAME=false
 NODENAME=rabbit@{{ RABBITMQ_NODENAME }}
 RABBITMQ_NODE_PORT={{ rabbitmq_port }}
 RABBITMQ_NODE_IP_ADDRESS={{ rabbitmq_ip }}
