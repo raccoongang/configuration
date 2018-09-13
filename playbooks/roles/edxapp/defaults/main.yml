@@ -1347,5 +1347,12 @@ SERVICE_WORKER_USERS:
     is_superuser: false
 
 ## BEGIN RACCOONGANG ##
+EDXAPP_CELERY_BEAT:
+  enabled: True
+  monitor: True
+  service_variant: lms
+  beat_file: "{{ supervisor_data_dir }}/beat"
+  pid_file: "{{ supervisor_data_dir }}/celery_beat.pid"
+
 REMOVE_STATICFILES_DIR_DURING_UPDATE: no
 ## END RACCOONGANG ##
