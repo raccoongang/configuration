@@ -48,6 +48,7 @@ MONGO_BIND_IP: 127.0.0.1
 
 MONGO_REPL_SET: "rs0"
 MONGO_AUTH: true
+MONGO_CLUSTER_KEY: "CHANGEME+FiCuSm0ngAisHERETPoNhb3i++/B2Jtgq2z27hpU0TAnHXzFmujTwLhbc3+LEVTl"
 
 # Cluster member configuration
 # Fed directly into mongodb_replica_set module
