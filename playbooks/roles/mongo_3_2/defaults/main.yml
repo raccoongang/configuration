@@ -49,10 +49,14 @@ MONGO_BIND_IP: 127.0.0.1
 MONGO_REPL_SET: "rs0"
 MONGO_AUTH: true
 
+MONGO_CLUSTER_KEY: "CHANGEMEasyhONV6ZFkn6Zj6TpOnhb3i++/B2Jtgq2Z27HPu0TAnHXzFmujTWlHBC3+levTl"
+
 # Cluster member configuration
 # Fed directly into mongodb_replica_set module
 MONGO_RS_CONFIG:
-  members: []
+  _id: '{{ MONGO_REPL_SET }}'
+  members:
+    - host: '127.0.0.1'
 
 # Storage engine options in 3.2: "mmapv1" or "wiredTiger"
 # 3.2 and 3.4 default to wiredTiger
@@ -76,4 +80,4 @@ mongo_dbpath: "{{ mongo_data_dir }}/mongodb"
 # you can disable the journal to reduce disk usage
 mongo_enable_journal: true
 
-MONGO_LOG_SERVERSTATUS: true
+MONGO_LOG_SERVERSTATUS: false
