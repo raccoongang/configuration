@@ -15,6 +15,22 @@
 # Variables set to "None" will be converted to None
 # when the edxapp config is written to disk.
 
+## BEGIN RACCOONGANG ##
+EDXAPP_XLOG_MONGO_DB_NAME: 'xlog'
+
+EDXAPP_S3_USE_SIGV4: false
+EDXAPP_S3_HOST: null
+
+EDXAPP_THIRD_PARTY_AUTH_BACKENDS:
+ - social_core.backends.google.GoogleOAuth2
+ - social_core.backends.linkedin.LinkedinOAuth2
+ - social_core.backends.facebook.FacebookOAuth2
+ - social_core.backends.azuread.AzureADOAuth2
+ - social_core.backends.vk.VKOAuth2
+ - third_party_auth.saml.SAMLAuthBackend
+ - third_party_auth.lti.LTIAuthBackend
+## END RACCOONGANG ##
+
 # Bucket used for xblock file storage
 EDXAPP_XBLOCK_FS_STORAGE_BUCKET: "None"
 EDXAPP_XBLOCK_FS_STORAGE_PREFIX: "None"
@@ -42,6 +58,9 @@ EDXAPP_CMS_MAX_REQ: !!null
 # the configuration on disk
 EDXAPP_AWS_ACCESS_KEY_ID:  "None"
 EDXAPP_AWS_SECRET_ACCESS_KEY:  "None"
+EDXAPP_AZURE_ACCOUNT_NAME: "None"
+EDXAPP_AZURE_ACCOUNT_KEY: "None"
+EDXAPP_AZURE_CONTAINER: "None"
 EDXAPP_AWS_QUERYSTRING_AUTH: false
 EDXAPP_AWS_STORAGE_BUCKET_NAME: "SET-ME-PLEASE (ex. bucket-name)"
 # An empty string makes the course import/export functionality to use the
@@ -692,6 +711,7 @@ EDXAPP_BLOCK_STRUCTURES_SETTINGS:
 # Configuration settings needed for the LMS to communicate with the Enterprise service.
 EDXAPP_ENTERPRISE_API_URL: "{{ EDXAPP_LMS_ROOT_URL }}/enterprise/api/v1"
 
+EDXAPP_ENTERPRISE_SERVICE_WORKER_EMAIL: "enterprise_worker@example.com"
 EDXAPP_ENTERPRISE_SERVICE_WORKER_USERNAME: "enterprise_worker"
 
 EDXAPP_ENTERPRISE_COURSE_ENROLLMENT_AUDIT_MODES:
@@ -839,7 +859,10 @@ edxapp_generic_auth_config:  &edxapp_generic_auth
   ANALYTICS_DATA_TOKEN: "{{ EDXAPP_ANALYTICS_DATA_TOKEN }}"
   DEFAULT_FILE_STORAGE:  "{{ EDXAPP_DEFAULT_FILE_STORAGE }}"
   AWS_ACCESS_KEY_ID:  "{{ EDXAPP_AWS_ACCESS_KEY_ID }}"
-  AWS_SECRET_ACCESS_KEY: "{{ EDXAPP_AWS_SECRET_ACCESS_KEY }}"
+  AWS_SECRET_ACCESS_KEY: "{{ EDXAPP_AWS_SECRET_ACCESS_KEY }}"  
+  AZURE_ACCOUNT_NAME: "{{ EDXAPP_AZURE_ACCOUNT_NAME }}"
+  AZURE_ACCOUNT_KEY: "{{ EDXAPP_AZURE_ACCOUNT_KEY }}"
+  AZURE_CONTAINER: "{{ EDXAPP_AZURE_CONTAINER }}" 
   AWS_QUERYSTRING_AUTH: "{{ EDXAPP_AWS_QUERYSTRING_AUTH }}"
   AWS_STORAGE_BUCKET_NAME: "{{ EDXAPP_AWS_STORAGE_BUCKET_NAME }}"
   AWS_S3_CUSTOM_DOMAIN: "{{ EDXAPP_AWS_S3_CUSTOM_DOMAIN }}"
@@ -859,6 +882,13 @@ edxapp_generic_auth_config:  &edxapp_generic_auth
     basic_auth: "{{ EDXAPP_XQUEUE_BASIC_AUTH }}"
     django_auth: "{{ EDXAPP_XQUEUE_DJANGO_AUTH }}"
     url: "{{ EDXAPP_XQUEUE_URL }}"
+  MONGODB_LOG:
+    db: "{{ EDXAPP_XLOG_MONGO_DB_NAME }}"
+    host: "{{ EDXAPP_MONGO_HOSTS }}"
+    password: "{{ EDXAPP_MONGO_PASSWORD }}"
+    port: "{{ EDXAPP_MONGO_PORT }}"
+    user: "{{ EDXAPP_MONGO_USER }}"
+    ssl: "{{ EDXAPP_MONGO_USE_SSL }}"  
   CONTENTSTORE:
     ENGINE:  'xmodule.contentstore.mongo.MongoContentStore'
     #
@@ -937,6 +967,7 @@ generic_env_config:  &edxapp_generic_env
     STORAGE_TYPE: "{{ EDXAPP_GRADE_STORAGE_TYPE | default(None) }}"
     BUCKET: "{{ EDXAPP_GRADE_BUCKET | default(None) }}"
     ROOT_PATH: "{{ EDXAPP_GRADE_ROOT_PATH | default(None) }}"
+    CONTAINER: "{{ EDXAPP_GRADE_STORAGE_CONTAINER | default(None) }}"
   STATIC_URL_BASE: "{{ EDXAPP_STATIC_URL_BASE }}"
   STATIC_ROOT_BASE: "{{ edxapp_staticfile_dir }}"
   LMS_BASE: "{{ EDXAPP_LMS_BASE }}"
@@ -1078,6 +1109,10 @@ generic_env_config:  &edxapp_generic_env
   HELP_TOKENS_BOOKS: "{{ EDXAPP_HELP_TOKENS_BOOKS }}"
   # License for serving content in China
   ICP_LICENSE: "{{ EDXAPP_ICP_LICENSE }}"
+  ## BEGIN RACCOONGANG ##
+  S3_USE_SIGV4: "{{ EDXAPP_S3_USE_SIGV4 }}"
+  S3_HOST: "{{ EDXAPP_S3_HOST }}"
+  ## END RACCOONGANG ##
 
 lms_auth_config:
   <<: *edxapp_generic_auth
@@ -1152,6 +1187,9 @@ lms_env_config:
   CELERY_QUEUES: "{{ EDXAPP_LMS_CELERY_QUEUES }}"
   ALTERNATE_WORKER_QUEUES: "cms"
   ENTERPRISE_COURSE_ENROLLMENT_AUDIT_MODES: "{{ EDXAPP_ENTERPRISE_COURSE_ENROLLMENT_AUDIT_MODES }}"
+  ## BEGIN RACCOONGANG ##
+  THIRD_PARTY_AUTH_BACKENDS: "{{ EDXAPP_THIRD_PARTY_AUTH_BACKENDS }}"
+  ## END RACCOONGANG ##
 
 cms_auth_config:
   <<: *edxapp_generic_auth
@@ -1300,3 +1338,14 @@ edxapp_cms_variant: cms
 
 # Worker Settings
 worker_django_settings_module: '{{ EDXAPP_SETTINGS }}'
+
+# Add default service worker users
+SERVICE_WORKER_USERS:
+  - email: "{{ EDXAPP_ENTERPRISE_SERVICE_WORKER_EMAIL }}"
+    username: "{{ EDXAPP_ENTERPRISE_SERVICE_WORKER_USERNAME }}"
+    is_staff: true
+    is_superuser: false
+
+## BEGIN RACCOONGANG ##
+REMOVE_STATICFILES_DIR_DURING_UPDATE: no
+## END RACCOONGANG ##

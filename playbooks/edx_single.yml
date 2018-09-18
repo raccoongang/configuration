@@ -39,7 +39,6 @@
     - edxapp
     - demo
     - oauth_client_setup
-
     - forum
     - role: notifier
     - role: xqueue
