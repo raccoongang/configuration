@@ -414,6 +414,7 @@
   become_user: "{{ common_web_user }}"
   tags:
     - manage
+    - reindex_edxapp_elastic
 
 - name: reindex libraries
   expect:
@@ -426,6 +427,7 @@
   become_user: "{{ common_web_user }}"
   tags:
     - manage
+    - reindex_edxapp_elastic
 
 - name: build service worker users list
   set_fact:
