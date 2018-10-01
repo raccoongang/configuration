@@ -289,7 +289,7 @@
 # checking the replica set status until we see a PRIMARY in the results.
 - name: Wait for the replica set to update and (if needed) elect a primary
   mongodb_rs_status:
-      host: "{{ ansible_default_ipv4['address'] }}"
+      host: "{{ MONGO_RS_CONFIG['members'][0]['host'] }}"
       username: "{{ MONGO_ADMIN_USER }}"
       password: "{{ MONGO_ADMIN_PASSWORD }}"
   register: status
