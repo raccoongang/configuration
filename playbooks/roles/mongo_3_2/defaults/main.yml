@@ -53,7 +53,9 @@ MONGO_CLUSTER_KEY: "CHANGEME+FiCuSm0ngAisHERETPoNhb3i++/B2Jtgq2z27hpU0TAnHXzFmuj
 # Cluster member configuration
 # Fed directly into mongodb_replica_set module
 MONGO_RS_CONFIG:
-  members: []
+  _id: '{{ MONGO_REPL_SET }}'
+  members:
+    - host: "127.0.0.1"
 
 # Storage engine options in 3.2: "mmapv1" or "wiredTiger"
 # 3.2 and 3.4 default to wiredTiger

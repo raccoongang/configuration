@@ -294,8 +294,8 @@
       password: "{{ MONGO_ADMIN_PASSWORD }}"
   register: status
   until: status.status is defined and 'PRIMARY' in status.status.members|map(attribute='stateStr')|list
-  retries: 5
-  delay: 2
+  retries: 10
+  delay: 3
   run_once: true
   tags:
     - "manage"
