@@ -297,8 +297,8 @@
   register: status
   until: status.status is defined and 'PRIMARY' in status.status.members|map(attribute='stateStr')|list
   when: mongo_configure_replica_set
-  retries: 5
-  delay: 2
+  retries: 10
+  delay: 3
   run_once: true
   tags:
     - "manage"
