@@ -17,7 +17,7 @@
   gather_facts: True
   roles:
     - role: swapfile
-      SWAPFILE_SIZE: 8GB
+      when: SWAPFILE_SIZE is defined and SWAPFILE_SIZE != ''
     - role: nginx
       nginx_sites:
       - certs
@@ -28,17 +28,26 @@
       nginx_default_sites:
       - lms
     - role: edxlocal
+      when: EDXAPP_MYSQL_HOST == 'localhost' or EDXAPP_MYSQL_HOST == '127.0.0.1'
     - role: memcache
     - role: mongo
     - role: rabbitmq
       rabbitmq_ip: 127.0.0.1
+    - role: elasticsearch
     - role: edxapp
       celery_worker: True
     - edxapp
-    - demo
+    - role: analytics_api
+      when: "{{ RUN_INSIGHTS_ROLES | default(False) }}"
+    - role: insights
+      when: "{{ RUN_INSIGHTS_ROLES | default(False) }}"
+    - role: nginx
+      nginx_sites:
+      - analytics_api
+      - insights
+      when: "{{ RUN_INSIGHTS_ROLES | default(False) }}"
     - oauth_client_setup
     - oraclejdk
-    - role: elasticsearch
     - forum
     - role: notifier
     - role: xqueue
@@ -48,4 +57,3 @@
       when: COMMON_ENABLE_NEWRELIC
     - role: datadog
       when: COMMON_ENABLE_DATADOG
-
