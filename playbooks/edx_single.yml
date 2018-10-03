@@ -27,7 +27,7 @@
       - xqueue
       nginx_default_sites:
       - lms
-    - oraclejdk
+    - role: oraclejdk
     - role: elasticsearch
     - role: edxlocal
     - role: memcache
