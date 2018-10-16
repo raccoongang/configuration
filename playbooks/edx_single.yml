@@ -1,0 +1,78 @@
+---
+
+# Example sandbox configuration
+# for single server community
+# installs
+
+- name: Bootstrap instance(s)
+  hosts: all
+  gather_facts: no
+  become: True
+  roles:
+    - python
+
+- name: Configure instance(s)
+  hosts: all
+  become: True
+  gather_facts: True
+  roles:
+    - role: swapfile
+      when: SWAPFILE_SIZE is defined and SWAPFILE_SIZE != ''
+      tags:
+        - raccoon:sandbox-skip-global
+    - role: nginx
+      nginx_sites:
+      - certs
+      - cms
+      - lms
+      - forum
+      - xqueue
+      nginx_default_sites:
+      - lms
+    - role: edxlocal
+      tags:
+        - raccoon:sandbox-skip-global
+    - role: memcache
+      tags:
+        - raccoon:sandbox-skip-global
+    - role: mongo
+      tags:
+        - raccoon:sandbox-skip-global
+    - role: rabbitmq
+      rabbitmq_ip: 127.0.0.1
+      tags:
+        - raccoon:sandbox-skip-global
+    - role: edxapp
+      celery_worker: True
+    - edxapp
+    - role: demo
+      tags:
+        - raccoon:sandbox-skip-global
+    - oauth_client_setup
+    - role: oraclejdk
+      tags:
+        - raccoon:sandbox-skip-global
+    - role: elasticsearch
+      tags:
+        - raccoon:sandbox-skip-global
+    - role: forum
+      tags:
+        - raccoon:sandbox-skip-global
+    - role: notifier
+      tags:
+        - raccoon:sandbox-skip-global
+    - role: xqueue
+      update_users: True
+      tags:
+        - raccoon:sandbox-skip-global
+    - role: certs
+      tags:
+        - raccoon:sandbox-skip-global
+    - role: newrelic
+      when: COMMON_ENABLE_NEWRELIC
+      tags:
+        - raccoon:sandbox-skip-global
+    - role: datadog
+      when: COMMON_ENABLE_DATADOG
+      tags:
+        - raccoon:sandbox-skip-global
