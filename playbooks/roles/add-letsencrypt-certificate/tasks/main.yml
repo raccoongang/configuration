@@ -5,51 +5,30 @@
   file:
     path: "{{ dhparamfile_dir }}"
     state: directory
-  become_method: sudo
-  become_user: root
-  become: True
 
 - name: Check if themes root dir exist
   stat:
     path: "{{ dhparamfile_dir }}"
   register: check_dhparamfile_dir_exist
-  become_method: sudo
-  become_user: root
-  become: True
 
 - name: Check if dhparam.pem file exist
   stat:
     path: "{{ dhparamfile_dir }}/dhparam.pem"
   register: check_dhparamfile_exist
-  become_method: sudo
-  become_user: root
-  become: True
 
 - name: Generate dhparam.pem
   command: "openssl dhparam -out {{ dhparamfile_dir }}/dhparam.pem 2048"
   when: check_dhparamfile_dir_exist.stat.exists and (not check_dhparamfile_exist.stat.exists)
-  become_method: sudo
-  become_user: root
-  become: True
 
 - stat: path="/etc/letsencrypt/live/{{ EDXAPP_SITE_NAME }}/fullchain.pem" 
   register: le_cert_exists
-  become_method: sudo
-  become: yes
-  become_user: root
 
 - name: Installing certbot dependencies
   apt: name="{{ item }}" update_cache=yes
   with_items: "{{ le_packages }}"
-  become_method: sudo
-  become: yes
-  become_user: root
 
 - name: Creating checkout directory for nginx
   file: path=/var/www/letsencrypt state=directory mode=0755 owner=www-data group=www-data
-  become_method: sudo
-  become: yes
-  become_user: root
   notify: reload nginx
 
 - name: Installing certbot
@@ -57,15 +36,9 @@
     url: https://dl.eff.org/certbot-auto
     dest: /usr/local/bin/certbot-auto
     mode: 0755
-  become_method: sudo
-  become: yes
-  become_user: root
 
 - name: Performing post-installation setup
   command: /usr/local/bin/certbot-auto --non-interactive --text --os-packages-only
-  become_method: sudo
-  become: yes
-  become_user: root
   when: le_cert_exists.stat.islnk is not defined
 
 - name: Compare LETSENCRYPT_MAIN_DOMAIN with LMS, CMS and PREVIEW
@@ -81,9 +54,6 @@
    
 - name: Requesting for LMS, CMS and LETSENCRYPT_ADDITIONAL_DOMAIN certificates
   command: /usr/local/bin/certbot-auto certonly --agree-tos --non-interactive --text --rsa-key-size 2048 --webroot -w /var/www/letsencrypt -d {{ LETSENCRYPT_ALL_DOMAIN|join(' -d ') }}  --register-unsafely-without-email --force-renewal
-  become_method: sudo
-  become: yes
-  become_user: root
   when: le_cert_exists.stat.islnk is not defined
 
 - name: Updating nginx LMS configuration
@@ -91,27 +61,18 @@
     src: "lms.j2"
     dest: "{{ nginx_sites_available_dir }}/lms"
     force: yes
-  become_method: sudo
-  become: yes
-  become_user: root
 
 - name: Updating nginx CMS configuration
   template:
     src: "cms.j2"
     dest: "{{ nginx_sites_available_dir }}/cms"
     force: yes
-  become_method: sudo
-  become: yes
-  become_user: root
 
 - name: Updating nginx programs-multitenant-redirect configuration
   template:
     src: "programs-multitenant-redirect.j2"
     dest: "{{ nginx_sites_available_dir }}/programs-multitenant-redirect"
     force: yes
-  become_method: sudo
-  become: yes
-  become_user: root
 
 - name: Creating link for programs-multitenant-redirect nginx configuration
   file:
@@ -126,9 +87,6 @@
     src: "credentials-multitenant-redirect.j2"
     dest: "{{ nginx_sites_available_dir }}/credentials-multitenant-redirect"
     force: yes
-  become_method: sudo
-  become: yes
-  become_user: root
 
 - name: Creating link for credentials-multitenant-redirect nginx configuration
   file:
@@ -140,9 +98,6 @@
 
 - name: Restarting nginx
   service: name=nginx state=restarted
-  become_method: sudo
-  become: yes
-  become_user: root
 
 - name: ensure that /usr/share/nginx/html dir exits
   file:
@@ -150,20 +105,14 @@
     state: directory
   with_items:
   - "{{ letsencrypt_webroot }}"
-  become_method: sudo
-  become: yes
-  become_user: root
 
 - name: Add auto-renewal task in cron
   cron: 
     name: "Automatic renewal letsencrypt certificate" 
     minute: "0" 
     hour: "1"
-    month: "*/2"
-    job: '/usr/local/bin/certbot-auto renew --force-renewal --webroot -w {{ letsencrypt_webroot }} --post-hook "service nginx restart" > /dev/null'
-  become_method: sudo
-  become: yes
-  become_user: root
+    month: "*"
+    job: '/usr/local/bin/certbot-auto renew --webroot -w {{ letsencrypt_webroot }} --post-hook "service nginx restart" > /dev/null'
 
 - name: Make sure nginx has started
   service:

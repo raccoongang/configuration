@@ -1,15 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# Script for installing Ansible and the edX configuration repostory
-# onto a host to enable running ansible to complete configuration.
-# This script can be used by Docker, Packer or any other system
-# for building images that requires having ansible available.
-#
-# Can be run as follows:
-#
-# UPGRADE_OS=true CONFIGURATION_VERSION="ficus-rg" \
-# bash <(curl -s https://raw.githubusercontent.com/raccoongang/configuration/ficus-rg/util/install/ansible-bootstrap.sh)
+# Script for installing Ansible and edX configuration and edx-platform repo's
 
 set -xe
 
@@ -35,6 +27,18 @@ fi
 
 if [[ -z "${RUN_ANSIBLE}" ]]; then
   RUN_ANSIBLE=true
+fi
+
+if [[ -z "${PLATFORM_REPO}" ]]; then
+  PLATFORM_REPO="https://github.com/raccoongang/edx-platform.git"
+fi
+
+if [[ -z "${PLATFORM_VERSION}" ]]; then
+  PLATFORM_VERSION="ficus-rg"
+fi
+
+if [[ -z "${MICROSERVICES_VERSION}" ]]; then
+  MICROSERVICES_VERSION="open-release/ficus.3"
 fi
 
 #
@@ -153,6 +157,35 @@ if [[ "true" == "${RUN_ANSIBLE}" ]]; then
     cd "${CONFIGURATION_DIR}"/playbooks/edx-east
     "${PYTHON_BIN}"/ansible-playbook edx_ansible.yml -i '127.0.0.1,' -c local -e "configuration_version=${CONFIGURATION_VERSION}" -e "edx_ansible_source_repo=${CONFIGURATION_REPO}"
 
+    sudo apt-get install -y python-software-properties
+    sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+
+    sudo apt-get update -y
+    sudo apt-get upgrade -y
+
+    sudo apt-get install -y build-essential software-properties-common curl git-core libxml2-dev libxslt1-dev python-pip libmysqlclient-dev python-apt python-dev libxmlsec1-dev libfreetype6-dev swig gcc g++
+    sudo pip install --upgrade pip==8.1.2
+    sudo pip install --upgrade setuptools==24.0.3
+    sudo -H pip install --upgrade virtualenv==15.0.2
+
+    cd /edx/app/edx_ansible/edx_ansible/playbooks
+
+
+    eval "sudo -E /edx/app/edx_ansible/venvs/edx_ansible/bin/ansible-playbook -c local ./edx_sandbox.yml -i "localhost," \
+    -e 'forum_version: ${MICROSERVICES_VERSION}' \
+    -e 'xqueue_version: ${MICROSERVICES_VERSION}' \
+    -e 'notifier_version: ${MICROSERVICES_VERSION}' \
+    -e 'certs_version: ${MICROSERVICES_VERSION}' \
+    -e 'demo_version: ${MICROSERVICES_VERSION}' \
+    -e 'edx_platform_repo: ${PLATFORM_REPO}' \
+    -e 'edx_platform_version: ${PLATFORM_VERSION}'"
+
+    eval "/edx/app/edx_ansible/venvs/edx_ansible/bin/ansible-playbook -c local -i 'localhost,' /edx/app/edx_ansible/edx_ansible/playbooks/run_role.yml -e 'role=rabbitmq' -e 'rabbitmq_ip=127.0.0.1'"
+
+    eval "sudo /edx/app/edx_ansible/update edx-platform ${ANSIBLE_VERSION}"
+
+    eval "sudo /edx/bin/supervisorctl restart all"
+
     # cleanup
     rm -rf "${ANSIBLE_DIR}"
     rm -rf "${CONFIGURATION_DIR}"
@@ -167,10 +200,16 @@ if [[ "true" == "${RUN_ANSIBLE}" ]]; then
 
     > . /edx/app/edx_ansible/venvs/edx_ansible/bin/activate
 
+    Done OpenEdx installation, edx-platform is now installed in /edx/app/edxapp.
+    Activate the virtual env with
+
+    > . /edx/app/edxapp/venvs/edxapp/bin/activate
+
     ******************************************************************************
 EOF
 else
     mkdir -p /edx/ansible/facts.d
     echo '{ "ansible_bootstrap_run": true }' > /edx/ansible/facts.d/ansible_bootstrap.json
 fi
+
 

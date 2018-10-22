@@ -18,8 +18,6 @@
   roles:
     - role: swapfile
       when: SWAPFILE_SIZE is defined and SWAPFILE_SIZE != ''
-      tags:
-        - raccoon:sandbox-skip-global
     - role: nginx
       nginx_sites:
       - certs
@@ -30,49 +28,24 @@
       nginx_default_sites:
       - lms
     - role: edxlocal
-      tags:
-        - raccoon:sandbox-skip-global
     - role: memcache
-      tags:
-        - raccoon:sandbox-skip-global
     - role: mongo
-      tags:
-        - raccoon:sandbox-skip-global
     - role: rabbitmq
       rabbitmq_ip: 127.0.0.1
-      tags:
-        - raccoon:sandbox-skip-global
     - role: edxapp
       celery_worker: True
     - edxapp
-    - role: demo
-      tags:
-        - raccoon:sandbox-skip-global
+    - demo
     - oauth_client_setup
-    - role: oraclejdk
-      tags:
-        - raccoon:sandbox-skip-global
+    - oraclejdk
     - role: elasticsearch
-      tags:
-        - raccoon:sandbox-skip-global
-    - role: forum
-      tags:
-        - raccoon:sandbox-skip-global
+    - forum
     - role: notifier
-      tags:
-        - raccoon:sandbox-skip-global
     - role: xqueue
       update_users: True
-      tags:
-        - raccoon:sandbox-skip-global
-    - role: certs
-      tags:
-        - raccoon:sandbox-skip-global
+    - certs
     - role: newrelic
       when: COMMON_ENABLE_NEWRELIC
-      tags:
-        - raccoon:sandbox-skip-global
     - role: datadog
       when: COMMON_ENABLE_DATADOG
-      tags:
-        - raccoon:sandbox-skip-global
+
