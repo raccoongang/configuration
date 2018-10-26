@@ -27,6 +27,8 @@
       - xqueue
       nginx_default_sites:
       - lms
+    - role: oraclejdk
+    - role: elasticsearch
     - role: edxlocal
     - role: memcache
     - role: mongo
@@ -35,15 +37,15 @@
     - role: edxapp
       celery_worker: True
     - edxapp
-    - demo
-    - oauth_client_setup
-    - oraclejdk
-    - role: elasticsearch
-    - forum
+    - role: rg_instructor_analytics_log_collector
+      when: "{{ EDXAPP_RG_INSTRUCTOR_ANALYTICS_ENABLE | default(False) }}"
+    - role: demo
+    - role: oauth_client_setup
+    - role: forum
     - role: notifier
     - role: xqueue
       update_users: True
-    - certs
+    - role: certs
     - role: newrelic
       when: COMMON_ENABLE_NEWRELIC
     - role: datadog
