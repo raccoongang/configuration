@@ -3,4 +3,3 @@
   when: ansible_os_family == "Debian"
 
 - include: agent6.yml
-

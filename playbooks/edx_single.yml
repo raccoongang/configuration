@@ -40,10 +40,10 @@
       rabbitmq_ip: 127.0.0.1
     - role: edxapp
       celery_worker: True
-    - edxapp
+    - role: edxapp
     - role: celeryd
       when: "{{ EDXAPP_CUSTOM_CELERYD_ENABLE | default(False) }}"
-    - ecommerce
+    - role: ecommerce
     - role: ecomworker
     - role: analytics_api
       when: "{{ RUN_INSIGHTS_ROLES | default(False) }}"
@@ -60,13 +60,14 @@
       when: "{{ EDXAPP_ENABLE_EDXNOTES }}"
     - role: edx_notes_api
       when: "{{ EDXAPP_ENABLE_EDXNOTES }}"
-    - oauth_client_setup
-    - oraclejdk
+    - role: oauth_client_setup
+    - role: oraclejdk
     - role: elasticsearch
-    - forum
+    - role: forum
     - role: notifier
       NOTIFIER_DIGEST_TASK_INTERVAL: 5
     - role: xqueue
       update_users: True
-    - certs
-
+    - role: certs
+    - role: datadog
+      when: COMMON_ENABLE_DATADOG

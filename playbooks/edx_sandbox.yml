@@ -25,7 +25,7 @@
       - lms
       - forum
       - xqueue
-      - ecommerce
+      # - ecommerce
       nginx_default_sites:
       - lms
     - role: edxlocal
