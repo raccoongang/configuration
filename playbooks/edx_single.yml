@@ -46,6 +46,8 @@
       when: SANDBOX_ENABLE_ECOMMERCE is defined and SANDBOX_ENABLE_ECOMMERCE
     - role: rg_instructor_analytics_log_collector
       when: "{{ EDXAPP_RG_INSTRUCTOR_ANALYTICS_ENABLE | default(False) }}"
+    - role: celerybeat
+      when: EDXAPP_CELERY_BEAT.enabled | default(False)
     - role: analytics_api
       when: SANDBOX_ENABLE_ANALYTICS_API is defined and SANDBOX_ENABLE_ANALYTICS_API
     - role: insights
