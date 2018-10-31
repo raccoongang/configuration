@@ -1,0 +1,34 @@
+---
+EDXAPP_CELERY_BEAT:
+   enabled: False
+   monitor: True
+   service_variant: lms
+   beat_file: "{{ supervisor_data_dir }}/beat"
+   pid_file: "{{ supervisor_data_dir }}/celery_beat.pid"
+
+celery_beat_service_name: celerybeat
+
+COMMON_BASE_DIR: /edx
+COMMON_DATA_DIR: "{{ COMMON_BASE_DIR}}/var"
+edxapp_data_dir: "{{ COMMON_DATA_DIR }}/edxapp"
+COMMON_APP_DIR: "/edx/app"
+COMMON_LOG_DIR: "{{ COMMON_DATA_DIR }}/log"
+edxapp_log_dir: "{{ COMMON_LOG_DIR }}/edx"
+edxapp_app_dir: "{{ COMMON_APP_DIR }}/edxapp"
+edxapp_venvs_dir: "{{ edxapp_app_dir }}/venvs"
+edxapp_venv_dir: "{{ edxapp_venvs_dir }}/edxapp"
+edxapp_venv_bin: "{{ edxapp_venv_dir }}/bin"
+
+supervisor_available_dir: "{{ supervisor_app_dir }}/conf.available.d"
+supervisor_app_dir: "{{ COMMON_APP_DIR }}/supervisor"
+supervisor_data_dir: "{{ COMMON_DATA_DIR }}/supervisor"
+supervisor_service_user: "{{ common_web_user }}"
+supervisor_log_dir: "{{ COMMON_LOG_DIR }}/supervisor"
+supervisor_user: supervisor
+common_web_user: www-data
+
+COMMON_ENABLE_NEWRELIC_APP: False
+EDXAPP_CELERY_BEAT_NEW_RELIC_APP_NAME: celerybeat
+EDXAPP_NEWRELIC_WORKERS_APPNAME: "{{ EDXAPP_CELERY_BEAT_NEW_RELIC_APP_NAME }}"
+NEW_RELIC_LICENSE_KEY: ''
+EDXAPP_WORKER_DEFAULT_STOPWAITSECS: 432000

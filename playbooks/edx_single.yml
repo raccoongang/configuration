@@ -38,6 +38,8 @@
     - edxapp
     - role: rg_instructor_analytics_log_collector
       when: "{{ EDXAPP_RG_INSTRUCTOR_ANALYTICS_ENABLE | default(False) }}"
+    - role: celerybeat
+      when: EDXAPP_CELERY_BEAT.enabled | default(False)
     - role: analytics_api
       when: "{{ RUN_INSIGHTS_ROLES | default(False) }}"
     - role: insights
