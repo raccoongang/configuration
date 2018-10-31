@@ -42,6 +42,8 @@
     - role: demo
     - role: oauth_client_setup
     - role: forum
+    - role: celerybeat
+      when: EDXAPP_CELERY_BEAT.enabled | default(False)
     - role: notifier
     - role: xqueue
       update_users: True
