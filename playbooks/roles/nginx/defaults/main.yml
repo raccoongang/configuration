@@ -69,7 +69,7 @@ NGINX_EDXAPP_ERROR_PAGES:
   "502": "{{ nginx_default_error_page }}"
   "504": "{{ nginx_default_error_page }}"
 
-CMS_HOSTNAME: '~^((stage|prod)-)?studio.*'
+CMS_HOSTNAME: '~^((stage|prod)-)?guru.*'
 ECOMMERCE_HOSTNAME: '~^((stage|prod)-)?ecommerce.*'
 PROGRAMS_HOSTNAME: '~^((stage|prod)-)?programs.*'
 

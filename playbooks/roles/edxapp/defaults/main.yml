@@ -16,6 +16,7 @@
 # when the edxapp config is written to disk.
 
 # Bucket used for xblock file storage
+EDXAPP_ADMINS: []
 EDXAPP_XBLOCK_FS_STORAGE_BUCKET: "None"
 EDXAPP_XBLOCK_FS_STORAGE_PREFIX: "None"
 EDXAPP_DJFS:
@@ -854,6 +855,7 @@ generic_env_config:  &edxapp_generic_env
   SESSION_SAVE_EVERY_REQUEST: "{{ EDXAPP_SESSION_SAVE_EVERY_REQUEST }}"
   SOCIAL_SHARING_SETTINGS: "{{ EDXAPP_SOCIAL_SHARING_SETTINGS }}"
   SESSION_COOKIE_SECURE: "{{ EDXAPP_SESSION_COOKIE_SECURE }}"
+  ADMINS: "{{EDXAPP_ADMINS}}"
 
 lms_auth_config:
   <<: *edxapp_generic_auth
