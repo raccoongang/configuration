@@ -1,3 +1,10 @@
+- Role: mysql
+  - Added ability to deploy PowerBI readonly user
+    POWERBI_RO_MYSQL_USER - username or undefined. if undefined task will be skipped
+    POWERBI_RO_MYSQL_PASS
+    POWERBI_RO_MYSQL_HOST - hostname of PowerBI permissive gateway. specify '10.0.0.%' to allow subnet.
+    MYSQL_BIND_ADDRESS - allow to configure listen address bind for mysqld. use '0.0.0.0' to connect PowerBI
+
 - Role: edxapp
   - Added a new EDXAPP_MYSQL_CONN_MAX_AGE, default to 0.  Adjust it to change how long a connection is kept open
   for reuse before it is closed.
