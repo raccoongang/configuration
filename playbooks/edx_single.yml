@@ -36,6 +36,8 @@
       when: "'localhost' in EDXAPP_MONGO_HOSTS or '127.0.0.1' in EDXAPP_MONGO_HOSTS"
     - role: rabbitmq
       rabbitmq_ip: 127.0.0.1
+    - role: elasticsearch
+      when: "'localhost' in EDXAPP_ELASTIC_SEARCH_CONFIG|map(attribute='host') or '127.0.0.1' in EDXAPP_ELASTIC_SEARCH_CONFIG|map(attribute='host')"
     - role: edxapp
       celery_worker: True
     - edxapp
@@ -56,8 +58,6 @@
     - demo
     - oauth_client_setup
     - oraclejdk
-    - role: elasticsearch
-      when: "'localhost' in EDXAPP_ELASTIC_SEARCH_CONFIG|map(attribute='host') or '127.0.0.1' in EDXAPP_ELASTIC_SEARCH_CONFIG|map(attribute='host')"
     - forum
     - role: discovery
       when: SANDBOX_ENABLE_DISCOVERY is defined and SANDBOX_ENABLE_DISCOVERY
