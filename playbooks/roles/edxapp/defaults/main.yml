@@ -16,6 +16,8 @@
 # when the edxapp config is written to disk.
 
 ## BEGIN RACCOONGANG ##
+EDXAPP_XLOG_MONGO_DB_NAME: 'xlog'
+
 EDXAPP_S3_USE_SIGV4: false
 EDXAPP_S3_HOST: null
 
@@ -23,6 +25,14 @@ EDXAPP_LMS_USE_GOOGLE_RECAPTCHA: False
 EDXAPP_CMS_USE_GOOGLE_RECAPTCHA: False
 EDXAPP_GOOGLE_RECAPTCHA_SECRET_KEY: "secret_key_here"
 EDXAPP_GOOGLE_RECAPTCHA_DATA_SITE_KEY: "site_key_here"
+EDXAPP_THIRD_PARTY_AUTH_BACKENDS:
+ - social_core.backends.google.GoogleOAuth2
+ - social_core.backends.linkedin.LinkedinOAuth2
+ - social_core.backends.facebook.FacebookOAuth2
+ - social_core.backends.azuread.AzureADOAuth2
+ - social_core.backends.vk.VKOAuth2
+ - third_party_auth.saml.SAMLAuthBackend
+ - third_party_auth.lti.LTIAuthBackend
 ## END RACCOONGANG ##
 
 # Bucket used for xblock file storage
@@ -876,6 +886,13 @@ edxapp_generic_auth_config:  &edxapp_generic_auth
     basic_auth: "{{ EDXAPP_XQUEUE_BASIC_AUTH }}"
     django_auth: "{{ EDXAPP_XQUEUE_DJANGO_AUTH }}"
     url: "{{ EDXAPP_XQUEUE_URL }}"
+  MONGODB_LOG:
+    db: "{{ EDXAPP_XLOG_MONGO_DB_NAME }}"
+    host: "{{ EDXAPP_MONGO_HOSTS }}"
+    password: "{{ EDXAPP_MONGO_PASSWORD }}"
+    port: "{{ EDXAPP_MONGO_PORT }}"
+    user: "{{ EDXAPP_MONGO_USER }}"
+    ssl: "{{ EDXAPP_MONGO_USE_SSL }}"  
   CONTENTSTORE:
     ENGINE:  'xmodule.contentstore.mongo.MongoContentStore'
     #
@@ -1176,6 +1193,9 @@ lms_env_config:
   ALTERNATE_WORKER_QUEUES: "cms"
   ENTERPRISE_COURSE_ENROLLMENT_AUDIT_MODES: "{{ EDXAPP_ENTERPRISE_COURSE_ENROLLMENT_AUDIT_MODES }}"
   USE_GOOGLE_RECAPTCHA: "{{ EDXAPP_LMS_USE_GOOGLE_RECAPTCHA }}"
+  ## BEGIN RACCOONGANG ##
+  THIRD_PARTY_AUTH_BACKENDS: "{{ EDXAPP_THIRD_PARTY_AUTH_BACKENDS }}"
+  ## END RACCOONGANG ##
 
 cms_auth_config:
   <<: *edxapp_generic_auth
