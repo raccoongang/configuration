@@ -1,0 +1,12 @@
+#
+# {{ ansible_managed }}
+#
+[program:{{ analytics_log_watcher_service_name }}]
+
+environment=DJANGO_SETTINGS_MODULE=lms.envs.aws,SERVICE_VARIANT=lms
+command={{ edxapp_venv_bin }}/python {{ edxapp_venv_dir }}/src/rg-instructor-analytics-log-collector/run_log_watcher.py --sleep_time {{ analytics_log_watcher_sleep_time }} --tracking_log_dir {{ tracking_directory }}
+user={{ common_web_user }}
+stdout_logfile={{ supervisor_log_dir }}/%(program_name)s-stdout.log
+stderr_logfile={{ supervisor_log_dir }}/%(program_name)s-stderr.log
+killasgroup=true
+stopasgroup=true

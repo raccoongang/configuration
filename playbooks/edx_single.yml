@@ -35,6 +35,8 @@
     - role: edxapp
       celery_worker: True
     - edxapp
+    - role: rg_instructor_analytics_log_collector
+      when: "{{ EDXAPP_RG_INSTRUCTOR_ANALYTICS_ENABLE | default(False) }}"
     - demo
     - oauth_client_setup
     - oraclejdk
