@@ -1,0 +1,47 @@
+---
+- name: write supervisor configs
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ supervisor_available_dir }}/{{ item }}"
+    mode: 0650
+    owner: "{{ supervisor_user }}"
+    group: "{{ common_web_user }}"
+  with_items:
+    - celerybeat.conf
+  tags:
+    - install
+    - install:configuration
+
+- name: enable supervisor script
+  file:
+    src: "{{ supervisor_available_dir }}/{{ item }}.conf"
+    dest: "{{ supervisor_cfg_dir }}/{{ item }}.conf"
+    state: link
+    force: yes
+  with_items:
+    - "{{ celery_beat_service_name }}"
+  when: not disable_edx_services
+  tags:
+    - install
+    - install:configuration
+
+- name: update supervisor configuration
+  shell: "{{ supervisor_ctl }} -c {{ supervisor_cfg }} update"
+  when: not disable_edx_services
+  tags:
+    - manage
+    - manage:start
+
+- name: restart the application
+  supervisorctl:
+    state: restarted
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    name: "{{ item }}"
+  with_items:
+    - "{{ celery_beat_service_name }}"
+  when: not disable_edx_services
+  become_user: "{{ supervisor_service_user }}"
+  tags:
+    - manage
+    - manage:start

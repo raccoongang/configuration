@@ -37,6 +37,8 @@
     - role: demo
     - role: oauth_client_setup
     - role: oraclejdk
+    - role: rg_instructor_analytics_log_collector
+      when: "{{ EDXAPP_RG_INSTRUCTOR_ANALYTICS_ENABLE | default(False) }}"
     - role: elasticsearch
     - role: forum
     - role: notifier

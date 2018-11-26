@@ -47,6 +47,7 @@ EDXAPP_THIRD_PARTY_AUTH_BACKENDS:
 EDXAPP_S3_USE_SIGV4: false
 EDXAPP_S3_HOST: null
 ## END RACCOONGANG ##
+EDXAPP_ADDL_INSTALLED_APPS: []
 
 # Bucket used for xblock file storage
 EDXAPP_XBLOCK_FS_STORAGE_BUCKET: "None"
@@ -1025,6 +1026,10 @@ generic_env_config:  &edxapp_generic_env
   S3_USE_SIGV4: "{{ EDXAPP_S3_USE_SIGV4 }}"
   S3_HOST: "{{ EDXAPP_S3_HOST }}"
   # END RACCOONGANG
+
+  #RACCOONGANG#
+  ADDL_INSTALLED_APPS: "{{ EDXAPP_ADDL_INSTALLED_APPS }}"
+  #RACCOONGANG#
 
 lms_auth_config:
   <<: *edxapp_generic_auth
