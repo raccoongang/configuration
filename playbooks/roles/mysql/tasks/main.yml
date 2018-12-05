@@ -22,3 +22,16 @@
 
 - include: mysql.yml
   when: (mysql_56_installed.rc == 1) or (remove_experimental_mysql)
+
+- name: Changing bind-address in mysqld.cnf
+  lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^bind-address'
+    line: "bind-address = {{ MYSQL_BIND_ADDRESS }}"
+  register: mysqld_cnf_update
+
+- name: Restart mysqld
+  service:
+    name: mysql
+    state: restarted
+  when: mysqld_cnf_update.changed
