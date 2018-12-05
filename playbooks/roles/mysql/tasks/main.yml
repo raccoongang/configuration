@@ -29,9 +29,10 @@
     regexp: '^bind-address'
     line: "bind-address = {{ MYSQL_BIND_ADDRESS }}"
   register: mysqld_cnf_update
+  when: MYSQL_BIND_ADDRESS is defined
 
 - name: Restart mysqld
   service:
     name: mysql
     state: restarted
-  when: mysqld_cnf_update.changed
+  when: MYSQL_BIND_ADDRESS is defined and mysqld_cnf_update.changed
