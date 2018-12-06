@@ -429,6 +429,7 @@
   become_user: "{{ common_web_user }}"
   tags:
     - manage
+    - reindex
 
 - name: reindex libraries
   expect:
@@ -441,3 +442,4 @@
   become_user: "{{ common_web_user }}"
   tags:
     - manage
+    - reindex
