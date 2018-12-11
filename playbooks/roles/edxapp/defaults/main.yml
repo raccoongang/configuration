@@ -454,10 +454,10 @@ EDXAPP_AUTOMATED_USERS:
     authorized_keys:
       - "SSH authorized key"
 
-EDXAPP_USE_GIT_IDENTITY: True
+EDXAPP_USE_GIT_IDENTITY: false
 # Paste the contents of the git identity
 # into this var
-EDXAPP_GIT_IDENTITY: "{{COMMON_GITLAB_READONLY_KEY}}"
+EDXAPP_GIT_IDENTITY: !!null
 
 EDXAPP_UPDATE_STATIC_FILES_KEY: false
 # Set this to true if you want to install the private pip

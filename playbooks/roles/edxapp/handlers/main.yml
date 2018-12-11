@@ -1,0 +1,4 @@
+- name: remove read-only ssh key
+  file:
+    path: "{{ edxapp_git_identity }}"
+    state: absent

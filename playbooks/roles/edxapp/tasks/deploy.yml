@@ -23,6 +23,7 @@
     owner: "{{ edxapp_user }}"
     mode: "0600"
   when: EDXAPP_USE_GIT_IDENTITY
+  notify: remove read-only ssh key
   tags:
     - install
     - install:base
@@ -385,16 +386,6 @@
   tags:
     - install
     - install:configuration
-
-- name: remove read-only ssh key
-  file:
-    path: "{{ edxapp_git_identity }}"
-    state: absent
-  when: EDXAPP_USE_GIT_IDENTITY
-  tags:
-    - install
-    - install:configuration
-    - install:code
 
 - include: tag_ec2.yml tags=deploy
   when: COMMON_TAG_EC2_INSTANCE

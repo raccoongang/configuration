@@ -18,7 +18,7 @@ themes_home: "{{ COMMON_DATA_DIR }}/{{ themes_service_name }}"
 
 THEMES_CODE_DIR: "{{ themes_home }}/{{ themes_service_name }}"
 
-THEMES_GIT_IDENTITY: "{{COMMON_GITLAB_READONLY_KEY}}"
+THEMES_GIT_IDENTITY: !!null
 THEMES_GIT_PROTOCOL: "{{ COMMON_GIT_PROTOCOL }}"
 THEMES_GIT_MIRROR: "{{ COMMON_GIT_MIRROR }}"
 THEMES_GIT_PATH: "{{ COMMON_GIT_PATH }}"
