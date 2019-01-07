@@ -37,8 +37,8 @@
     - role: edxapp
       celery_worker: True
     - edxapp
-    - role: rg_instructor_analytics_log_collector
-      when: "{{ EDXAPP_RG_INSTRUCTOR_ANALYTICS_ENABLE | default(False) }}"
+    # - role: rg_instructor_analytics_log_collector
+    #  when: "{{ EDXAPP_RG_INSTRUCTOR_ANALYTICS_ENABLE | default(False) }}"
     - role: demo
     - role: oauth_client_setup
     - role: forum
