@@ -1,4 +1,9 @@
-- Roles: nginx
+- Role: edxapp:
+  - Added RG_WIKI_ENABLED variable to control WIKI_ENABLED via extra-vars
+
+- Use Ansible 2.3.1.0 so that we can do shallow clones of tags.
+
+- Role: nginx:
   - Added RG_NGINX_LMS_CLIENT_MAX_BODY_SIZE, RG_NGINX_CMS_CLIENT_MAX_BODY_SIZE to override `client_max_body_size` in lms and cms nginx configuration.
 
 - Role: mysql
