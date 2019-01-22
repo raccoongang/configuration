@@ -524,3 +524,19 @@
     minute: "{{ EDXAPP_CLEARSESSIONS_CRON_MINUTES }}"
     day: "*"
   when: EDXAPP_CLEARSESSIONS_CRON_ENABLED
+  tags:
+    - install
+    - install:base
+
+- name: install additional cron jobs
+  cron:
+    name: "{{ item.name }}"
+    user: "{{ item.user }}"
+    job: "{{ item.job }}"
+    day: "{{ item.day | default('*') }}"
+    hour: "{{ item.hour | default('*') }}"
+    minute: "{{ item.minute | default('*') }}"
+  with_items: "{{ EDXAPP_ADDITIONAL_CRON_JOBS }}"
+  tags:
+    - install
+    - install:base
