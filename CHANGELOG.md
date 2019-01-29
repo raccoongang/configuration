@@ -1,3 +1,6 @@
+- Roles: nginx
+  - Added RG_NGINX_LMS_CLIENT_MAX_BODY_SIZE, RG_NGINX_CMS_CLIENT_MAX_BODY_SIZE to override `client_max_body_size` in lms and cms nginx configuration.
+
 - Role: mysql
   - Added ability to deploy PowerBI readonly user
     POWERBI_RO_MYSQL_USER - username or undefined. if undefined task will be skipped
