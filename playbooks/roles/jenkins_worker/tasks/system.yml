@@ -20,6 +20,12 @@
   shell: "curl {{ jenkins_worker_key_url }} -o {{ jenkins_home }}/.ssh/authorized_keys"
   when: jenkins_worker_key_url is defined
 
+- name: Create empty authorized_keys
+  file:
+      path={{ jenkins_home }}/.ssh/authorized_keys
+      state=touch
+  when: jenkins_worker_key_url is not defined
+
 - name: Set key permissions
   file:
     path={{ jenkins_home }}/.ssh/authorized_keys
