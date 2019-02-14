@@ -1,3 +1,6 @@
+- Roles: nginx
+  - Added RG_NGINX_LMS_CLIENT_MAX_BODY_SIZE, RG_NGINX_CMS_CLIENT_MAX_BODY_SIZE to override `client_max_body_size` in lms and cms nginx configuration.
+
 - Role: mongo_3_2
   - Added role for mongo 3.2, not yet in use.
   - Removed MONGO_CLUSTERED variable. In this role mongo replication is always configured, even if there is only one node.
