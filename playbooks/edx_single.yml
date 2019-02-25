@@ -42,7 +42,7 @@
     - role: elasticsearch
     - role: forum
     - role: notifier
-    - role: certs
+    #  - role: certs
     - role: edx_notes_api
       when: EDXAPP_ENABLE_EDXNOTES
     - role: newrelic
