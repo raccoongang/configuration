@@ -31,7 +31,7 @@
     # Nginx reverse proxy
     - role: nginx
       nginx_sites:
-      - certs
+    #  - certs
       - cms
       - lms
       - forum
