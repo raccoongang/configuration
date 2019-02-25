@@ -20,7 +20,7 @@
       SWAPFILE_SIZE: 8GB
     - role: nginx
       nginx_sites:
-      - certs
+    #  - certs
       - cms
       - lms
       - forum
