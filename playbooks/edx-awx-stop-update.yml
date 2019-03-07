@@ -1,0 +1,95 @@
+---
+- hosts: all
+  gather_facts: false
+  vars:
+    sysctl_settings:
+      vm.swappiness: 1
+      net.core.rmem_max: 16777216
+      net.core.wmem_max: 16777216
+      net.ipv4.tcp_rmem: "4096 524288 16777216"
+      net.ipv4.tcp_wmem: "4096 524288 16777216"
+      net.core.netdev_max_backlog: 250000
+      net.ipv4.ip_local_port_range: "10240 65000"
+      net.ipv4.conf.all.send_redirects: 0
+
+  tasks:
+    - include_vars: vault/rg-slack-token.yml
+    - include_vars: vault/roles/zabbix/zabbix-rg-api.yml
+
+    - name: applying fix for mysql timezone information
+      shell: "mysql_tzinfo_to_sql /usr/share/zoneinfo | sed -e 's/Local time zone must be set--see zic manual page/local/' | mysql -u root mysql"
+      when: EDXAPP_MYSQL_HOST == 'localhost' or EDXAPP_MYSQL_HOST == '127.0.0.1'
+      become: true
+      become_method: 'sudo'
+      tags:
+        - mysql_tzinfo_to_sql
+
+    - name: applying sysctl settings
+      sysctl:
+        name: "{{ item.key }}"
+        value: "{{ item.value }}"
+      with_dict: "{{ sysctl_settings }}"
+      ignore_errors: true
+      become: true
+      become_method: 'sudo'
+
+    - name: disabling email spam from cron about ubuntu upgrade
+      file:
+        path: "{{ item }}"
+        state: absent
+      become: true
+      become_method: 'sudo'
+      with_items:
+        - "/etc/cron.daily/update-notifier-common"
+        - "/etc/cron.weekly/update-notifier-common"
+
+    - name: removing /tmp/mako_lms directory
+      file:
+        path: "/tmp/mako_lms"
+        state: absent
+      become: true
+      become_method: 'sudo'
+
+    - name: removing /tmp/mako_cms directory
+      file:
+        path: "/tmp/mako_cms"
+        state: absent
+      become: true
+      become_method: 'sudo'
+
+    - name: get visible names for zabbix hosts which names starts with {{ EDXAPP_LMS_BASE }}
+      shell: "python roles/zabbix/server/files/get_visiblename.py {{ EDXAPP_LMS_BASE | default(inventory_hostname, true) }}"
+      environment:
+        ZABBIX_SERVER: "https://zabbix.raccoongang.com"
+        ZABBIX_USER: "{{ vault_zabbix_api_login }}"
+        ZABBIX_PASS: "{{ vault_zabbix_api_password }}"
+      register: hosts
+      when: zabbix_enabled
+      delegate_to: localhost
+      tags:
+        - skip_ansible_lint
+
+    - name: removing maintenance window for hosts - {{ hosts.stdout.split('\n') }}
+      zabbix_maintenance:
+        name: "AWX update - {{ project_name }}"
+        host_names: "{{ hosts.stdout.split('\n') }}"
+        # host_name: "Test"
+        state: absent
+        minutes: 180
+        server_url: "https://zabbix.raccoongang.com"
+        login_user: "{{ vault_zabbix_api_login }}"
+        login_password: "{{ vault_zabbix_api_password }}"
+      when: zabbix_enabled and hosts.stdout != ''
+      delegate_to: localhost
+      ignore_errors: true
+
+    - name: sending slack notification
+      slack:
+        token: "{{ slack_notification_token }}"
+        channel: "{{ item }}"
+        msg: "AWX: {{ project_name }} {{ env }} updated. {{ EDXAPP_LMS_BASE }}"
+        icon_url: "https://awx.raccoongang.com/favicon.ico"
+        username: "AWX"
+      with_items: "{{ slack_notification_channels[env] }}"
+      when: slack_notification_channels is defined and slack_notification_channels[env] is defined and slack_notification_channels[env] != ''
+      delegate_to: localhost

@@ -1,0 +1,89 @@
+---
+- hosts: all
+  gather_facts: false
+
+  tasks:
+    - include_vars: vault/rg-slack-token.yml
+    - include_vars: vault/roles/zabbix/zabbix-rg-api.yml
+
+    - name: get visible names for zabbix hosts which names starts with {{ EDXAPP_LMS_BASE }}
+      shell: "python roles/zabbix/server/files/get_visiblename.py {{ EDXAPP_LMS_BASE | default(inventory_hostname, true) }}"
+      environment:
+        ZABBIX_SERVER: "https://zabbix.raccoongang.com"
+        ZABBIX_USER: "{{ vault_zabbix_api_login }}"
+        ZABBIX_PASS: "{{ vault_zabbix_api_password }}"
+      register: hosts
+      when: zabbix_enabled
+      delegate_to: localhost
+      tags:
+        - skip_ansible_lint
+
+    - name: creating zabbix 3 hour maintenance for hosts - {{ hosts.stdout.split('\n') }}
+      zabbix_maintenance:
+        name: "AWX update - {{ project_name }}"
+        host_names: "{{ hosts.stdout.split('\n') }}"
+        # host_name: "Test"
+        state: present
+        minutes: 180
+        server_url: "https://zabbix.raccoongang.com"
+        login_user: "{{ vault_zabbix_api_login }}"
+        login_password: "{{ vault_zabbix_api_password }}"
+      when: zabbix_enabled and hosts.stdout != ''
+      delegate_to: localhost
+
+    - name: Update expired rabbitmq repo key
+      shell: "curl -L https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey | apt-key add -"
+      args:
+        warn: False
+      become: True
+
+    - name: Update expired edX PPA repo key
+      shell: "apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 69464050"
+      args:
+        warn: False
+      become: True
+
+    - name: HotFix for server_names_hash_bucket_size
+      stat: path=/etc/nginx/nginx.conf
+      register: nginx_conf
+
+    - name: HotFix for server_names_hash_bucket_size
+      lineinfile:
+        path: '/etc/nginx/sites-enabled/ssl.conf'
+        regexp: '^server_names_hash_bucket_size'
+        state: absent
+      when: nginx_conf.stat.exists
+      become: true
+      become_user: root
+      ignore_errors: yes
+
+    - name: HotFix for server_names_hash_bucket_size
+      lineinfile:
+        path: '/etc/nginx/sites-enabled/edx-http.conf'
+        regexp: '^server_names_hash_bucket_size'
+        state: absent
+      when: nginx_conf.stat.exists
+      become: true
+      become_user: root
+      ignore_errors: yes
+
+    - name: HotFix for server_names_hash_bucket_size
+      lineinfile:
+        path: "/etc/nginx/nginx.conf"
+        regexp: ".*server_names_hash_bucket_size.*"
+        line: "        server_names_hash_bucket_size 128;"
+        state: present
+      when: nginx_conf.stat.exists
+      become: true
+      become_user: root
+
+    - name: Sending slack notification
+      slack:
+        token: "{{ slack_notification_token }}"
+        channel: "{{ item }}"
+        msg: "AWX: Start updating {{ project_name }} {{ env }}{{ '. Started by: '~awx_user_name if awx_user_name is defined else '' }}{{ ' https://awx.raccoongang.com/#/workflows/'~awx_workflow_job_id if awx_workflow_job_id is defined else '' }}"
+        icon_url: "https://awx.raccoongang.com/favicon.ico"
+        username: "AWX"
+      with_items: "{{ slack_notification_channels[env] }}"
+      when: slack_notification_channels is defined and slack_notification_channels[env] is defined and slack_notification_channels[env] != ''
+      delegate_to: localhost
