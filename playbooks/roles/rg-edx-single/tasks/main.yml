@@ -3,11 +3,19 @@
 
 - include: edx_single.yml
 
-- include: edx-user-attr.yml
+- import_role:
+    name: edx-user-attr
 
-- include: edx-single-nginx-https-selfsigned.yml
+- import_role:
+    name: rg-nginx
+  vars:
+    nginx: yes
+    nginx_letsencrypt: no
+    nginx_letsencrypt_setup: no
+    insights: no
 
-- include: filebeat.yml
+- import_role:
+    name: filebeat
 
 - include: edx-backup-duplicity.yml
 

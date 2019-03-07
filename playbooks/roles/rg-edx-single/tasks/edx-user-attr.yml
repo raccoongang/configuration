@@ -1,6 +1,0 @@
----
-- hosts: all
-  become: True
-  gather_facts: True
-  roles:
-    - "edx-user-attr"
