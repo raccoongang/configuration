@@ -1,16 +1,16 @@
 ---
-- import_playbook: /etc/ansible/edx-awx-start-update.yml
+- include: edx-awx-start-update.yml
 
-- import_playbook: /etc/ansible/edx_single.yml
+- include: edx_single.yml
 
-- import_playbook: /etc/ansible/edx-user-attr.yml
+- include: edx-user-attr.yml
 
-- import_playbook: /etc/ansible/edx-single-nginx-https-selfsigned.yml
+- include: edx-single-nginx-https-selfsigned.yml
 
-- import_playbook: /etc/ansible/filebeat.yml
+- include: filebeat.yml
 
-- import_playbook: /etc/ansible/edx-backup-duplicity.yml
+- include: edx-backup-duplicity.yml
 
-- import_playbook: /etc/ansible/edx-zabbix-single.yml
+- include: edx-zabbix-single.yml
 
-- import_playbook: /etc/ansible/edx-awx-stop-update.yml
+- include: edx-awx-stop-update.yml
