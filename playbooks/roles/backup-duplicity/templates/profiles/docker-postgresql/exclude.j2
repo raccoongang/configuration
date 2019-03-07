@@ -1,0 +1,3 @@
+{% for exclude in item[0]['exclude']|default(backup_exclude) %}
+{{ exclude }}
+{% endfor %}

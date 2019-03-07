@@ -1,0 +1,17 @@
+---
+- name: install dependencies
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - "{{ backup_sys_packages[ansible_distribution]['common'] | default([], true) }}"
+    - "{{ backup_sys_packages[ansible_distribution][backup_target_method] | default([], true) }}"
+    - "{{ backup_sys_packages[backup_target_method] | default([], true) }}"
+    - "{{ 'gnupg' if backup_gpg_key != 'disabled' else [] }}"
+
+- name: install python requirements into venv
+  pip:
+    name: "{{ item }}"
+    virtualenv: "{{ backup_venv }}"
+  with_items:
+    - "{{ backup_venv_packages['common'] | default([], true) }}"
+    - "{{ backup_venv_packages[backup_target_method] | default([], true) }}"

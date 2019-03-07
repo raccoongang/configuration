@@ -1,0 +1,29 @@
+---
+
+# - name: Ensure libselinux-python is installed
+#   yum:
+#     name=libselinux-python
+# 
+# - name: Install EPEL repo
+#   yum:
+#     name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+# 
+# - name: Import EPEL GPG key
+#   rpm_key:
+#     key: "/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7"
+
+- name: installing system packages
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - "{{ backup_sys_packages[ansible_distribution]['common'] | default([], true) }}"
+    - "{{ backup_sys_packages[ansible_distribution][backup_target_method] | default([], true) }}"
+    - "{{ backup_sys_packages[backup_target_method] | default([], true) }}"
+
+- name: installing python requirements into venv
+  pip:
+    name: "{{ item }}"
+    virtualenv: "{{ backup_venv }}"
+  with_items:
+    - "{{ backup_venv_packages['common'] | default([], true) }}"
+    - "{{ backup_venv_packages[backup_target_method] | default([], true) }}"
