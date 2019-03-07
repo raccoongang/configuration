@@ -10,4 +10,4 @@
     insights: no
     nginx_ssl_selfsigned: yes
   roles:
-    - { role: nginx }
+    - { role: rg-nginx }
