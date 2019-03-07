@@ -1,0 +1,72 @@
+---
+- name: finding IP of {{ zabbix_server_host_dns }}
+  shell: "ping -n -t 1 -c 1 {{ zabbix_server_host_dns }} | head -n 1 | cut -f2 -d'(' | cut -f1 -d')'"
+  register: nslookup
+  when: not zabbix_server_host_dns is match("^\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3}$")
+  delegate_to: localhost
+  become: false
+
+- name: is host_name an DNS
+  set_fact:
+    interfaces_useip: 0
+    interfaces_dns: "{{ zabbix_server_host_dns }}"
+    interfaces_ip: "{{ nslookup.stdout }}"
+  when: not zabbix_server_host_dns is match("^\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3}$")
+
+- name: is host_name an IP address
+  set_fact:
+    interfaces_useip: 1
+    interfaces_dns: ""
+    interfaces_ip: "{{ zabbix_server_host_dns }}"
+  when: zabbix_server_host_dns is match("^\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3}$")
+
+- name: debug
+  debug:
+    msg: "interfaces_ip = {{ interfaces_ip }} interfaces_dns = {{ interfaces_dns }}"
+
+- name: checking {{ zabbix_server_host_name }} is already exists on Zabbix server
+  shell: "python {{ role_path }}/files/get_visiblename.py {{ zabbix_server_host_name }}"
+  environment:
+    ZABBIX_USER: "{{ zabbix_server_user }}"
+    ZABBIX_PASS: "{{ zabbix_server_password }}"
+    ZABBIX_SERVER: "{{ zabbix_server_url }}"
+  register: host_exists_on_zabbix
+  delegate_to: localhost
+  become: false
+  tags:
+    - skip_ansible_lint
+
+- name: keeping current visible_name
+  set_fact:
+    zabbix_server_host_visible_name: "{{ host_exists_on_zabbix.stdout }}"
+  when:
+    host_exists_on_zabbix.stdout != ''
+
+- name: adding Test-Maintenance group for the first install
+  set_fact:
+    zabbix_server_host_groups: "{{ zabbix_server_host_groups }} + ['Test-Maintenance']"
+  when:
+    host_exists_on_zabbix.stdout == ''
+
+- name: adding host to Zabbix server
+  local_action:
+    module: zabbix_host
+    server_url: "{{ zabbix_server_url }}"
+    login_user: "{{ zabbix_server_user }}"
+    login_password: "{{ zabbix_server_password }}"
+    host_name: "{{ zabbix_server_host_name }}"
+    visible_name: "{{ zabbix_server_host_visible_name }}"
+    description: "{{ zabbix_server_host_description }}"
+    host_groups: "{{ zabbix_server_host_groups }}"
+    link_templates: "{{ zabbix_server_host_link_templates }}"
+    status: enabled
+    state: present
+    interfaces:
+      - type: 1
+        main: 1
+        useip: "{{ interfaces_useip }}"
+        ip: "{{ interfaces_ip }}"
+        dns: "{{ interfaces_dns }}"
+        port: 10050
+  delegate_to: localhost
+  become: false

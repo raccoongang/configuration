@@ -1,0 +1,35 @@
+---
+
+- name: Add zabbix-agent GPG key
+  rpm_key:
+    key: http://repo.zabbix.com/RPM-GPG-KEY-ZABBIX
+    state: present
+
+- name: Guessing Amazon Linux version
+  set_fact:
+    amazon_linux_version: 5
+
+- name: Guessing Amazon Linux version
+  set_fact:
+    amazon_linux_version: 6
+  when: ansible_distribution_version is search("2017")
+
+- name: Guessing Amazon Linux version
+  set_fact:
+    amazon_linux_version: 7
+  when: ansible_distribution_version is search("2018")
+
+- name: Add zabbix main repository
+  yum_repository:
+    name: zabbix
+    baseurl: "http://repo.zabbix.com/zabbix/{{ zabbix_version['Amazon'][amazon_linux_version]['version'] }}/rhel/{{ amazon_linux_version }}/$basearch/"
+    state: present
+    description: Zabbix YUM repo
+
+- name: Install zabbix-agent packages
+  yum:
+    name: "{{ item }}"
+    update_cache: yes
+  with_items:
+    "{{ zabbix_requirements[ansible_distribution] }}"
+

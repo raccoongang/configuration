@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>3.0</version>
+    <date>2017-10-28T14:22:09Z</date>
+    <groups>
+        <group>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Active Template App Docker</template>
+            <name>Active Template App Docker</name>
+            <description/>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Docker containers</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>Docker container1 status</name>
+                    <type>7</type>
+                    <snmp_community/>
+                    <multiplier>0</multiplier>
+                    <snmp_oid/>
+                    <key>docker.status[{$CONTAINER_NAME1}]</key>
+                    <delay>180</delay>
+                    <history>7</history>
+                    <trends>30</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Docker containers</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>Docker container status</name>
+                    </valuemap>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Docker container2 status</name>
+                    <type>7</type>
+                    <snmp_community/>
+                    <multiplier>0</multiplier>
+                    <snmp_oid/>
+                    <key>docker.status[{$CONTAINER_NAME2}]</key>
+                    <delay>180</delay>
+                    <history>7</history>
+                    <trends>30</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Docker containers</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>Docker container status</name>
+                    </valuemap>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Docker container3 status</name>
+                    <type>7</type>
+                    <snmp_community/>
+                    <multiplier>0</multiplier>
+                    <snmp_oid/>
+                    <key>docker.status[{$CONTAINER_NAME3}]</key>
+                    <delay>180</delay>
+                    <history>7</history>
+                    <trends>30</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Docker containers</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>Docker container status</name>
+                    </valuemap>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Docker container4 status</name>
+                    <type>7</type>
+                    <snmp_community/>
+                    <multiplier>0</multiplier>
+                    <snmp_oid/>
+                    <key>docker.status[{$CONTAINER_NAME4}]</key>
+                    <delay>180</delay>
+                    <history>7</history>
+                    <trends>30</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Docker containers</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>Docker container status</name>
+                    </valuemap>
+                    <logtimefmt/>
+                </item>
+                <item>
+                    <name>Docker container5 status</name>
+                    <type>7</type>
+                    <snmp_community/>
+                    <multiplier>0</multiplier>
+                    <snmp_oid/>
+                    <key>docker.status[{$CONTAINER_NAME5}]</key>
+                    <delay>180</delay>
+                    <history>7</history>
+                    <trends>30</trends>
+                    <status>0</status>
+                    <value_type>3</value_type>
+                    <allowed_hosts/>
+                    <units/>
+                    <delta>0</delta>
+                    <snmpv3_contextname/>
+                    <snmpv3_securityname/>
+                    <snmpv3_securitylevel>0</snmpv3_securitylevel>
+                    <snmpv3_authprotocol>0</snmpv3_authprotocol>
+                    <snmpv3_authpassphrase/>
+                    <snmpv3_privprotocol>0</snmpv3_privprotocol>
+                    <snmpv3_privpassphrase/>
+                    <formula>1</formula>
+                    <delay_flex/>
+                    <params/>
+                    <ipmi_sensor/>
+                    <data_type>0</data_type>
+                    <authtype>0</authtype>
+                    <username/>
+                    <password/>
+                    <publickey/>
+                    <privatekey/>
+                    <port/>
+                    <description/>
+                    <inventory_link>0</inventory_link>
+                    <applications>
+                        <application>
+                            <name>Docker containers</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>Docker container status</name>
+                    </valuemap>
+                    <logtimefmt/>
+                </item>
+            </items>
+            <discovery_rules/>
+            <macros/>
+            <templates/>
+            <screens/>
+        </template>
+    </templates>
+    <triggers>
+        <trigger>
+            <expression>{Active Template App Docker:docker.status[{$CONTAINER_NAME1}].last()}=0</expression>
+            <name>Docker container {$CONTAINER_NAME1} on {HOST.NAME}</name>
+            <url/>
+            <status>0</status>
+            <priority>4</priority>
+            <description/>
+            <type>0</type>
+            <dependencies/>
+        </trigger>
+        <trigger>
+            <expression>{Active Template App Docker:docker.status[{$CONTAINER_NAME2}].last()}=0</expression>
+            <name>Docker container {$CONTAINER_NAME2} on {HOST.NAME}</name>
+            <url/>
+            <status>0</status>
+            <priority>4</priority>
+            <description/>
+            <type>0</type>
+            <dependencies/>
+        </trigger>
+        <trigger>
+            <expression>{Active Template App Docker:docker.status[{$CONTAINER_NAME3}].last()}=0</expression>
+            <name>Docker container {$CONTAINER_NAME3} on {HOST.NAME}</name>
+            <url/>
+            <status>0</status>
+            <priority>4</priority>
+            <description/>
+            <type>0</type>
+            <dependencies/>
+        </trigger>
+        <trigger>
+            <expression>{Active Template App Docker:docker.status[{$CONTAINER_NAME4}].last()}=0</expression>
+            <name>Docker container {$CONTAINER_NAME4} on {HOST.NAME}</name>
+            <url/>
+            <status>0</status>
+            <priority>4</priority>
+            <description/>
+            <type>0</type>
+            <dependencies/>
+        </trigger>
+        <trigger>
+            <expression>{Active Template App Docker:docker.status[{$CONTAINER_NAME5}].last()}=0</expression>
+            <name>Docker container {$CONTAINER_NAME5} on {HOST.NAME}</name>
+            <url/>
+            <status>0</status>
+            <priority>4</priority>
+            <description/>
+            <type>0</type>
+            <dependencies/>
+        </trigger>
+    </triggers>
+    <value_maps>
+        <value_map>
+            <name>Docker container status</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>Stopped</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Running</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+    </value_maps>
+</zabbix_export>

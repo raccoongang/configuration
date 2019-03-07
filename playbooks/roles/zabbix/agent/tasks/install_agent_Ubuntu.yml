@@ -1,0 +1,24 @@
+- name: Update expired apt keys
+  shell: 'apt-key list | grep "expired: " | sed -ne "s|pub .*/\([^ ]*\) .*|\1|gp" |  xargs -n1 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys'
+
+- name: Add zabbix-agent apt_key
+  apt_key:
+    keyserver: keys.gnupg.net
+    id: "{{ zabbix_version[ansible_distribution][ansible_distribution_release].repo_key }}"
+
+- name: Add zabbix main repository into sources list
+  apt_repository:
+    repo: 'deb http://repo.zabbix.com/zabbix/{{ zabbix_version[ansible_distribution][ansible_distribution_release].version }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} main'
+    state: present
+
+- name: Add zabbix deb-src repository into sources list
+  apt_repository:
+    repo: 'deb-src http://repo.zabbix.com/zabbix/{{ zabbix_version[ansible_distribution][ansible_distribution_release].version }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} main'
+    state: present
+
+- name: Install zabbix-agent packages
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+  with_items:
+    "{{ zabbix_requirements[ansible_distribution] }}"

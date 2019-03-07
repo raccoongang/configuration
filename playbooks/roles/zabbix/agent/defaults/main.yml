@@ -1,0 +1,69 @@
+---
+zabbix_version_latest: "3.4"
+zabbix_version:
+  Ubuntu:
+    xenial:
+      version: "{{ zabbix_version_latest }}"
+      repo_key: "DF517F33E709712C"
+    trusty:
+      version: "{{ zabbix_version_latest }}"
+      repo_key: "DF517F33E709712C"
+    precise:
+      version: 2.4
+      repo_key: "D13D58E479EA5ED4"
+  Amazon:
+    6:
+      version: 2.4
+    7:
+      version: "{{ zabbix_version_latest }}"
+  CentOS:
+    repo_key:
+      - "https://repo.zabbix.com/RPM-GPG-KEY-ZABBIX"
+      - "https://repo.zabbix.com/RPM-GPG-KEY-ZABBIX-A14FE591"
+
+zabbix_requirements:
+  Ubuntu:
+    - python-pip
+    - python-virtualenv
+    - zabbix-agent
+    - libmysqlclient-dev
+  CentOS:
+    - gcc
+    - python-devel
+    - python-virtualenv
+    - python-pip
+    - zabbix-agent
+    - mysql-devel
+  Amazon:
+    - gcc
+    - python-devel
+    - python-virtualenv
+    - python-pip
+    - zabbix-agent
+    - mysql-devel
+
+zabbix_requirements_pip:
+    - elasticsearch
+    - "pymongo>=3.2.2"
+    - mysqlclient
+
+zabbix_server: "{{ ZABBIX_SERVER | default('zabbix.raccoongang.com', true) }}"
+zabbix_agent_hostname: "{{ ZABBIX_AGENT_HOSTNAME | default(inventory_hostname, true) }}"
+
+zabbix_agent_mongo_host: "localhost"
+zabbix_agent_mongo_user: "admin"
+zabbix_agent_mongo_password: ""
+zabbix_agent_mongo_auth_db: "admin"
+
+zabbix_agent_mysql_host: "localhost"
+zabbix_agent_mysql_user: "root"
+zabbix_agent_mysql_password: ""
+
+zabbix_agent_elasticsearch_host: "localhost"
+
+zabbix_agent_memcached_host: "localhost"
+zabbix_agent_memcached_port: 11211
+
+zabbix_agent_rabbitmq_host: "localhost"
+zabbix_agent_rabbitmq_user: "guest"
+zabbix_agent_rabbitmq_password: "guest"

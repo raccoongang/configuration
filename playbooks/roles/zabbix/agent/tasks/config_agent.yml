@@ -1,0 +1,97 @@
+---
+- name: Ensure /var/log/zabbix directory exists
+  file:
+    path: "/var/log/zabbix"
+    state: directory
+    owner: zabbix
+    group: zabbix
+
+- name: Install logrotate configuration
+  copy:
+    src: "files/logrotate"
+    dest: "/etc/logrotate.d/zabbix-agent"
+
+- name: Update Zabbix agent configuration
+  template:
+    src: "zabbix_agentd.conf.j2"
+    dest: "/etc/zabbix/zabbix_agentd.conf"
+  notify: restart zabbix-agent
+
+- name: Deploying RG userparameters
+  copy:
+    src: "files/zabbix_agentd.d/"
+    dest: "/etc/zabbix/zabbix_agentd.d.new/"
+    mode: "0750"
+    owner: zabbix
+    group: zabbix
+  notify: restart zabbix-agent
+
+- name: Cleaning stale userparameters
+  file:
+    path: "/etc/zabbix/zabbix_agentd.d"
+    state: "absent"
+  notify: restart zabbix-agent
+
+- name: Installing userparameters
+  command: "mv /etc/zabbix/zabbix_agentd.d.new /etc/zabbix/zabbix_agentd.d"
+  tags:
+    - skip_ansible_lint
+
+- name: Installing python requirements into venv
+  pip:
+    name: "{{ item }}"
+    virtualenv: "/etc/zabbix/.venv"
+  with_items: "{{ zabbix_requirements_pip }}"
+
+- name: Deploying RG scripts
+  copy:
+    src: "files/scripts/"
+    dest: "/etc/zabbix/scripts.new/"
+    mode: "0750"
+    owner: zabbix
+    group: zabbix
+  notify: restart zabbix-agent
+
+- name: Cleaning stale scripts
+  file:
+    path: "{{ item }}"
+    state: "absent"
+  with_items:
+    - "/etc/zabbix/scripts"
+    - "/var/lib/zabbix/.my.cnf"
+  notify: restart zabbix-agent
+
+- name: Adding zabbix scripts configuration file
+  template:
+    src: "scripts/scripts.cfg.j2"
+    dest: "/etc/zabbix/scripts.new/scripts.cfg"
+    mode: "0600"
+    owner: zabbix
+    group: zabbix
+  notify: restart zabbix-agent
+
+- name: Installing scripts
+  command: "mv /etc/zabbix/scripts.new /etc/zabbix/scripts"
+  tags:
+    - skip_ansible_lint
+
+- name: Adding NOPASSWOD in sudoers for zabbix user
+  lineinfile:
+    dest: /etc/sudoers
+    line: "zabbix ALL=(ALL) NOPASSWD: /etc/zabbix/scripts/"
+    state: present
+    insertafter: EOF
+
+- name: Adding zabbix-agent service to startup
+  service:
+    name: zabbix-agent
+    enabled: yes
+
+- name: Running systemctl enable zabbix-agent as fix for issue https://github.com/ansible/ansible-modules-core/issues/3764
+  shell: "systemctl enable zabbix-agent"
+  ignore_errors: true
+
+- name: Starting zabbix-agent
+  service:
+    name: zabbix-agent
+    state: started

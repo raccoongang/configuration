@@ -1,0 +1,25 @@
+PidFile=/var/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
+DebugLevel=3
+
+# ListenPort=10050
+# ListenIP=0.0.0.0
+StartAgents=0
+
+Server={{ zabbix_server }}
+ServerActive={{ zabbix_server }}
+Hostname={{ zabbix_agent_hostname }}
+# HostnameItem=system.hostname
+# HostMetadata=
+# HostMetadataItem=
+# RefreshActiveChecks=120
+# MaxLinesPerSecond=100
+
+Timeout=30
+
+Include=/etc/zabbix/zabbix_agentd.d/
+# Include=/usr/local/etc/zabbix_agentd.userparams.conf
+# Include=/usr/local/etc/zabbix_agentd.conf.d/
+
+# LoadModulePath=${libdir}/modules
+# LoadModule=
