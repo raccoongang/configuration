@@ -1,0 +1,6 @@
+---
+- name: Copy filebeat configuration file
+  template:
+    src: filebeat.j2
+    dest: /etc/filebeat/filebeat.yml
+  notify: filebeat restart

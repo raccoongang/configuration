@@ -1,0 +1,31 @@
+---
+- name: Add apt key
+  apt_key:
+    url: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+    state: present
+
+- name: Add apt repository
+  apt_repository:
+    repo: "deb https://artifacts.elastic.co/packages/{{ filebeat.version }}.x/apt stable main"
+    state: present
+
+- name: Install filebeat
+  apt:
+    name: filebeat
+    state: present
+    update_cache: true
+
+- name: Enable filebeat service
+  systemd:
+    name: filebeat
+    daemon_reload: yes
+    enabled: yes
+    masked: no
+
+- name: Install modules
+  command: "filebeat modules enable {{ item }}"
+  with_items: "{{ filebeat.modules }}"
+  tags: skip_ansible_lint
+  ignore_errors: yes
+  notify: filebeat restart
+  when: filebeat.modules |length > 0
