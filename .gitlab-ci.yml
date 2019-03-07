@@ -1,0 +1,21 @@
+stages:
+    - build
+
+services:
+    - docker:dind
+
+before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+
+build-base-image:
+    stage: build
+    variables:
+        BASE_IMAGE: registry-gitlab.raccoongang.com/devops/configuration:$CI_COMMIT_REF_SLUG-develop
+    script:
+        - docker build -t $BASE_IMAGE .
+        - docker push $BASE_IMAGE
+    only:
+        - master
+        - ficus-rg
+        - ginkgo-rg
+        - hawthorn-rg
