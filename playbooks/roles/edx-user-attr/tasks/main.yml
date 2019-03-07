@@ -1,0 +1,3 @@
+---
+- include: sett_user_arrts.yml
+  when: edx_user_attr

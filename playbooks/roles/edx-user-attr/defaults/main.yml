@@ -1,0 +1,52 @@
+---
+edx_user_attr: yes # enable role
+
+project_version: "" # ironwood/hawthorn/ginkgo/ficus/...
+
+manage_script_v0:
+  - ficus
+  - ginkgo
+
+user_password_manage_script_v0: user-password-manage-v0.py
+user_password_manage_script_v1: user-password-manage-v1.py
+
+EDXAPP_STAFF_PASSWORD: edxPass123
+
+edxapp_user: edxapp
+edxapp_code_dir: "/edx/app/edxapp/edx-platform"
+COMMON_EDXAPP_SETTINGS: 'aws'
+
+COMMON_BASE_DIR: /edx
+COMMON_APP_DIR: "{{ COMMON_BASE_DIR}}/app"
+edxapp_app_dir: "{{ COMMON_APP_DIR }}/edxapp"
+edxapp_venvs_dir: "{{ edxapp_app_dir }}/venvs"
+edxapp_venv_dir: "{{ edxapp_venvs_dir }}/edxapp"
+edxapp_venv_bin: "{{ edxapp_venv_dir }}/bin"
+
+staff_users:
+  - email: 'staff@example.com'
+    username: staff
+    password: "{{ EDXAPP_STAFF_PASSWORD }}"
+    is_staff: true
+    is_superuser: true
+    is_active: true
+
+test_users:
+  - email: 'honor@example.com'
+    username: honor
+    password: "{{ EDXAPP_STAFF_PASSWORD }}"
+    is_staff: false
+    is_superuser: false
+    is_active: true
+  - email: 'audit@example.com'
+    username: audit
+    password: "{{ EDXAPP_STAFF_PASSWORD }}"
+    is_staff: false
+    is_superuser: false
+    is_active: true
+  - email: 'verified@example.com'
+    username: verified
+    password: "{{ EDXAPP_STAFF_PASSWORD }}"
+    is_staff: false
+    is_superuser: false
+    is_active: true

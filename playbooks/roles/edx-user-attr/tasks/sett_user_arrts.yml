@@ -1,0 +1,57 @@
+---
+
+- name: Set user_password_manage_script version 0
+  set_fact:
+    user_password_manage_script: "{{ user_password_manage_script_v0 }}"
+  when: project_version in manage_script_v0
+
+- name: Set user_password_manage_script version 1
+  set_fact:
+    user_password_manage_script: "{{ user_password_manage_script_v1 }}"
+  when: project_version not in manage_script_v0
+
+- name: copy "{{ user_password_manage_script }} to {{ edxapp_code_dir }}"
+  copy:
+    src: "{{ user_password_manage_script }}"
+    dest: "{{ edxapp_code_dir }}/{{ user_password_manage_script }}"
+    owner: "{{ edxapp_user }}"
+    group: "{{ edxapp_user }}"
+    mode: 0644
+  become: yes
+  become_user: "{{ edxapp_user }}"
+
+- name: manage staff users
+  shell: "{{ edxapp_venv_bin }}/python {{ edxapp_code_dir }}/{{ user_password_manage_script }} lms --settings={{ COMMON_EDXAPP_SETTINGS }} \
+           --username={{ item.username}} \
+           --email={{ item.email }} \
+           --password={{ EDXAPP_STAFF_PASSWORD }} \
+           {% if item.is_staff %}--is_staff=1 {% else %}--is_staff=0{% endif %} \
+           {% if item.is_active %}--is_active=1 {% else %}--is_active=0{% endif %} \
+           {% if item.is_superuser %}--is_superuser=1 {% else %}--is_superuser=0{% endif %}"
+
+  with_items: "{{ staff_users }}"
+  no_log: True
+  become: yes
+  become_user: "{{ edxapp_user }}"
+
+- name: manage edX test users
+  shell: "{{ edxapp_venv_bin }}/python {{ edxapp_code_dir }}/{{ user_password_manage_script }} lms --settings={{ COMMON_EDXAPP_SETTINGS }} \
+           --username={{ item.username}} \
+           --email={{ item.email }} \
+           --password={{ EDXAPP_STAFF_PASSWORD }} \
+           {% if item.is_staff %}--is_staff=1 {% else %}--is_staff=0{% endif %} \
+           {% if item.is_active %}--is_active=1 {% else %}--is_active=0{% endif %} \
+           {% if item.is_superuser %}--is_superuser=1 {% else %}--is_superuser=0{% endif %}"
+
+  with_items: "{{ test_users }}"
+  no_log: True
+  become: yes
+  become_user: "{{ edxapp_user }}"
+
+- name: remove "{{ user_password_manage_script }} from {{ edxapp_code_dir }}"
+  file:
+    path: "{{ edxapp_code_dir }}/{{ user_password_manage_script }}"
+    state: absent
+  become: yes
+  become_user: "{{ edxapp_user }}"
+
