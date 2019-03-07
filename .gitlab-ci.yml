@@ -19,3 +19,10 @@ build-base-image:
         - ficus-rg
         - ginkgo-rg
         - hawthorn-rg
+
+build-version-image:
+    extends: build-base-image
+    variables:
+        BASE_IMAGE: registry-gitlab.raccoongang.com/devops/configuration:$CI_COMMIT_REF_SLUG
+    only:
+        - tags
