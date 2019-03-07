@@ -1,0 +1,27 @@
+filebeat_enable: false
+filebeat:
+  version: 6
+  modules:
+    - auditd
+    - mysql
+    - nginx
+    - redis
+    - system
+  paths:
+    - /var/log/*
+    - /var/log/*/*
+    - /edx/var/log/*
+    - /edx/var/log/*/*.log
+  exclude_files:
+    - '.gz$'
+  index_pattern: '{{ ansible_fqdn }}-%{[beat.version]}-%{+yyyy.MM.dd}'
+  template_name: "{{ ansible_fqdn }}"
+  template_pattern: '{{ ansible_fqdn }}-*'
+  dashboards_index: '{{ ansible_fqdn }}-*'
+  shards: 1
+  kibana_host: https://logs.raccoongang.com
+  kibana_port: 443
+  kibana_username: elastic
+  kibana_password: "{{ vault_elastic_web_passwd }}"
+  elastic_username: elastic
+  elastic_password: "{{ vault_elastic_web_passwd }}"
