@@ -7,7 +7,7 @@
     - include_vars: vault/roles/zabbix/zabbix-rg-api.yml
 
     - name: get visible names for zabbix hosts which names starts with {{ EDXAPP_LMS_BASE }}
-      shell: "python roles/zabbix/server/files/get_visiblename.py {{ EDXAPP_LMS_BASE | default(inventory_hostname, true) }}"
+      shell: "python ~/playbooks/roles/zabbix/server/files/get_visiblename.py {{ EDXAPP_LMS_BASE | default(inventory_hostname, true) }}"
       environment:
         ZABBIX_SERVER: "https://zabbix.raccoongang.com"
         ZABBIX_USER: "{{ vault_zabbix_api_login }}"
