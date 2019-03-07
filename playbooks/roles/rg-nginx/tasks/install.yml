@@ -1,0 +1,25 @@
+- name: Add APT GPG key for Nginx
+  apt_key:
+    url=http://nginx.org/keys/nginx_signing.key
+    state=present
+
+- name: Add Nginx APT repository
+  apt_repository:
+    repo="deb http://nginx.org/packages/ubuntu/ {{ ansible_distribution_release }} nginx"
+    state=present
+
+- name: Remove old Nginx version
+  apt:
+    name: nginx-common
+    state: absent
+
+- name: Verify if nginx installed
+  apt:
+    name: nginx
+    state: present
+
+- name: Remove nginx default.conf
+  file:
+    dest: "{{ nginx_default_conf_path }}"
+    state: absent
+  when: nginx_default_conf_delete

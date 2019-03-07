@@ -1,0 +1,13 @@
+---
+
+- hosts: all
+  gather_facts: yes
+  become: yes
+  vars:
+    nginx: yes
+    nginx_ssl: yes
+    nginx_letsencrypt: no
+    insights: no
+    nginx_ssl_selfsigned: yes
+  roles:
+    - { role: nginx }
