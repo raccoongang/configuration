@@ -1,4 +1,5 @@
 *
+!bootstrap.sh
 !playbooks/
 !docker/build/*
 !docker/build/*/*.yml
