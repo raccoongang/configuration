@@ -20,6 +20,8 @@ echo "$ANSIBLE_SSH_KEY" > ~/.ssh/id_rsa
 chmod 600 ~/.ssh/id_rsa
 echo "Loaded SSH key from environment"
 
+echo "$ANSIBLE_VAULT_KEY" > ~/vault_password
+chmod 600 ~/vault_password
 echo "Loaded Ansible Vault key from environment"
 
 exec "$@"
