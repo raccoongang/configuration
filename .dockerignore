@@ -1,6 +1,7 @@
 *
 !bootstrap.sh
 !playbooks/
+!vault/
 !docker/build/*
 !docker/build/*/*.yml
 docker/build/*/Dockerfile
