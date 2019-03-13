@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:2
 
 RUN pip install ansible
 
