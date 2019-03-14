@@ -176,7 +176,7 @@
   when: jenkins_worker is not defined or not jenkins_worker
   tags:
     - install
-    - install:base  
+    - install:base
 
 - name: install rake gem
   shell: "gem install rake -v {{ rbenv_rake_version }}"
@@ -188,13 +188,13 @@
     - install:base
 
 - name: update rubygems
-  shell: "gem install rubygems-update && update_rubygems"
+  shell: "gem install rubygems-update {{ ' -v'~rubygems_update_version if rubygems_update_version != '' else '' }} && update_rubygems"
   become_user: "{{ rbenv_user }}"
   environment: "{{ rbenv_environment }}"
   tags:
     - install
     - install:base
-    
+
 - name: rehash
   shell: "rbenv rehash"
   become_user: "{{ rbenv_user }}"
