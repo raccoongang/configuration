@@ -3,6 +3,9 @@
 # Example sandbox configuration
 # for single server community
 # installs
+- include_vars: ~/playbooks/roles/backup-duplicity/defaults/main.yml
+- include_vars: ~/playbooks/roles/forum/defaults/main.yml
+- include_vars: ~/vault/roles/zabbix/zabbix-rg-api.yml
 
 - import_role:
     name: python
