@@ -15,6 +15,7 @@ COPY --chown=ansible playbooks /home/ansible/playbooks
 COPY --chown=ansible vault /home/ansible/vault
 
 ENV ANSIBLE_ROLES_PATH=/home/ansible/playbooks/roles \
+    ANSIBLE_CONFIG=/home/ansible/playbooks/ansible.cfg \
     ANSIBLE_VAULT_PASSWORD_FILE=/home/ansible/vault_password
 
 ENTRYPOINT ["./bootstrap.sh"]
