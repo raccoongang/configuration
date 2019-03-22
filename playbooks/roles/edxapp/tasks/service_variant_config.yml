@@ -109,7 +109,7 @@
     force: yes
   become_user: "{{ supervisor_user }}"
   with_items: "{{ service_variants_enabled }}"
-  when: celery_worker is not defined and not disable_edx_services
+  when: not disable_edx_services
   tags:
     - install
     - install:configuration
