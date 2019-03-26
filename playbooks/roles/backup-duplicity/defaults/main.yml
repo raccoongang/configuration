@@ -1,6 +1,6 @@
 ---
 
-backup_enabled: true           # Enable the role
+backup_enabled: false          # fix for unnecessary backup role for DevEnv
 
 backup_cron: yes               # Setup cron tasks for backup
 backup_cron_schedule: "11 1 * * *"
