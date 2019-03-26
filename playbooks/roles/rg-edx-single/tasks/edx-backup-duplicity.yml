@@ -2,6 +2,7 @@
 - name: set backup_enabled
   set_fact:
     backup_enabled: "{{ backup_enabled | default(false) | bool }}"
+  when: backup_enabled # fix for unnecessary backup role for DevEnv
 
 - name: configure default backup profiles for AWS
   set_fact:
