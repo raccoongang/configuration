@@ -1,0 +1,40 @@
+#! /usr/bin/env bash
+
+# {{ ansible_managed }}
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+# some more ls aliases
+alias ll='ls -Al'
+alias la='ls -A'
+
+
+source "{{ item.home }}/{{ item.env }}"
+
+# If X11 forwarding is enabled, then use the DISPLAY value
+# already set and use the X11 session cookie
+if [ -n "$DISPLAY" ]; then
+    export XAUTHORITY="{{ localdev_xauthority }}"
+
+# Otherwise, configure the display to use the virtual frame buffer
+else
+    export DISPLAY="{{ localdev_xvfb_display }}"
+fi
+
+# Import ~/.bashrc.d modules
+if [ -d {{ item.home }}/.bashrc.d ]; then
+   for BASHMODULE in {{ item.home }}/.bashrc.d/*; do
+      source $BASHMODULE
+   done
+fi
+
+cd "{{ item.home }}/{{ item.repo }}"
+
+export JSCOVER_JAR="/usr/local/bin/JSCover-all-{{ localdev_jscover_version }}.jar"
