@@ -29,7 +29,7 @@
       - lms
     - role: edxlocal
     - role: memcache
-    - role: mongo
+    - role: mongo_3_2
     - role: rabbitmq
       rabbitmq_ip: 127.0.0.1
     - role: edxapp
