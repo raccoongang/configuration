@@ -19,6 +19,7 @@ ENV ANSIBLE_ROLES_PATH=/home/ansible/playbooks/roles \
     ANSIBLE_CONFIG=/home/ansible/playbooks/ansible.cfg \
     ANSIBLE_VAULT_PASSWORD_FILE=/home/ansible/vault_password \
     ANSIBLE_RETRY_FILES_SAVE_PATH=/tmp \
+    ANSIBLE_LIBRARY=/home/ansible/playbooks/library \
     ANSIBLE_INVENTORY=/home/ansible/inventory/hosts.yml,./hosts.yml
 
 ENTRYPOINT ["./bootstrap.sh"]
