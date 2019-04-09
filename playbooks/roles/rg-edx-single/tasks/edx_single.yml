@@ -117,10 +117,6 @@
     name: certs
 
 - import_role:
-    name: newrelic
-  when: COMMON_ENABLE_NEWRELIC
-
-- import_role:
     name: datadog
   when: COMMON_ENABLE_DATADOG
 
