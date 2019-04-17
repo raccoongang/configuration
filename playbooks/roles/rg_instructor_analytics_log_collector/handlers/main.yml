@@ -1,0 +1,8 @@
+---
+- name: stop all processes
+  shell: "{{ supervisor_ctl }} stop all"
+
+- name: restart supervisor 
+  service:
+    name: supervisor
+    state: restarted

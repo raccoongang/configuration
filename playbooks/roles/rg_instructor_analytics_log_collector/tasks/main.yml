@@ -18,6 +18,9 @@
     name: '{{ common_web_user }}'
     groups: adm
     append: yes
+  notify:
+    - stop all processes
+    - restart supervisor
 
 - name: enable supervisor script
   file:
