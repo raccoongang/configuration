@@ -39,6 +39,8 @@ EDXAPP_THIRD_PARTY_AUTH_BACKENDS:
 
 EDXAPP_S3_USE_SIGV4: false
 EDXAPP_S3_HOST: null
+
+EDXAPP_RG_SENTRY_DSN: "{{ COMMON_RG_SENTRY_DSN }}"
 ## END RACCOONGANG ##
 
 # Bucket used for xblock file storage
@@ -838,6 +840,9 @@ edxapp_generic_auth_config:  &edxapp_generic_auth
   FACEBOOK_APP_ID: "{{ EDXAPP_FACEBOOK_APP_ID }}"
   FACEBOOK_APP_SECRET: "{{ EDXAPP_FACEBOOK_APP_SECRET }}"
   FACEBOOK_API_VERSION: "{{ EDXAPP_FACEBOOK_API_VERSION }}"
+  ## BEGIN RACCOONGANG ##
+  RG_SENTRY_DSN: "{{ EDXAPP_RG_SENTRY_DSN }}"
+  ## END RACCOONGANG ##
 
 generic_cache_config: &default_generic_cache
   BACKEND:  'django.core.cache.backends.memcached.MemcachedCache'
