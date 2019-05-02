@@ -44,6 +44,10 @@
     rabbitmq_ip: 127.0.0.1
 
 - import_role:
+    name: elasticsearch
+  when: "'localhost' in EDXAPP_ELASTIC_SEARCH_CONFIG|map(attribute='host') or '127.0.0.1' in EDXAPP_ELASTIC_SEARCH_CONFIG|map(attribute='host')"
+
+- import_role:
     name: edxapp
   vars:
     celery_worker: True
@@ -82,10 +86,6 @@
 
 - import_role:
     name: oraclejdk
-
-- import_role:
-    name: elasticsearch
-  when: "'localhost' in EDXAPP_ELASTIC_SEARCH_CONFIG|map(attribute='host') or '127.0.0.1' in EDXAPP_ELASTIC_SEARCH_CONFIG|map(attribute='host')"
 
 - import_role:
     name: forum
