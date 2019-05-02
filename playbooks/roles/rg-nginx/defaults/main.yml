@@ -63,7 +63,7 @@ NGINX_ADDITIONAL_SERVICES_CONFIG: []
 
 use_raccoongang_ssl: False
 raccoongang_ssl_path: /etc/nginx/ssl
-raccoongang_ssl_src_path: "{{ playbook_dir }}/vault/roles/nginx"
+raccoongang_ssl_src_path: ~/vault/roles/nginx
 raccoongang_ssl_crt: raccoongang-ssl.crt
 raccoongang_ssl_key: raccoongang-ssl.key
 
