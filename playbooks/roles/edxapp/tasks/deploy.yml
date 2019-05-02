@@ -354,7 +354,7 @@
     config: "{{ supervisor_cfg }}"
     state: started
   become_user: "{{ supervisor_service_user }}"
-  when: celery_worker is not defined and not disable_edx_services
+  when: not disable_edx_services
   with_items:
     - 'lms'
     - 'cms'
@@ -367,7 +367,7 @@
     supervisorctl_path: "{{ supervisor_ctl }}"
     config: "{{ supervisor_cfg }}"
     state: started
-  when: celery_worker is defined and not disable_edx_services
+  when: not disable_edx_services
   become_user: "{{ supervisor_service_user }}"
   tags:
     - manage
@@ -411,7 +411,7 @@
     supervisorctl_path: "{{ supervisor_ctl }}"
     config: "{{ supervisor_cfg }}"
     state: restarted
-  when: edxapp_installed is defined and celery_worker is not defined and not disable_edx_services
+  when: edxapp_installed is defined and not disable_edx_services
   become_user: "{{ supervisor_service_user }}"
   with_items:
     - 'lms'
@@ -425,7 +425,7 @@
     supervisorctl_path: "{{ supervisor_ctl }}"
     config: "{{ supervisor_cfg }}"
     state: restarted
-  when: edxapp_installed is defined and celery_worker is defined and not disable_edx_services
+  when: edxapp_installed is defined and not disable_edx_services
   become_user: "{{ common_web_user }}"
   tags:
     - manage

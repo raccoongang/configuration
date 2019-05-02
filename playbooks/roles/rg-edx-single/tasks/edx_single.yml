@@ -49,9 +49,6 @@
     celery_worker: True
 
 - import_role:
-    name: edxapp
-
-- import_role:
     name: ecommerce
   when: SANDBOX_ENABLE_ECOMMERCE is defined and SANDBOX_ENABLE_ECOMMERCE
 
