@@ -3,7 +3,13 @@
 
 - Use Ansible 2.3.1.0 so that we can do shallow clones of tags.
 
-- Role: nginx:
+- Roles: common_vars
+  * Added COMMON_RG_SENTRY_DSN for sentry.io integration for all services
+
+- Roles: edxapp
+  * Added EDXAPP_RG_SENTRY_DSN, RG_SENTRY_DSN for LMS and CMS sentry.io integration
+
+- Roles: nginx
   - Added RG_NGINX_LMS_CLIENT_MAX_BODY_SIZE, RG_NGINX_CMS_CLIENT_MAX_BODY_SIZE to override `client_max_body_size` in lms and cms nginx configuration.
 
 - git_clone:

@@ -21,6 +21,9 @@ EDXAPP_ADDL_INSTALLED_APPS: []
 RG_WIKI_ENABLED: True
 #
 
+EDXAPP_RG_SENTRY_DSN: "{{ COMMON_RG_SENTRY_DSN }}"
+## END RACCOONGANG ##
+
 # Bucket used for xblock file storage
 EDXAPP_XBLOCK_FS_STORAGE_BUCKET: "None"
 EDXAPP_XBLOCK_FS_STORAGE_PREFIX: "None"
@@ -1110,6 +1113,9 @@ edxapp_generic_auth_config:  &edxapp_generic_auth
     port: "{{ EDXAPP_MONGO_PORT }}"
     user: "{{ EDXAPP_MONGO_USER }}"
     ssl: "{{ EDXAPP_MONGO_USE_SSL }}"  
+  ## BEGIN RACCOONGANG ##
+  RG_SENTRY_DSN: "{{ EDXAPP_RG_SENTRY_DSN }}"
+  ## END RACCOONGANG ##
 
 generic_cache_config: &default_generic_cache
   BACKEND:  'django.core.cache.backends.memcached.MemcachedCache'
