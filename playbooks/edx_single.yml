@@ -55,7 +55,7 @@
       when: SANDBOX_ENABLE_ANALYTICS_API is defined and SANDBOX_ENABLE_ANALYTICS_API
     - role: insights
       when: SANDBOX_ENABLE_INSIGHTS is defined and SANDBOX_ENABLE_INSIGHTS
-    # not ready yet: - edx_notes_api
+    - role: edx_notes_api
     - role: demo
     - role: oauth_client_setup
     - role: forum

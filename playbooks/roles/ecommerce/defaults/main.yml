@@ -52,6 +52,15 @@ ECOMMERCE_JWT_LEEWAY: 1
 ECOMMERCE_JWT_SECRET_KEYS:
   - '{{ COMMON_JWT_SECRET_KEY }}'
 
+ECOMMERCE_REPOS:
+  - PROTOCOL: "{{ COMMON_GIT_PROTOCOL }}"
+    DOMAIN: "{{ COMMON_GIT_MIRROR }}"
+    PATH: "{{ COMMON_GIT_PATH }}"
+    REPO: ecommerce.git
+    VERSION: "{{ ECOMMERCE_VERSION }}"
+    DESTINATION: "{{ ecommerce_code_dir }}"
+    SSH_KEY: "{{ ECOMMERCE_GIT_IDENTITY }}"
+
 # Used to automatically configure OAuth2 Client
 ECOMMERCE_SOCIAL_AUTH_EDX_OIDC_KEY: 'ecommerce-key'
 ECOMMERCE_SOCIAL_AUTH_EDX_OIDC_SECRET: 'ecommerce-secret'
