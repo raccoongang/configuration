@@ -16,6 +16,7 @@ dependencies:
       - '{{ ecommerce_user }}'
     when: ECOMMERCE_ENABLE_COMPREHENSIVE_THEMING
   - role: edx_django_service
+    edx_django_service_repos: '{{ ECOMMERCE_REPOS }}'
     edx_django_service_version: '{{ ECOMMERCE_VERSION }}'
     edx_django_service_name: '{{ ecommerce_service_name }}'
     edx_django_service_config_overrides: '{{ ecommerce_service_config_overrides }}'
