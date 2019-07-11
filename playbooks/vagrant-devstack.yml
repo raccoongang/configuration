@@ -1,0 +1,42 @@
+#
+# Exported from Ginkgo release
+# https://github.com/edx/configuration/blob/open-release/ginkgo.2/playbooks/vagrant-devstack.yml
+#
+# Default vagrantfile: ../vagrant/rg-devstack/Vagrantfile
+#
+# Usage:
+# ansible-playbook -i,192.168.33.14 -uvagrant --private-key=~/.vagrant/insecure_private_key vagrant-devstack.yml -e@../vagrant/rg-devstack/defaults/*.yml
+#
+- name: Vagrant devstack privision
+  hosts: all
+  become: True
+  gather_facts: True
+  vars_files:
+    - roles/edxapp/vars/devstack.yml
+    - ../vagrant/rg-devstack/defaults/rg-devstack.yml
+    - ../vagrant/rg-devstack/defaults/rg-devstack-base.yml
+    - ../vagrant/rg-devstack/defaults/rg-devstack-theme.yml
+  roles:
+    - role: common
+    - role: vhost
+    - role: edx_ansible
+    - role: mysql
+    - role: edxlocal
+    - role: memcache
+    - role: mongo
+    - role: rabbitmq
+      rabbitmq_ip: 127.0.0.1
+    - role: oraclejdk
+    - role: elasticsearch
+    - role: edxapp
+    - role: forum
+    - role: ecommerce
+    - role: ecomworker
+      ECOMMERCE_WORKER_BROKER_HOST: 127.0.0.1
+    - role: discovery
+    - role: notifier
+      NOTIFIER_DIGEST_TASK_INTERVAL: "5"
+    - role: browsers
+    - role: local_dev
+    - role: demo
+    - role: oauth_client_setup

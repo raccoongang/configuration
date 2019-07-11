@@ -1,0 +1,8 @@
+---
+edxapp_theme_version: "base-hawthorn-stage"
+edxapp_theme_source_repo: "https://github.com/raccoongang/edx-theme.git"
+edxapp_theme_name: "edx-theme"
+EDXAPP_COMPREHENSIVE_THEME_DIR: '/edx/app/edxapp/themes/{{ edxapp_theme_name }}'
+EDXAPP_COMPREHENSIVE_THEME_DIRS:  [/edx/app/edxapp/themes]
+EDXAPP_DEFAULT_SITE_THEME: '{{ edxapp_theme_name }}'
+EDXAPP_ENABLE_COMPREHENSIVE_THEMING: true

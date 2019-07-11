@@ -1,0 +1,39 @@
+#
+# overrides for default OpenEdx settings from roles/edxapp/vars/devstack.yml
+#
+---
+EDXAPP_PLATFORM_NAME: 'hawthorn-rg'
+migrate_db: 'yes'
+devstack: true
+edx_django_service_is_devstack: true
+disable_edx_services: true
+mongo_enable_journal: false
+EDXAPP_NO_PREREQ_INSTALL: 0
+COMMON_SSH_PASSWORD_AUTH: "yes"
+EDXAPP_LMS_BASE: 127.0.0.1:9100
+EDXAPP_CMS_BASE: 127.0.0.1:9101
+EDXAPP_OAUTH_ENFORCE_SECURE: false
+EDXAPP_LMS_BASE_SCHEME: http
+ECOMMERCE_DJANGO_SETTINGS_MODULE: "ecommerce.settings.devstack"
+# When provisioning your devstack, we apply security updates
+COMMON_SECURITY_UPDATES: true
+SECURITY_UPGRADE_ON_ANSIBLE: true
+MONGO_AUTH: false
+SANDBOX_ENABLE_DISCOVERY: true
+DISCOVERY_URL_ROOT: 'http://localhost:{{ DISCOVERY_NGINX_PORT }}'
+SANDBOX_ENABLE_CREDENTIALS: true
+credentials_create_demo_data: true
+ANALYTICS_API_DATABASES: {}
+edx_platform_repo: https://github.com/raccoongang/edx-platform.git
+# edx_platform_version: hawthorn-rg
+edx_platform_version: 'a-kryachko/hawthorn-rg/upgrade_matplotlib'
+edx_ansible_source_repo: https://github.com/raccoongang/configuration.git
+configuration_version: hawthorn-rg
+forum_version: "open-release/hawthorn.1"
+NOTIFIER_VERSION: "open-release/hawthorn.1"
+xqueue_version: "open-release/hawthorn.1"
+certs_version: "open-release/hawthorn.1"
+demo_version: "open-release/hawthorn.1"
+ECOMMERCE_VERSION: "open-release/hawthorn.1"
+ECOMMERCE_WORKER_VERSION: "open-release/hawthorn.1"
+DISCOVERY_VERSION: "open-release/hawthorn.1"

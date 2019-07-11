@@ -1,0 +1,127 @@
+Vagrant.require_version ">= 1.8.7"
+unless Vagrant.has_plugin?("vagrant-vbguest")
+  raise "Please install the vagrant-vbguest plugin by running `vagrant plugin install vagrant-vbguest`"
+end
+
+VM_NAME = ENV['VM_NAME'] || 'hawthorn'
+VM_BOX_NAME = ENV['VM_BOX_NAME'] || 'hawthorn-rg'
+
+VAGRANTFILE_API_VERSION = "2"
+
+MEMORY = 3072
+CPU_COUNT = 2
+
+LMS_PORT = 9100
+CMS_PORT = 9101
+
+$script = <<SCRIPT
+
+    echo "=== Provisioning as root user ==="
+    sudo -sH /edx/src/vagrant-provision-root.sh #{LMS_PORT} #{CMS_PORT}
+    echo "=== Provisioning as edxapp user ==="
+    sudo -sHu edxapp /edx/src/vagrant-provision-edxapp.sh
+
+SCRIPT
+
+#
+# to save disk space on local computer a shared working directory can be configured.
+# the directory will be provisioned with standard OpenEdx repositories:
+# edx-platform, edx-theme, cs_comment_service, ecommerce, ecommerce_worker, course_discovery, credentials, etc...
+#
+WORKDIR = "./"
+
+MOUNT_DIRS = {
+  :ssh => {:repo => "~/.ssh", :local => "/edx/app/edxapp/.ssh-from-host", :owner => "edxapp"},
+  :edx_platform => {:repo => "#{WORKDIR}/edx-platform", :local => "/edx/app/edxapp/edx-platform", :owner => "edxapp"},
+  :edx_theme => {:repo => "#{WORKDIR}/edx-theme", :local => "/edx/app/edxapp/themes/edx-theme", :owner => "edxapp"},
+  :forum => {:repo => "#{WORKDIR}/cs_comments_service", :local => "/edx/app/forum/cs_comments_service", :owner => "forum"},
+  :course_discovery => {:repo => "#{WORKDIR}/course-discovery", :local => "/edx/app/discovery/discovery", :owner => "www-data"},
+  :credentials => {:repo => "#{WORKDIR}/credentials", :local => "/edx/app/credentials/credentials", :owner => "www-data"},
+  :ecommerce => {:repo => "#{WORKDIR}/ecommerce", :local => "/edx/app/ecommerce/ecommerce", :owner => "ecommerce"},
+  :edx_analytics_pipeline => {:repo => "#{WORKDIR}/edx-analytics-pipeline", :local => "/edx/app/analytics_pipeline/analytics_pipeline", :owner => "www-data"},
+  :edx_notes_api => {:repo => "#{WORKDIR}/edx-notes-api", :local => "/edx/app/edx_notes_api/edx_notes_api", :owner => "www-data"},
+  :xqueue => {:repo => "#{WORKDIR}/xqueue", :local => "/edx/app/xqueue/xqueue", :owner => "www-data"},
+  :src => {:repo => "#{WORKDIR}/src", :local => "/edx/src", :owner => "root"},
+}
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.define VM_NAME
+  config.vm.hostname   = "hawthorn"
+  config.vm.box        = "ubuntu/xenial64"
+  # config.vm.box        = VM_BOX_NAME
+  # config.vm.box_url    = "http://files.edx.org/vagrant-images/#{VM_BOX_NAME}"
+  config.vm.box_check_update = false
+  config.vm.network :private_network, hostsupdater: "skip", ip: "192.168.33.14"
+
+  config.vm.network :forwarded_port, guest: 8000, host: LMS_PORT  # LMS
+  config.vm.network :forwarded_port, guest: 8001, host: CMS_PORT  # Studio
+
+  # If you want to run the box with port forwarding for any possible OpenEdx service, set VAGRANT_ALL_PORTS=1.
+  # Warning! You can not start more than one OpexEdx devstack box at once with VAGRANT_ALL_PORTS set up
+  if ENV['VAGRANT_ALL_PORTS']
+    config.vm.network :forwarded_port, guest: 8002, host: 8002   # Ecommerce
+    config.vm.network :forwarded_port, guest: 8003, host: 8003   # LMS for Bok Choy
+    config.vm.network :forwarded_port, guest: 8031, host: 8031   # Studio for Bok Choy
+    config.vm.network :forwarded_port, guest: 8120, host: 8120   # edX Notes Service
+    config.vm.network :forwarded_port, guest: 8765, host: 8765
+    config.vm.network :forwarded_port, guest: 9200, host: 9200   # Elasticsearch
+    config.vm.network :forwarded_port, guest: 18080, host: 18080 # Forums
+    config.vm.network :forwarded_port, guest: 8100, host: 8100   # Analytics Data API
+    config.vm.network :forwarded_port, guest: 8110, host: 8110   # Insights
+    config.vm.network :forwarded_port, guest: 9876, host: 9876   # ORA2 Karma tests
+    config.vm.network :forwarded_port, guest: 50070, host: 50070 # HDFS Admin UI
+    config.vm.network :forwarded_port, guest: 8088, host: 8088   # Hadoop Resource Manager
+    config.vm.network :forwarded_port, guest: 18140, host: 18140 # Programs
+    config.vm.network :forwarded_port, guest: 8140, host: 8140   # Programs
+    config.vm.network :forwarded_port, guest: 18150, host: 18150 # Credentials
+    config.vm.network :forwarded_port, guest: 8150, host: 8150   # Credentials
+  end
+
+  config.ssh.insert_key = false
+  config.ssh.forward_agent = true
+
+  # Enable X11 forwarding so we can interact with GUI applications
+  if ENV['VAGRANT_X11']
+    config.ssh.forward_x11 = true
+  end
+
+  config.vm.synced_folder  ".", "/vagrant", disabled: true
+
+  if ENV['VAGRANT_USE_VBOXFS'] == 'true'
+    MOUNT_DIRS.each { |k, v|
+      config.vm.synced_folder v[:repo], v[:local], create: true, owner: v[:owner], group: "www-data"
+    }
+  else
+    MOUNT_DIRS.each { |k, v|
+      config.vm.synced_folder v[:repo], v[:local], create: true, nfs: true, :linux__nfs_options => ["rw","no_root_squash","tcp","vers=3"]
+    }
+  end
+
+  config.vm.provider :virtualbox do |vb|
+
+    vb.name = VM_NAME
+    vb.customize ["modifyvm", :id, "--memory", MEMORY.to_s]
+    vb.customize ["modifyvm", :id, "--cpus", CPU_COUNT.to_s]
+
+    # Allow DNS to work for Ubuntu 12.10 host
+    # http://askubuntu.com/questions/238040/how-do-i-fix-name-service-for-vagrant-client
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+
+    # # Virtio is faster, but the box needs to have support for it.
+    vb.customize ['modifyvm', :id, '--nictype1', 'virtio']
+    vb.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 1000 ]
+  end
+
+  # Use vagrant-vbguest plugin to make sure Guest Additions are in sync
+  config.vbguest.auto_reboot = true
+  config.vbguest.auto_update = true
+
+  # Assume that the base box has the edx_ansible role installed
+  # We can then tell the Vagrant instance to update itself.
+  # config.vm.provision "shell", inline: $script
+  config.vm.provision "ansible", playbook: ""
+
+  config.vm.post_up_message = "\nLMS|CMS:\t\t\tFORUM:\n\nvagrant ssh\t\t\tvagrant ssh\nsudo -sHu edxapp bash\t\tsudo -sHu forum bash\npaver devstack lms|studio\tbundle install\n\t\t\t\truby app.rb -p 18080\n\nLMS - http://127.0.0.1:#{LMS_PORT}/\nCMS - http://127.0.0.1:#{CMS_PORT}/\nuser: staff@example.com pass: edx"
+
+end
