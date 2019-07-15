@@ -17,7 +17,7 @@
   gather_facts: True
   roles:
     - role: swapfile
-      SWAPFILE_SIZE: 8GB
+      when: SWAPFILE_SIZE is defined and SWAPFILE_SIZE != ''
     - role: nginx
       nginx_sites:
       - certs
@@ -41,7 +41,6 @@
     - role: elasticsearch
     - forum
     - role: notifier
-      NOTIFIER_DIGEST_TASK_INTERVAL: 5
     - role: xqueue
       update_users: True
     - certs
