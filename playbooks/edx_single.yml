@@ -32,20 +32,21 @@
     - role: mongo
     - role: rabbitmq
       rabbitmq_ip: 127.0.0.1
+    - role: oraclejdk
+    - role: elasticsearch
     - role: edxapp
       celery_worker: True
-    - edxapp
-    - demo
-    - oauth_client_setup
-    - oraclejdk
-    - role: elasticsearch
-    - forum
+    - role: edxapp
+    - role: demo
+    - role: oauth_client_setup
+    - role: forum
     - role: notifier
     - role: xqueue
       update_users: True
-    - certs
+    - role: certs
+    - role: edx_notes_api
+      when: EDXAPP_ENABLE_EDXNOTES
     - role: newrelic
       when: COMMON_ENABLE_NEWRELIC
     - role: datadog
       when: COMMON_ENABLE_DATADOG
-
