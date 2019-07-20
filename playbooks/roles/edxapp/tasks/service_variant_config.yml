@@ -179,6 +179,17 @@
     - gather_static_assets
     - assets
 
+- name: Remove directory with previous version of staticfiles
+  file:
+    path: "{{ edxapp_staticfile_dir }}-prev"
+    state: absent
+  when: celery_worker is not defined and not devstack and not EDXAPP_RG_REMOVE_STATICFILES_DIR_DURING_UPDATE
+
+# custom rule was applied to nginx configuration to serve /static from both directories
+- name: Rotate staticfiles version - current to previuos
+  command: mv "{{ edxapp_staticfile_dir }}" "{{ edxapp_staticfile_dir }}-prev"
+  when: celery_worker is not defined and not devstack and not EDXAPP_RG_REMOVE_STATICFILES_DIR_DURING_UPDATE
+
 # Gather assets using paver if possible
 - name: "gather static assets with paver"
   command: "{{ COMMON_BIN_DIR }}/edxapp-update-assets"
