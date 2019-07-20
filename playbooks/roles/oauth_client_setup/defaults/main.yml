@@ -65,6 +65,15 @@ oauth_client_setup_oauth2_clients:
         logout_uri: "{{ VEDA_WEB_FRONTEND_LOGOUT_URL | default('None') }}",
         username: "{{ EDXAPP_VEDA_SERVICE_USER_NAME | default('None') }}"
       }
+    - {
+        # oauth2 client name for edx_notes_api hardcoded here - edx-platform/lms/djangoapps/edxnotes/helpers.py
+        name: "{{ 'edx-notes' if EDXAPP_ENABLE_EDXNOTES else 'None' }}",
+        url_root: "{{ EDX_NOTES_RG_PUBLIC_URI }}",
+        id: "{{ EDX_NOTES_API_CLIENT_ID | default('None') }}",
+        secret: "{{ EDX_NOTES_API_CLIENT_SECRET | default('None') }}",
+        logout_uri: "None",
+        username: "None",
+      }
 
 #
 # OS packages

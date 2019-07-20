@@ -30,6 +30,7 @@ EDXAPP_GRADES_DOWNLOAD:
 
 EDXAPP_RG_SENTRY_DSN: "{{ COMMON_RG_SENTRY_DSN }}"
 EDXAPP_RG_REMOVE_STATICFILES_DIR_DURING_UPDATE: no
+EDX_NOTES_RG_PUBLIC_URI: "http://localhost:18120"
 ## END RACCOONGANG ##
 
 # Bucket used for xblock file storage
@@ -739,7 +740,7 @@ EDXAPP_PARSE_KEYS: {}
 # In a production environment when using separate clusters, you'll
 # want to route requests differently from the LMS (internal api) and
 # from JS (public API)
-EDXAPP_EDXNOTES_PUBLIC_API: http://localhost:18120/api/v1
+EDXAPP_EDXNOTES_PUBLIC_API: "{{ EDX_NOTES_RG_PUBLIC_URI }}/api/v1"
 EDXAPP_EDXNOTES_INTERNAL_API: http://localhost:18120/api/v1
 
 EDXAPP_XBLOCK_SETTINGS: {}
