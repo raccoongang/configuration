@@ -41,6 +41,7 @@ EDXAPP_S3_USE_SIGV4: false
 EDXAPP_S3_HOST: null
 
 EDXAPP_RG_SENTRY_DSN: "{{ COMMON_RG_SENTRY_DSN }}"
+EDXAPP_REINDEX_ALL_COURSES: true
 ## END RACCOONGANG ##
 
 # Bucket used for xblock file storage
