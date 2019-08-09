@@ -31,6 +31,8 @@
     - role: mongo
     - role: rabbitmq
       rabbitmq_ip: 127.0.0.1
+    - role: oraclejdk
+    - role: elasticsearch
     - role: edxapp
       celery_worker: True
     - role: edxapp
@@ -39,10 +41,11 @@
     - role: oraclejdk
     - role: rg_instructor_analytics_log_collector
       when: "{{ EDXAPP_RG_INSTRUCTOR_ANALYTICS_ENABLE | default(False) }}"
-    - role: elasticsearch
     - role: forum
     - role: notifier
     #  - role: certs
+    - role: xqueue
+      update_users: True
     - role: edx_notes_api
       when: EDXAPP_ENABLE_EDXNOTES
     - role: newrelic
