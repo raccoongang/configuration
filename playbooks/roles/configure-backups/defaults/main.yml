@@ -4,8 +4,18 @@ backup_enabled: no             # Enable the role
 backup_remove: no               # Set yes for uninstall the role from target system
 backup_cron: yes                # Setup cron tasks for backup
 
+azure_backup_blobstorage_create: no
+azure_grades_blobstorage_create: no
+
 backup_user: root               # Run backups as user
 backup_group: "{{backup_user}}"
+
+backup_venv: /edx/app/venvs/duplicity
+backup_venv_packages:
+  - boto==2.48.0
+  - boto3==1.4.4
+  - botocore==1.5.95
+  - s3transfer==0.1.10
 
 backup_home: /etc/duplicity             # Backup configuration directory
 backup_work: /var/duplicity             # Working directory

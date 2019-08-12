@@ -75,3 +75,11 @@
     name: "{{ COMMON_MYSQL_ADMIN_USER }}"
     password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
     priv: "*.*:CREATE USER"
+
+- name: setup the PowerBI db user
+  mysql_user:
+    name: "{{ POWERBI_RO_MYSQL_USER }}"
+    password: "{{ POWERBI_RO_MYSQL_PASS }}"
+    host: "{{ POWERBI_RO_MYSQL_HOST }}"
+    priv: "{{ EDXAPP_MYSQL_DB_NAME }}.*:SELECT"
+  when: POWERBI_RO_MYSQL_USER is defined

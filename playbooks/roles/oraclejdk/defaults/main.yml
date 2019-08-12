@@ -12,3 +12,11 @@ oraclejdk_link: "/usr/lib/jvm/java-8-oracle"
 
 oraclejdk_debian_pkgs:
   - curl
+
+oraclejdk_file_from_raccoongang_s3: yes
+s3_production_packages_bucket: edx-production-packages
+s3_production_packages_folder: ficus-rg
+oraclejdk_s3_file: jdk-8u65-linux-x64.tar.gz
+oraclejdk_s3_url: "https://s3-eu-west-1.amazonaws.com/{{ s3_production_packages_bucket }}/{{ s3_production_packages_folder }}/{{ oraclejdk_s3_file }}"
+oraclejdk_tmp_dir: /var/tmp
+

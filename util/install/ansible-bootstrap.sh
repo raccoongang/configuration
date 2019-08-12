@@ -8,25 +8,25 @@
 #
 # Can be run as follows:
 #
-# UPGRADE_OS=true CONFIGURATION_VERSION="master" \
-# bash <(curl -s https://raw.githubusercontent.com/edx/configuration/master/util/install/ansible-bootstrap.sh)
+# UPGRADE_OS=true CONFIGURATION_VERSION="ficus-rg" \
+# bash <(curl -s https://raw.githubusercontent.com/raccoongang/configuration/ficus-rg/util/install/ansible-bootstrap.sh)
 
 set -xe
 
 if [[ -z "${ANSIBLE_REPO}" ]]; then
-  ANSIBLE_REPO="https://github.com/edx/ansible.git"
+  ANSIBLE_REPO="https://github.com/raccoongang/ansible.git"
 fi
 
 if [[ -z "${ANSIBLE_VERSION}" ]]; then
-  ANSIBLE_VERSION="master"
+  ANSIBLE_VERSION="ficus-rg"
 fi
 
 if [[ -z "${CONFIGURATION_REPO}" ]]; then
-  CONFIGURATION_REPO="https://github.com/edx/configuration.git"
+  CONFIGURATION_REPO="https://github.com/raccoongang/configuration.git"
 fi
 
 if [[ -z "${CONFIGURATION_VERSION}" ]]; then
-  CONFIGURATION_VERSION="master"
+  CONFIGURATION_VERSION="ficus-rg"
 fi
 
 if [[ -z "${UPGRADE_OS}" ]]; then
@@ -151,7 +151,7 @@ if [[ "true" == "${RUN_ANSIBLE}" ]]; then
     make requirements
 
     cd "${CONFIGURATION_DIR}"/playbooks/edx-east
-    "${PYTHON_BIN}"/ansible-playbook edx_ansible.yml -i '127.0.0.1,' -c local -e "configuration_version=${CONFIGURATION_VERSION}"
+    "${PYTHON_BIN}"/ansible-playbook edx_ansible.yml -i '127.0.0.1,' -c local -e "configuration_version=${CONFIGURATION_VERSION}" -e "edx_ansible_source_repo=${CONFIGURATION_REPO}"
 
     # cleanup
     rm -rf "${ANSIBLE_DIR}"

@@ -1,0 +1,60 @@
+---
+- name: Upload tracking logs to insighs s3
+  hosts: all
+  become_method: sudo
+  become: yes
+  become_user: ubuntu
+
+  tasks:
+
+  - name: Delete "{{ tracking_files_tmp }}" dir
+    file:
+      path: "{{ tracking_files_tmp }}"
+      state: absent
+    become_method: sudo
+    become: yes
+    become_user: root
+
+  - name: Check if "{{ tracking_files_tmp }}" exist
+    stat:
+      path: "{{ tracking_files_tmp }}"
+    register: check_tracking_files_tmp
+
+  - name: Create "{{ tracking_files_tmp }}" if not exist
+    file:
+      path: "{{ tracking_files_tmp }}"
+      state: directory
+      owner: ubuntu
+      group: ubuntu
+    when: check_tracking_files_tmp.stat.exists == False
+
+  - name: "Copy hadoop additional files to {{ tracking_files_tmp }} on analytics instance"
+    synchronize:
+      src: "{{ COMMON_LOG_DIR }}/tracking/"
+      dest: "{{ tracking_files_tmp }}/"
+      mode: push
+
+  - name: recursive chmod
+    file:
+      dest: "{{ tracking_files_tmp }}"
+      mode: 0755
+      recurse: yes
+    become_method: sudo
+    become: yes
+    become_user: root
+
+  - name: Put configs and packages into S3 bucket
+    s3_sync:
+      aws_access_key: "{{ EDXAPP_AWS_ACCESS_KEY_ID }}"
+      aws_secret_key: "{{ EDXAPP_AWS_SECRET_ACCESS_KEY }}"
+      bucket: "{{ ANALITICS_TRACKING_LOGS_BUCKET }}"
+      file_root: "{{ tracking_files_tmp }}"
+
+  - name: Delete "{{ tracking_files_tmp }}" dir
+    file:
+      path: "{{ tracking_files_tmp }}"
+      state: absent
+    become_method: sudo
+    become: yes
+    become_user: root
+
