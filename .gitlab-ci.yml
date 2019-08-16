@@ -21,8 +21,18 @@ build-base-image:
         - hawthorn-rg
 
 build-version-image:
-    extends: build-base-image
+    stage: build
     variables:
         BASE_IMAGE: registry-gitlab.raccoongang.com/devops/configuration:$CI_COMMIT_REF_SLUG
+    script:
+        - FULL_VERSION=$BASE_IMAGE
+        - MINOR_VERSION=$(echo $FULL_VERSION | sed -n -e "s/\(^.*\)-.*$/\1/p")
+        - MAJOR_VERSION=$(echo $MINOR_VERSION | sed -n -e "s/\(^.*\)-.*$/\1/p")
+        - docker build -t $FULL_VERSION .
+        - docker tag $FULL_VERSION $MINOR_VERSION
+        - docker tag $FULL_VERSION $MAJOR_VERSION
+        - docker push $FULL_VERSION
+        - docker push $MINOR_VERSION
+        - docker push $MAJOR_VERSION
     only:
         - tags
