@@ -15,8 +15,7 @@ mongo_journal_dir: "{{ COMMON_DATA_DIR }}/mongo/mongodb/journal"
 mongo_user: mongodb
 
 MONGODB_REPO: "deb http://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/3.2 multiverse"
-MONGODB_APT_KEY: "7F0CEB10"
-MONGODB_APT_KEYSERVER: "keyserver.ubuntu.com"
+MONGODB_APT_KEY: "https://www.mongodb.org/static/pgp/server-3.2.asc"
 
 mongodb_debian_pkgs:
   - "mongodb-org={{ mongo_version }}"
@@ -24,8 +23,6 @@ mongodb_debian_pkgs:
   - "mongodb-org-shell={{ mongo_version }}"
   - "mongodb-org-mongos={{ mongo_version }}"
   - "mongodb-org-tools={{ mongo_version }}"
-
-
 
 mongo_configure_replica_set: true
 
