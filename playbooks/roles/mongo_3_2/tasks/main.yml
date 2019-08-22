@@ -62,6 +62,15 @@
     - "install:app-requirements"
     - "mongo_packages"
 
+- name: ensure mongod service is enabled
+  service:
+    name: mongod
+    enabled: yes
+  tags:
+    - "install"
+    - "install:app-requirements"
+    - "mongo_packages"
+
 - name: create mongo dirs
   file:
     path: "{{ item }}"
