@@ -1,0 +1,18 @@
+// Add super user
+if(db.getUser('{{ MONGO_ADMIN_USER }}') == null) {
+    db.createUser(
+        {
+            "user": "{{ MONGO_ADMIN_USER }}",
+            "pwd": "{{ MONGO_ADMIN_PASSWORD }}",
+            "roles": ["root"]
+        }
+    );
+} else {
+    db.updateUser(
+        "{{ MONGO_ADMIN_USER }}",
+        {
+            "pwd": "{{ MONGO_ADMIN_PASSWORD }}",
+            "roles": ["root"]
+        }
+    );
+}
