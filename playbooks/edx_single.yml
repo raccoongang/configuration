@@ -30,7 +30,7 @@
       - lms
     - role: edxlocal
     - role: memcache
-    - role: mongo
+    - role: mongo_2_6-3_2
     - role: rabbitmq
       rabbitmq_ip: 127.0.0.1
     - role: oraclejdk
