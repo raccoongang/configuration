@@ -19,6 +19,13 @@
 EDXAPP_XLOG_MONGO_DB_NAME: 'xlog'
 EDXAPP_ADDL_INSTALLED_APPS: []
 RG_WIKI_ENABLED: True
+EDXAPP_GRADES_DOWNLOAD:
+  STORAGE_CLASS: "{{ EDXAPP_GRADE_STORAGE_CLASS | default(None) }}"
+  STORAGE_KWARGS: "{{ EDXAPP_GRADE_STORAGE_KWARGS | default(None) }}"
+  STORAGE_TYPE: "{{ EDXAPP_GRADE_STORAGE_TYPE | default(None) }}"
+  BUCKET: "{{ EDXAPP_GRADE_BUCKET | default(None) }}"
+  CONTAINER: "{{ EDXAPP_GRADE_BUCKET | default(None) }}"
+  ROOT_PATH: "{{ EDXAPP_GRADE_ROOT_PATH | default(None) }}"
 #
 
 EDXAPP_RG_SENTRY_DSN: "{{ COMMON_RG_SENTRY_DSN }}"
@@ -818,6 +825,8 @@ EDXAPP_VIDEO_IMAGE_SETTINGS:
     location: "{{ edxapp_media_dir }}/"
     base_url: "{{ EDXAPP_MEDIA_URL }}/"
   DIRECTORY_PREFIX: 'video-images/'
+  STORAGE_CLASS: "{{ EDXAPP_GRADE_STORAGE_CLASS | default(None) }}"
+  CONTAINER: "{{ EDXAPP_GRADE_BUCKET | default(None) }}"
 
 EDXAPP_VIDEO_TRANSCRIPTS_MAX_AGE: 31536000
 
@@ -828,6 +837,8 @@ EDXAPP_VIDEO_TRANSCRIPTS_SETTINGS:
     location: "{{ edxapp_media_dir }}/"
     base_url: "{{ EDXAPP_MEDIA_URL }}/"
   DIRECTORY_PREFIX: 'video-transcripts/'
+  STORAGE_CLASS: "{{ EDXAPP_GRADE_STORAGE_CLASS | default(None) }}"
+  CONTAINER: "{{ EDXAPP_GRADE_BUCKET | default(None) }}"
 
 # Course Block Structures
 EDXAPP_BLOCK_STRUCTURES_SETTINGS:
@@ -1158,12 +1169,7 @@ generic_env_config:  &edxapp_generic_env
   MICROSITE_ROOT_DIR: "{{ EDXAPP_MICROSITE_ROOT_DIR }}"
   MICROSITE_CONFIGURATION: "{{ EDXAPP_MICROSITE_CONFIGURATION }}"
   DEFAULT_FILE_STORAGE:  "{{ EDXAPP_DEFAULT_FILE_STORAGE }}"
-  GRADES_DOWNLOAD:
-    STORAGE_CLASS: "{{ EDXAPP_GRADE_STORAGE_CLASS | default(None) }}"
-    STORAGE_KWARGS: "{{ EDXAPP_GRADE_STORAGE_KWARGS | default(None) }}"
-    STORAGE_TYPE: "{{ EDXAPP_GRADE_STORAGE_TYPE | default(None) }}"
-    BUCKET: "{{ EDXAPP_GRADE_BUCKET | default(None) }}"
-    ROOT_PATH: "{{ EDXAPP_GRADE_ROOT_PATH | default(None) }}"
+  GRADES_DOWNLOAD: "{{ EDXAPP_GRADES_DOWNLOAD }}"
   STATIC_ROOT_BASE: "{{ edxapp_staticfile_dir }}"
   LMS_BASE: "{{ EDXAPP_LMS_BASE }}"
   CMS_BASE: "{{ EDXAPP_CMS_BASE }}"

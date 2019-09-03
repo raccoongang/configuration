@@ -8,3 +8,17 @@
   tags:
     - install
     - install:memcache
+
+- name: Set listen address to 0.0.0.0
+  lineinfile:
+    path: /etc/memcached.conf
+    regexp: '-l 127.0.0.1'
+    line: '-l 0.0.0.0'
+    state: present
+  register: memcached_conf
+
+- name: Restart memcached
+  service:
+    name: memcached
+    state: restarted
+  when: memcached_conf.changed

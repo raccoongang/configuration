@@ -23,6 +23,7 @@
     name: "{{ item.user }}"
     password: "{{ item.pass }}"
     priv: "{{ item.db }}.*:ALL"
+    host: "%"
     append_privs: yes
   when: item.db != None and item.db != ''
   with_items: "{{ edxlocal_database_users }}"
@@ -32,6 +33,7 @@
     name: "{{ COMMON_MYSQL_MIGRATE_USER }}"
     password: "{{ COMMON_MYSQL_MIGRATE_PASS }}"
     priv: "{{ item }}.*:ALL"
+    host: "%"
     append_privs: yes
   when: item != None and item != ''
   with_items: "{{ edxlocal_databases }}"
@@ -41,6 +43,7 @@
     name: "{{ ANALYTICS_API_DATABASES.default.USER }}"
     password: "{{ ANALYTICS_API_DATABASES.default.PASSWORD }}"
     priv: '{{ ANALYTICS_API_DATABASES.default.NAME }}.*:ALL/reports.*:SELECT'
+    host: "%"
   when: ANALYTICS_API_DATABASES.default is defined
 
 - name: create read-only reports user for the analytics-api
@@ -48,6 +51,7 @@
     name: "{{ ANALYTICS_API_DATABASES.reports.USER }}"
     password: "{{ ANALYTICS_API_DATABASES.reports.PASSWORD }}"
     priv: '{{ ANALYTICS_API_DATABASES.reports.NAME }}.*:SELECT'
+    host: "%"
   when: ANALYTICS_API_DATABASES.reports is defined
 
 - name: create a database for the hive metastore
@@ -62,6 +66,7 @@
     name: "{{ EDX_NOTES_API_MYSQL_DB_USER }}"
     password: "{{ EDX_NOTES_API_MYSQL_DB_PASS }}"
     priv: "{{ EDX_NOTES_API_MYSQL_DB_NAME }}.*:SELECT,INSERT,UPDATE,DELETE"
+    host: "%"
   when: EDX_NOTES_API_MYSQL_DB_USER is defined
 
 - name: setup the read-only db user
@@ -69,9 +74,11 @@
     name: "{{ COMMON_MYSQL_READ_ONLY_USER }}"
     password: "{{ COMMON_MYSQL_READ_ONLY_PASS }}"
     priv: "*.*:ALL"
+    host: "%"
 
 - name: setup the admin db user
   mysql_user:
     name: "{{ COMMON_MYSQL_ADMIN_USER }}"
     password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
     priv: "*.*:CREATE USER"
+    host: "%"

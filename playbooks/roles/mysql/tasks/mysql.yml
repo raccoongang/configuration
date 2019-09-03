@@ -40,10 +40,56 @@
     state: present
   with_items: "{{ mysql_debian_pkgs }}"
 
-- name: Start mysql
+- name: Move mysql datadir to edx partition
+  stat:
+    path: /var/lib/mysql
+  register: datadir
+  when: MYSQL_DATADIR != "/var/lib/mysql"
+
+- name: Move. Stop mysql service
+  service:
+    name: mysql
+    state: stopped
+  when:
+    - not datadir.stat.islnk
+    - MYSQL_DATADIR != "/var/lib/mysql"
+
+- name: Move /var/lib/mysql to new location and symlinking
+  shell: "mv /var/lib/mysql {{ MYSQL_DATADIR }} ; ln -s {{ MYSQL_DATADIR }} /var/lib/mysql"
+  when:
+    - not datadir.stat.islnk
+    - MYSQL_DATADIR != "/var/lib/mysql"
+
+- name: Deploy mysqld.cnf
+  template:
+    src: mysqld.cnf.j2
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+  register: mysqld_conf
+
+- name: Patch apparmor mysqld restrictions
+  replace:
+    path: /etc/apparmor.d/usr.sbin.mysqld
+    regexp: '^(.*)/var/lib/mysql(.*)$'
+    replace: '\1{{ MYSQL_DATADIR }}\2'
+  register: apparmor_mysqld
+
+- name: Reload apparmor service
+  service:
+    name: apparmor
+    state: reloaded
+  when: apparmor_mysqld.changed
+
+- name: Restart mysql service
+  service:
+    name: mysql
+    state: restarted
+  when: mysqld_conf.changed
+
+- name: Enable mysql service
   service:
     name: mysql
     state: started
+    enabled: yes
 
 - name: Ensure Anonymous user(s) does not exist
   mysql_user:
