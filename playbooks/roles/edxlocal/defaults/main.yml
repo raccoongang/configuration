@@ -2,6 +2,7 @@
 edxlocal_debian_pkgs:
   - postfix
   - libjpeg-dev
+  - python-mysqldb
 
 edxlocal_databases:
   - "{{ ECOMMERCE_DATABASE_NAME | default(None) }}"

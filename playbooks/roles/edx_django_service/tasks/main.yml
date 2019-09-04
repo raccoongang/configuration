@@ -111,7 +111,7 @@
     - devstack
     - devstack:install
 
-- name: migrate database
+- name: migrate database {{ edx_django_service_code_dir }}
   command: make migrate
   args:
     chdir: "{{ edx_django_service_code_dir }}"

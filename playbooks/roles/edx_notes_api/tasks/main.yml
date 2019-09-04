@@ -54,7 +54,7 @@
     - install
     - install:system-requirements
 
-- name: Migrate
+- name: Migrate edx_notes_api
   shell: >
     DB_MIGRATION_USER='{{ COMMON_MYSQL_MIGRATE_USER }}'
     DB_MIGRATION_PASS='{{ COMMON_MYSQL_MIGRATE_PASS }}'

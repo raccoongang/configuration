@@ -62,7 +62,7 @@
     - install
     - install:app-requirements
 
-- name: migrate
+- name: migrate insights
   shell: "DB_MIGRATION_USER='{{ COMMON_MYSQL_MIGRATE_USER }}' DB_MIGRATION_PASS='{{ COMMON_MYSQL_MIGRATE_PASS }}' {{ insights_venv_dir }}/bin/python {{ insights_manage }} migrate --noinput"
   args:
     chdir: "{{ insights_code_dir }}"
