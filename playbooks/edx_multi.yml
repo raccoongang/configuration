@@ -108,11 +108,8 @@
 
     - role: nginx
       nginx_sites:
-      - certs
       - cms
       - lms
-      - forum
-      - xqueue
       nginx_default_sites:
       - lms
 

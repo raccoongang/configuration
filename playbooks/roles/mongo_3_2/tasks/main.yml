@@ -33,8 +33,7 @@
 
 - name: add the mongodb signing key
   apt_key:
-    id: "{{ MONGODB_APT_KEY }}"
-    keyserver: "{{ MONGODB_APT_KEYSERVER }}"
+    url: "{{ MONGODB_APT_KEY }}"
     state: present
   retries: 3
   tags:

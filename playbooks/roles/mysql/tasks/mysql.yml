@@ -131,7 +131,7 @@
   mysql_user:
     name: "{{ COMMON_MYSQL_ADMIN_USER }}"
     password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
-    priv: "*.*:ALL,GRANT,CREATE USER"
+    priv: "*.*:ALL,GRANT"
     host: "%"
     login_user: root
     login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
