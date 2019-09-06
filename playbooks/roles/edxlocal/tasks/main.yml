@@ -26,7 +26,7 @@
     name: "{{ item.user }}"
     password: "{{ item.pass }}"
     priv: "{{ item.db }}.*:ALL"
-    host: "%"
+    host: "{{ edxlocal_host }}"
     append_privs: yes
     login_host: "{{ mysql_host }}"
     login_user: "{{ COMMON_MYSQL_ADMIN_USER }}"
@@ -39,7 +39,7 @@
     name: "{{ COMMON_MYSQL_MIGRATE_USER }}"
     password: "{{ COMMON_MYSQL_MIGRATE_PASS }}"
     priv: "{{ item }}.*:ALL"
-    host: "%"
+    host: "{{ edxlocal_host }}"
     append_privs: yes
     login_host: "{{ mysql_host }}"
     login_user: "{{ COMMON_MYSQL_ADMIN_USER }}"
@@ -52,7 +52,7 @@
     name: "{{ ANALYTICS_API_DATABASES.default.USER }}"
     password: "{{ ANALYTICS_API_DATABASES.default.PASSWORD }}"
     priv: '{{ ANALYTICS_API_DATABASES.default.NAME }}.*:ALL/reports.*:SELECT'
-    host: "%"
+    host: "{{ edxlocal_host }}"
     login_host: "{{ mysql_host }}"
     login_user: "{{ COMMON_MYSQL_ADMIN_USER }}"
     login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
@@ -63,7 +63,7 @@
     name: "{{ ANALYTICS_API_DATABASES.reports.USER }}"
     password: "{{ ANALYTICS_API_DATABASES.reports.PASSWORD }}"
     priv: '{{ ANALYTICS_API_DATABASES.reports.NAME }}.*:SELECT'
-    host: "%"
+    host: "{{ edxlocal_host }}"
     login_host: "{{ mysql_host }}"
     login_user: "{{ COMMON_MYSQL_ADMIN_USER }}"
     login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
@@ -84,7 +84,7 @@
     name: "{{ EDX_NOTES_API_MYSQL_DB_USER }}"
     password: "{{ EDX_NOTES_API_MYSQL_DB_PASS }}"
     priv: "{{ EDX_NOTES_API_MYSQL_DB_NAME }}.*:SELECT,INSERT,UPDATE,DELETE"
-    host: "%"
+    host: "{{ edxlocal_host }}"
     login_host: "{{ mysql_host }}"
     login_user: "{{ COMMON_MYSQL_ADMIN_USER }}"
     login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
@@ -95,7 +95,7 @@
     name: "{{ COMMON_MYSQL_READ_ONLY_USER }}"
     password: "{{ COMMON_MYSQL_READ_ONLY_PASS }}"
     priv: "*.*:SELECT,SHOW VIEW,PROCESS,REPLICATION CLIENT"
-    host: "%"
+    host: "{{ edxlocal_host }}"
     login_host: "{{ mysql_host }}"
     login_user: "{{ COMMON_MYSQL_ADMIN_USER }}"
     login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"

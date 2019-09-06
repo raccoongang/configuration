@@ -99,8 +99,10 @@
     host: "{{ item }}"
   ignore_errors: True
   with_items:
-    - "%"
     - "{{ ansible_hostname }}"
+    - "{{ COMMON_HOSTNAME | default(omit) }}"
+    - "%"
+    - "::1"
     - 127.0.0.1
     - localhost
 
@@ -111,7 +113,7 @@
     mode: 0600
     content: |
       [client]
-      user = {{ COMMON_MYSQL_ADMIN_PASS }}
+      user = {{ COMMON_MYSQL_ADMIN_USER }}
       password = {{ COMMON_MYSQL_ADMIN_PASS }}
 
 - name: Ensure Anonymous user(s) does not exist
@@ -123,7 +125,9 @@
     login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
   with_items:
     - "{{ ansible_hostname }}"
+    - "{{ COMMON_HOSTNAME | default(omit) }}"
     - "%"
+    - "::1"
     - 127.0.0.1
     - localhost
 
@@ -132,6 +136,9 @@
     name: "{{ COMMON_MYSQL_ADMIN_USER }}"
     password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
     priv: "*.*:ALL,GRANT"
-    host: "%"
+    host: "{{ item }}"
     login_user: root
     login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
+  with_items:
+    - localhost
+    - "%"

@@ -20,6 +20,7 @@ log_error = /var/log/mysql/error.log
 expire_logs_days	= 10
 max_binlog_size     = 100M
 
+{%- if project_environment == "prod" -%}
 # RG
 thread_cache_size = 16
 default-storage-engine = InnoDB
@@ -33,3 +34,4 @@ innodb_flush_method = O_DIRECT
 skip-name-resolve = 1
 tmp_table_size = 256M
 max_heap_table_size = 256M
+{%- endif -%}
