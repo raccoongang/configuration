@@ -1,5 +1,5 @@
 #
-# overrides for default OpenEdx settings from roles/edxapp/vars/devstack.yml
+# overrides for default OpenEdx devstack settings from roles/edxapp/vars/devstack.yml
 #
 ---
 EDXAPP_PLATFORM_NAME: 'hawthorn-rg'

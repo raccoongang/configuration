@@ -5,7 +5,7 @@
 # Default vagrantfile: ../vagrant/rg-devstack/Vagrantfile
 #
 # Usage:
-# ansible-playbook -i,192.168.33.14 -uvagrant --private-key=~/.vagrant/insecure_private_key vagrant-devstack.yml -e@../vagrant/rg-devstack/defaults/*.yml
+# ansible-playbook -i,192.168.33.14 -uvagrant --private-key=~/.vagrant/insecure_private_key vagrant-devstack.yml
 #
 - name: Vagrant devstack privision
   hosts: all
@@ -19,7 +19,6 @@
   roles:
     - role: common
     - role: vhost
-    - role: edx_ansible
     - role: mysql
     - role: edxlocal
     - role: memcache
@@ -34,6 +33,7 @@
     - role: ecomworker
       ECOMMERCE_WORKER_BROKER_HOST: 127.0.0.1
     - role: discovery
+    - role: credentials
     - role: notifier
       NOTIFIER_DIGEST_TASK_INTERVAL: "5"
     - role: browsers
