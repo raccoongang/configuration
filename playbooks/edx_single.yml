@@ -40,6 +40,8 @@
     - role: xqueue
       update_users: True
     - role: certs
+    - role: edx_notes_api
+      when: EDXAPP_ENABLE_EDXNOTES
     - role: newrelic
       when: COMMON_ENABLE_NEWRELIC
     - role: datadog
