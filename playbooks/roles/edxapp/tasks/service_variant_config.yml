@@ -3,9 +3,9 @@
   template:
     src: "{{ item[0] }}.{{ item[1] }}.json.j2"
     dest: "{{ edxapp_app_dir }}/{{ item[0] }}.{{ item[1] }}.json"
-    owner: "{{ edxapp_user }}"
-    group: "{{ common_web_group }}"
-    mode: 0640
+    owner: "{{ edxapp_user if not devstack else omit }}"
+    group: "{{ common_web_group if not devstack else omit }}"
+    mode: "{{ 0640 if not devstack else omit }}"
   become: true
   with_nested:
     - "{{ service_variants_enabled }}"
