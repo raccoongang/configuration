@@ -8,4 +8,7 @@
   daily
   rotate 3
   nocreate
+  postrotate
+    /etc/init.d/rabbitmq-server rotate-logs > /dev/null
+  endscript
 }
