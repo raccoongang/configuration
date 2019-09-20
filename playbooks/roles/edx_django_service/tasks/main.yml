@@ -142,7 +142,7 @@
     path: "{{ item }}"
     state: touch
     owner: "{{ common_web_user }}"
-    group: "{{ common_web_user }}"
+    group: "{{ common_web_group }}"
   with_items: '{{ edx_django_service_name_devstack_logs }}'
   tags:
     - install
@@ -154,7 +154,7 @@
     dest: "{{ edx_django_service_home }}/{{ edx_django_service_name }}.sh"
     mode: 0650
     owner: "{{ supervisor_user }}"
-    group: "{{ common_web_user }}"
+    group: "{{ common_web_group }}"
   tags:
     - install
     - install:configuration
@@ -164,7 +164,7 @@
     src: "edx/app/supervisor/conf.d.available/app.conf.j2"
     dest: "{{ supervisor_available_dir }}/{{ edx_django_service_name }}.conf"
     owner: "{{ supervisor_user }}"
-    group: "{{ common_web_user }}"
+    group: "{{ common_web_group }}"
     mode: 0644
   tags:
     - install
@@ -175,7 +175,7 @@
     src: "edx/app/app/devstack.sh.j2"
     dest: "{{ edx_django_service_home }}/devstack.sh"
     owner: "{{ supervisor_user }}"
-    group: "{{ common_web_user }}"
+    group: "{{ common_web_group }}"
     mode: 0744
   when: edx_django_service_is_devstack is defined and edx_django_service_is_devstack
   tags:
@@ -246,6 +246,24 @@
     - assets
     - assets:gather
 
+- name: create django specific directories
+  file:
+    path: "{{ item.dir }}"
+    state: directory
+    owner: "{{ item.owner }}"
+    group: "{{ common_web_group }}"
+    mode: "0755"
+  with_items:
+    - dir: "{{ edx_django_service_data_dir }}"
+      owner: "{{ edx_django_service_user }}"
+    - dir: "{{ edx_django_service_data_dir }}/media"
+      owner: "{{ common_web_user }}"
+    - dir: "{{ edx_django_service_data_dir }}/uploads"
+      owner: "{{ common_web_user }}"
+  tags:
+    - install
+    - install:base
+
 - name: restart the application
   supervisorctl:
     state: restarted
@@ -263,7 +281,7 @@
     src: "edx/app/nginx/sites-available/app.j2"
     dest: "{{ nginx_sites_available_dir }}/{{ edx_django_service_name }}"
     owner: root
-    group: "{{ common_web_user }}"
+    group: "{{ common_web_group }}"
     mode: 0640
   when: nginx_app_dir is defined
   notify: reload nginx
@@ -283,3 +301,46 @@
   tags:
     - install
     - install:vhosts
+
+- name: Creating superuser
+  command: >
+    {{ COMMON_BIN_DIR }}/python.{{ edx_django_service_name }} {{ COMMON_BIN_DIR }}/manage.{{ edx_django_service_name }}
+    createsuperuser --email {{ edx_django_service_superuser_email }}
+    --username {{ edx_django_service_superuser_username }}
+    --noinput
+  environment: "{{ edx_django_service_environment }}"
+  become_user: "{{ edx_django_service_user }}"
+  when: edx_django_service_superuser_username != ''
+  register: createsuperuser_out
+  ignore_errors: True
+  no_log: True
+  tags:
+    - install
+    - install:configuration
+
+- name: Checking output of createsuperuser command
+  fail:
+    msg: |
+      createsuperuser command fails.
+      please investigate.
+      {{ createsuperuser_out.stderr }}
+  when:
+    - createsuperuser_out.rc != 0
+    - not "Duplicate entry" in createsuperuser_out.stderr
+
+- name: Setting superuser password
+  expect:
+    command: >
+      {{ COMMON_BIN_DIR }}/python.{{ edx_django_service_name }} {{ COMMON_BIN_DIR }}/manage.{{ edx_django_service_name }}
+      changepassword {{ edx_django_service_superuser_username }}
+    responses:
+      "Password": "{{ edx_django_service_superuser_password }}"
+    timeout: 30
+  environment: "{{ edx_django_service_environment }}"
+  become_user: "{{ edx_django_service_user }}"
+  when:
+    - edx_django_service_superuser_username != ''
+    - edx_django_service_superuser_password != ''
+  tags:
+    - install
+    - install:configuration
