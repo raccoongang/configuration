@@ -67,6 +67,12 @@
 
     - role: elasticsearch
 
+    - role: discovery
+      when: SANDBOX_ENABLE_DISCOVERY is defined and SANDBOX_ENABLE_DISCOVERY
+
+    - role: credentials
+      when: SANDBOX_ENABLE_CREDENTIALS is defined and SANDBOX_ENABLE_CREDENTIALS
+
     - role: ecommerce
       when: SANDBOX_ENABLE_ECOMMERCE | default(False)
 
