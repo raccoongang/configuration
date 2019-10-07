@@ -15,6 +15,7 @@
         xqueue_host: "{{ hostvars['services'].ansible_host }}"
         certs_host: "{{ hostvars['services'].ansible_host }}"
         forum_host: "{{ hostvars['services'].ansible_host }}"
+      tags: [ "always" ]
 
 - name: Bootstrap instance(s)
   hosts: all
@@ -28,6 +29,12 @@
   become: True
   gather_facts: True
   roles:
+    - role: common_vars
+      when: False
+
+    - role: edxapp
+      when: False
+
     - role: swapfile
       when: SWAPFILE_SIZE is defined and SWAPFILE_SIZE != ''
 
@@ -38,6 +45,12 @@
   become: True
   gather_facts: True
   roles:
+    - role: common_vars
+      when: False
+
+    - role: edxapp
+      when: False
+
     - role: swapfile
       when: SWAPFILE_SIZE is defined and SWAPFILE_SIZE != ''
 
@@ -48,6 +61,12 @@
   become: True
   gather_facts: True
   roles:
+    - role: common_vars
+      when: False
+
+    - role: edxapp
+      when: False
+
     - role: swapfile
       when: SWAPFILE_SIZE is defined and SWAPFILE_SIZE != ''
 
