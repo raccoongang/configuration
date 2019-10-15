@@ -128,6 +128,9 @@
   become: True
   gather_facts: True
   roles:
+    - role: edx_notes_api
+      when: False
+
     - role: swapfile
       when: SWAPFILE_SIZE is defined and SWAPFILE_SIZE != ''
 
