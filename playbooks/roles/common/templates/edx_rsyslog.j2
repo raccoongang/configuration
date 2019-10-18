@@ -1,6 +1,15 @@
 # custom edx syslog configuration
 #
 
+{% if rsyslog_collector is defined and rsyslog_collector in ansible_all_ipv4_addresses %}
+module(load="imudp")
+input(type="imudp" port="514")
+{% endif %}
+{% if rsyslog_collector is defined and not rsyslog_collector in ansible_all_ipv4_addresses %}
+*.*  action(type="omfwd" target="{{ rsyslog_collector }}" port="514" protocol="udp"
+            action.resumeRetryCount="100"
+            queue.type="linkedList" queue.size="10000")
+{% endif %}
 
 #  Default rules for rsyslog.
 #

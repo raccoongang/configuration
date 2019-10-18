@@ -12,13 +12,19 @@
 - name: Set listen address to 0.0.0.0
   lineinfile:
     path: /etc/memcached.conf
-    regexp: '-l 127.0.0.1'
+    regexp: '^-l \d+\.\d+\.\d+\.\d+'
     line: '-l 0.0.0.0'
-    state: present
-  register: memcached_conf
+  register: memcached_conf1
+
+- name: Increase the memory limit
+  lineinfile:
+    path: /etc/memcached.conf
+    regexp: '^-m \d+'
+    line: '-m 512'
+  register: memcached_conf2
 
 - name: Restart memcached
   service:
     name: memcached
     state: restarted
-  when: memcached_conf.changed
+  when: memcached_conf1.changed or memcached_conf2.changed

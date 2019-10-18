@@ -15,7 +15,7 @@
     - install
     - install:app-requirements
 
-- name: trust rabbit's packagecloud repository
+- name: trust rabbit's repository
   apt_key:
     url: "{{ rabbitmq_repo_key }}"
     state: present
@@ -23,11 +23,14 @@
     - "install"
     - "install:app-requirements"
 
-- name: add rabbit's packagecloud repository
+- name: add rabbit's repository
   apt_repository:
-    repo: "{{ rabbitmq_repo }}"
+    repo: "{{ item }}"
     state: present
     update_cache: yes
+  with_items:
+    - "{{ rabbitmq_erlang_repo }}"
+    - "{{ rabbitmq_repo }}"
   tags:
     - "install"
     - "install:app-requirements"
@@ -58,6 +61,24 @@
     force: yes
     update_cache: yes
   when: installed_version.stdout is defined and installed_version.stdout == "not installed"
+  tags:
+    - "install"
+    - "install:app-requirements"
+
+- name: Patching /usr/sbin/rabbitmqctl (https://github.com/ansible/ansible/issues/49978)
+  lineinfile:
+    path: /usr/sbin/rabbitmqctl
+    regexp: 'exec \/sbin\/runuser -u rabbitmq --'
+    line: '        exec /sbin/runuser -u rabbitmq -- "/usr/lib/rabbitmq/bin/$SCRIPT" "$@" | grep -v "^vhost.*configure.*write.*read"'
+  tags:
+    - "install"
+    - "install:app-requirements"
+
+- name: Patching /usr/sbin/rabbitmqctl (https://github.com/ansible/ansible/issues/49978)
+  lineinfile:
+    path: /usr/sbin/rabbitmqctl
+    regexp: 'exec \/sbin\/runuser -s \/bin\/sh --'
+    line: '        exec /sbin/runuser -s /bin/sh -- rabbitmq "/usr/lib/rabbitmq/bin/$SCRIPT" "$@" | grep -v "^vhost.*configure.*write.*read"'
   tags:
     - "install"
     - "install:app-requirements"
