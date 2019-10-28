@@ -1,0 +1,41 @@
+---
+edx_user_attr: yes # enable role
+
+project_version: "" # ironwood/hawthorn/ginkgo/ficus/...
+
+manage_script_v0:
+  - ficus
+  - ginkgo
+
+user_password_manage_script_v0: user-password-manage-v0.py
+user_password_manage_script_v1: user-password-manage-v1.py
+
+EDXAPP_STAFF_PASSWORD: edxPass123
+
+staff_users:
+  - email: 'staff@example.com'
+    username: staff
+    password: "{{ EDXAPP_STAFF_PASSWORD }}"
+    is_staff: true
+    is_superuser: true
+    is_active: true
+
+test_users:
+  - email: 'honor@example.com'
+    username: honor
+    password: "{{ EDXAPP_STAFF_PASSWORD }}"
+    is_staff: false
+    is_superuser: false
+    is_active: true
+  - email: 'audit@example.com'
+    username: audit
+    password: "{{ EDXAPP_STAFF_PASSWORD }}"
+    is_staff: false
+    is_superuser: false
+    is_active: true
+  - email: 'verified@example.com'
+    username: verified
+    password: "{{ EDXAPP_STAFF_PASSWORD }}"
+    is_staff: false
+    is_superuser: false
+    is_active: true

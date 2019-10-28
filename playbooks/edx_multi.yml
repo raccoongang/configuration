@@ -150,6 +150,8 @@
 
     - role: demo
 
+    - role: edx-user-attr
+
     - role: oauth_client_setup
 
 - name: Post tasks for all instance(s)
