@@ -2,6 +2,10 @@
 edxlocal_debian_pkgs:
   - postfix
   - libjpeg-dev
+  - python-mysqldb
+
+mysql_host: "localhost"
+edxlocal_host: "{{ 'localhost' if mysql_host == 'localhost' or mysql_host == '127.0.0.1' else '%' }}"
 
 edxlocal_databases:
   - "{{ ECOMMERCE_DEFAULT_DB_NAME | default(None) }}"

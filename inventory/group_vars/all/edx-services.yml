@@ -22,7 +22,8 @@ edxapp_lms_gunicorn_port: 8000
 EDXAPP_LMS_NGINX_PORT: 18000
 EDXAPP_CMS_NGINX_PORT: 18010
 NGINX_REDIRECT_TO_HTTPS: false
-
+MYSQL_BIND_ADDRESS: '0.0.0.0'
+MONGO_BIND_IP: '0.0.0.0'
 
 #Mysql installation Variables
 EDXAPP_MYSQL_HOST: "{{ mysql_host }}"
