@@ -1,0 +1,51 @@
+---
+
+- name: Set ip address of services
+  hosts: all
+  become: False
+  gather_facts: no
+  tasks:
+    - name: set instances ip addresses
+      set_fact:
+        mysql_host: "{{ hostvars['backend'].ansible_host }}"
+        memcached_host: "{{ hostvars['app'].ansible_host }}"
+        mongo_hosts: "{{ hostvars['backend'].ansible_host }}"
+        elasticsearch_host: "{{ hostvars['app'].ansible_host }}"
+        rabbit_master: "{{ hostvars['app'].ansible_host }}"
+        xqueue_host: "{{ hostvars['app'].ansible_host }}"
+        certs_host: "{{ hostvars['app'].ansible_host }}"
+        forum_host: "{{ hostvars['app'].ansible_host }}"
+      tags: [ "always" ]
+
+- name: Bootstrap instance(s)
+  hosts: app
+  gather_facts: no
+  become: True
+  roles:
+    - python
+
+- name: Configure instance(s)
+  hosts: app
+  become: True
+  gather_facts: True
+  roles:
+    - role: edxapp
+      when: False
+    - role: swapfile
+      when: SWAPFILE_SIZE is defined and SWAPFILE_SIZE != ''
+    - role: nginx
+      nginx_sites:
+      - forum
+    - role: edxlocal
+    - role: memcache
+    - role: rabbitmq
+    - role: oraclejdk
+    - role: elasticsearch
+    - role: forum
+    - role: notifier
+    - role: edx_notes_api
+      when: EDXAPP_ENABLE_EDXNOTES
+    - role: newrelic
+      when: COMMON_ENABLE_NEWRELIC
+    - role: datadog
+      when: COMMON_ENABLE_DATADOG
