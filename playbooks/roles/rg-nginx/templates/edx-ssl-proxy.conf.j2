@@ -1,0 +1,51 @@
+server {
+
+    listen 80;
+    server_name {{ EDXAPP_LMS_BASE }} {{ EDXAPP_PREVIEW_LMS_BASE }} {{ EDXAPP_CMS_BASE }} {{ INSIGHTS_BASE | default('') }} {{ ANALYTICS_API_BASE | default('') }} {% for service in NGINX_ADDITIONAL_SERVICES_CONFIG %} {{ service.server_name }}{% endfor %};
+    client_max_body_size {{ RG_NGINX_CMS_CLIENT_MAX_BODY_SIZE | default('200m') }};
+
+    location / {
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Port $server_port;
+      proxy_set_header X-Forwarded-For $remote_addr;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://{{ localhost_ip_addr }};
+    }
+}
+
+{% if nginx_ssl_template %}
+
+server {
+
+    listen          443 ssl http2;
+    server_name {{ EDXAPP_LMS_BASE }} {{ EDXAPP_PREVIEW_LMS_BASE }} {{ EDXAPP_CMS_BASE }} {{ INSIGHTS_BASE | default('') }} {{ ANALYTICS_API_BASE | default('') }} {% for service in NGINX_ADDITIONAL_SERVICES_CONFIG %} {{ service.server_name }}{% endfor %};
+
+    ssl_certificate {{ lms_ssl_certificate_path }};
+    ssl_certificate_key {{ lms_ssl_certificate_key_path }};
+
+    ssl_protocols {{ NGINX_SSL_PROTOCOLS }};
+    ssl_dhparam {{ NGINX_DH_PARAMS_PATH }};
+    ssl_session_timeout 24h;
+    ssl_session_cache shared:SSL:50m;
+    ssl_ciphers {{ NGINX_SSL_CIPHERS }};
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_prefer_server_ciphers on;
+    ssl_trusted_certificate {{ ssl_trusted_certificate_path }};
+    resolver 8.8.8.8;
+
+    client_max_body_size {{ RG_NGINX_CMS_CLIENT_MAX_BODY_SIZE | default('200m') }};
+
+    location / {
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Port $server_port;
+      proxy_set_header X-Forwarded-For $remote_addr;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass https://{{ localhost_ip_addr }};
+    }
+}
+{% endif %}

@@ -1,0 +1,58 @@
+---
+#
+# most tasks was a copy-paste from 
+# https://github.com/raccoongang/configuration/tree/ginkgo-rg/playbooks/roles/demo
+#
+edx_user_attr: True # enable role
+
+project_version: "" # ironwood/hawthorn/ginkgo/ficus/...
+
+manage_script_v0:
+  - ficus
+  - ginkgo
+
+user_password_manage_script_v0: user-password-manage-v0.py
+user_password_manage_script_v1: user-password-manage-v1.py
+
+EDXAPP_STAFF_USER_EMAIL: 'staff@example.com'
+EDXAPP_STAFF_USERNAME: 'staff'
+EDXAPP_STAFF_PASSWORD: 'edxPass123'
+
+initial_hashed_password: 'pbkdf2_sha256$20000$TjE34FJjc3vv$0B7GUmH8RwrOc/BvMoxjb5j8EgnWTt3sxorDANeF7Qw=' # edx
+
+edxapp_user: edxapp
+COMMON_EDXAPP_SETTINGS: 'aws'
+
+COMMON_BASE_DIR: /edx
+COMMON_APP_DIR: "{{ COMMON_BASE_DIR}}/app"
+edxapp_app_dir: "{{ COMMON_APP_DIR }}/edxapp"
+edxapp_code_dir: "{{ edxapp_app_dir }}/edx-platform"
+edxapp_venvs_dir: "{{ edxapp_app_dir }}/venvs"
+edxapp_venv_dir: "{{ edxapp_venvs_dir }}/edxapp"
+edxapp_venv_bin: "{{ edxapp_venv_dir }}/bin"
+
+edx_users:
+  - email: "{{ EDXAPP_STAFF_USER_EMAIL }}"
+    username: "{{ EDXAPP_STAFF_USERNAME }}"
+    password: "{{ EDXAPP_STAFF_PASSWORD }}"
+    is_staff: True
+    is_superuser: True
+    is_active: True
+  - email: 'honor@example.com'
+    username: honor
+    password: "{{ EDXAPP_STAFF_PASSWORD }}"
+    is_staff: False
+    is_superuser: False
+    is_active: True
+  - email: 'audit@example.com'
+    username: audit
+    password: "{{ EDXAPP_STAFF_PASSWORD }}"
+    is_staff: False
+    is_superuser: False
+    is_active: True
+  - email: 'verified@example.com'
+    username: verified
+    password: "{{ EDXAPP_STAFF_PASSWORD }}"
+    is_staff: False
+    is_superuser: False
+    is_active: True

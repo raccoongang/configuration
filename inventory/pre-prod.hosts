@@ -1,0 +1,7 @@
+[pre_prod]
+lms ansible_host=10.10.0.4 ansible_port=22 ansible_user=automation
+app ansible_host=10.10.2.4 ansible_port=22 ansible_user=automation
+backend ansible_host=10.10.1.4 ansible_port=22 ansible_user=automation
+
+[awx]
+awx ansible_host=pre-prod-automation-aiacademy.uaenorth.cloudapp.azure.com ansible_port=3220 ansible_user=azureuser

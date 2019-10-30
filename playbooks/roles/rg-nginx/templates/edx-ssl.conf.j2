@@ -1,0 +1,700 @@
+{% if nginx_edx_config %}
+{% if nginx_ssl_template %}
+{% if nginx_not_skip_nebula_node_redirect %}
+server {
+    listen {{ nginx_http_port }} default;
+    location /heartbeat {
+        return 200;
+    }
+    location = /nginx_basic_status {
+        if ($http_user_agent != "Zabbix nginx status check") {
+            rewrite ^ $scheme://$http_host permanent;
+        }
+        stub_status;
+    }
+{% if nginx_disable_http_https_redirect %}
+    client_max_body_size {{ RG_NGINX_LMS_CLIENT_MAX_BODY_SIZE }};
+    location '/.well-known/acme-challenge' {
+      allow all;
+      default_type "text/plain";
+      root /var/www/letsencrypt;
+    }
+    location / {
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Port $server_port;
+      proxy_set_header X-Forwarded-For $remote_addr;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://{{ localhost_ip_addr }}:18000;
+    }
+{% else %}
+    location / {
+        rewrite ^ https://$http_host$request_uri?  permanent;
+    }
+{% endif %}
+    {% for additional_header in NGINX_ADDITIONAL_HEADERS %}
+        add_header {{ additional_header }};
+    {% endfor %}
+}
+{% endif %}
+{% endif %}
+
+{% if nginx_http_elb %}
+server {
+    listen 80 default;
+    location /heartbeat {
+        return 200;
+    }
+    location = /nginx_basic_status {
+        if ($http_user_agent != "Zabbix nginx status check") {
+            rewrite ^ $scheme://$http_host permanent;
+        }
+        stub_status;
+    }
+    location / {
+        rewrite ^ https://$http_host$request_uri?  permanent;
+    }
+}
+
+{% endif %}
+
+{% if preview_ssl_certificate_path is defined and preview_ssl_certificate_path and preview_lms_ssl_certificate_key_path is defined and preview_lms_ssl_certificate_key_path %}
+{% if nginx_default_redirect_to_lms %}
+
+# REDIRECT
+
+server {
+{% if nginx_ssl_template %}
+{% if nginx_http2 %}
+    listen 443 ssl http2;
+{% else %}
+    listen 443 ssl;
+{% endif %}
+    server_name _;
+
+    {% if lms_ssl_certificate_path is defined and lms_ssl_certificate_path %}
+    ssl_certificate {{ lms_ssl_certificate_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate {{ letsencrypt_ssl_certificate | lower }};
+    {% endif %}
+    {% endif %}
+    {% if lms_ssl_certificate_key_path is defined and lms_ssl_certificate_key_path %}
+    ssl_certificate_key {{ lms_ssl_certificate_key_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate_key {{ letsencrypt_ssl_certificate_key | lower }};
+    {% endif %}
+    {% endif %}
+
+    ssl_protocols {{ NGINX_SSL_PROTOCOLS }};
+    ssl_dhparam {{ NGINX_DH_PARAMS_PATH }};
+    ssl_session_timeout 24h;
+    ssl_session_cache shared:SSL:50m;
+    ssl_ciphers {{ NGINX_SSL_CIPHERS }};
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_prefer_server_ciphers on;
+    ssl_trusted_certificate {{ ssl_trusted_certificate_path }};
+{% else %}
+    listen {{ nginx_http_port }};
+    server_name _;
+{% endif %}
+    location '/.well-known/acme-challenge' {
+      allow all;
+      default_type "text/plain";
+      root /var/www/letsencrypt;
+    }
+    location / {
+        rewrite ^ https://{{ EDXAPP_LMS_BASE }} permanent;
+    }
+}
+{% endif %}
+
+# LMS
+
+server {
+{% if nginx_ssl_template %}
+
+{% if nginx_http2 %}
+    listen 443 ssl http2;
+{% else %}
+    listen 443 ssl;
+{% endif %}
+    server_name {{ EDXAPP_LMS_BASE }};
+
+    {% if lms_ssl_certificate_path is defined and lms_ssl_certificate_path %}
+    ssl_certificate {{ lms_ssl_certificate_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate {{ letsencrypt_ssl_certificate | lower }};
+    {% endif %}
+    {% endif %}
+    {% if lms_ssl_certificate_key_path is defined and lms_ssl_certificate_key_path %}
+    ssl_certificate_key {{ lms_ssl_certificate_key_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate_key {{ letsencrypt_ssl_certificate_key | lower }};
+    {% endif %}
+    {% endif %}
+
+    ssl_protocols  {{ NGINX_SSL_PROTOCOLS }};
+    ssl_dhparam {{ NGINX_DH_PARAMS_PATH }};
+    ssl_session_timeout  24h;
+    ssl_session_cache shared:SSL:50m;
+    ssl_ciphers {{ NGINX_SSL_CIPHERS }};
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_prefer_server_ciphers   on;
+    ssl_trusted_certificate     {{ ssl_trusted_certificate_path }};
+{% else %}
+    listen {{ nginx_http_port }};
+    server_name {{ EDXAPP_LMS_BASE }};
+{% endif %}
+    resolver 8.8.8.8;
+
+    client_max_body_size {{ RG_NGINX_LMS_CLIENT_MAX_BODY_SIZE }};
+
+    location '/.well-known/acme-challenge' {
+      allow all;
+      default_type "text/plain";
+      root /var/www/letsencrypt;
+    }
+{% if EDXAPP_EDXNOTES_PUBLIC_API is defined and '/edx_notes/' in EDXAPP_EDXNOTES_PUBLIC_API %}
+    location /edx_notes {
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Port $server_port;
+      proxy_set_header X-Forwarded-For $remote_addr;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://{{ localhost_ip_addr }}:8120/; # mind the slash!
+    }
+{% endif %}
+{% if EDXAPP_API_NGINX_ADDITIONAL_LOCATION is defined and EDXAPP_API_NGINX_ADDITIONAL_LOCATION %}
+    location /api {
+      proxy_read_timeout 600s;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Port $server_port;
+      proxy_set_header X-Forwarded-For $remote_addr;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://{{ localhost_ip_addr }}:18000;
+    }
+{% endif %}
+    location / {
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Port $server_port;
+      proxy_set_header X-Forwarded-For $remote_addr;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://{{ localhost_ip_addr }}:{{ EDXAPP_LMS_NGINX_PORT }};
+    }
+    {% for additional_header in NGINX_ADDITIONAL_HEADERS %}
+        add_header {{ additional_header }};
+    {% endfor %}
+}
+
+# PREVIEW
+
+server {
+{% if nginx_ssl_template %}
+
+{% if nginx_http2 %}
+    listen 443 ssl http2;
+{% else %}
+    listen 443 ssl;
+{% endif %}
+    server_name {{ EDXAPP_PREVIEW_LMS_BASE }};
+
+    {% if preview_ssl_certificate_path is defined and preview_ssl_certificate_path %}
+    ssl_certificate {{ preview_ssl_certificate_path }};
+    {% endif %}
+    {% if preview_lms_ssl_certificate_key_path is defined and preview_lms_ssl_certificate_key_path %}
+    ssl_certificate_key {{ preview_lms_ssl_certificate_key_path }};
+    {% endif %}
+
+    ssl_protocols {{ NGINX_SSL_PROTOCOLS }};
+    ssl_dhparam {{ NGINX_DH_PARAMS_PATH }};
+    ssl_session_timeout 24h;
+    ssl_session_cache shared:SSL:50m;
+    ssl_ciphers {{ NGINX_SSL_CIPHERS }};
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_prefer_server_ciphers on;
+    ssl_trusted_certificate {{ ssl_trusted_certificate_path }};
+{% else %}
+    listen {{ nginx_http_port }};
+    server_name {{ EDXAPP_PREVIEW_LMS_BASE }};
+{% endif %}
+    resolver                8.8.8.8;
+
+    client_max_body_size {{ RG_NGINX_LMS_CLIENT_MAX_BODY_SIZE }};
+
+    location '/.well-known/acme-challenge' {
+      allow all;
+      default_type "text/plain";
+      root /var/www/letsencrypt;
+    }
+
+    location / {
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Port $server_port;
+      proxy_set_header X-Forwarded-For $remote_addr;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://{{ localhost_ip_addr }}:{{ EDXAPP_LMS_NGINX_PORT }};
+    }
+    {% for additional_header in NGINX_ADDITIONAL_HEADERS %}
+        add_header {{ additional_header }};
+    {% endfor %}
+}
+{% else %}
+{% if nginx_default_redirect_to_lms %}
+
+# REDIRECT
+
+server {
+{% if nginx_ssl_template %}
+{% if nginx_http2 %}
+    listen 443 ssl http2;
+{% else %}
+    listen 443 ssl;
+{% endif %}
+    server_name _;
+
+    {% if lms_ssl_certificate_path is defined and lms_ssl_certificate_path %}
+    ssl_certificate {{ lms_ssl_certificate_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate {{ letsencrypt_ssl_certificate | lower }};
+    {% endif %}
+    {% endif %}
+    {% if lms_ssl_certificate_key_path is defined and lms_ssl_certificate_key_path %}
+    ssl_certificate_key {{ lms_ssl_certificate_key_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate_key {{ letsencrypt_ssl_certificate_key | lower }};
+    {% endif %}
+    {% endif %}
+
+    ssl_protocols {{ NGINX_SSL_PROTOCOLS }};
+    ssl_dhparam {{ NGINX_DH_PARAMS_PATH }};
+    ssl_session_timeout 24h;
+    ssl_session_cache shared:SSL:50m;
+    ssl_ciphers {{ NGINX_SSL_CIPHERS }};
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_prefer_server_ciphers on;
+    ssl_trusted_certificate {{ ssl_trusted_certificate_path }};
+{% else %}
+    listen {{ nginx_http_port }};
+    server_name _;
+{% endif %}
+    location '/.well-known/acme-challenge' {
+      allow all;
+      default_type "text/plain";
+      root /var/www/letsencrypt;
+    }
+    location / {
+        rewrite ^ https://{{ EDXAPP_LMS_BASE }} permanent;
+    }
+}
+{% endif %}
+
+# LMS and PREVIEW
+
+server {
+{% if nginx_ssl_template %}
+
+{% if nginx_http2 %}
+    listen          443 ssl http2;
+{% else %}
+    listen          443 ssl;
+{% endif %}
+    server_name {{ EDXAPP_LMS_BASE }} {{ EDXAPP_PREVIEW_LMS_BASE }};
+
+    {% if lms_ssl_certificate_path is defined and lms_ssl_certificate_path %}
+    ssl_certificate {{ lms_ssl_certificate_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate {{ letsencrypt_ssl_certificate | lower }};
+    {% endif %}
+    {% endif %}
+    {% if lms_ssl_certificate_key_path is defined and lms_ssl_certificate_key_path %}
+    ssl_certificate_key {{ lms_ssl_certificate_key_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate_key {{ letsencrypt_ssl_certificate_key | lower }};
+    {% endif %}
+    {% endif %}
+
+    ssl_protocols {{ NGINX_SSL_PROTOCOLS }};
+    ssl_dhparam {{ NGINX_DH_PARAMS_PATH }};
+    ssl_session_timeout  24h;
+    ssl_session_cache shared:SSL:50m;
+    ssl_ciphers {{ NGINX_SSL_CIPHERS }};
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_prefer_server_ciphers on;
+    ssl_trusted_certificate {{ ssl_trusted_certificate_path }};
+{% else %}
+    listen {{ nginx_http_port }};
+    server_name {{ EDXAPP_LMS_BASE }} {{ EDXAPP_PREVIEW_LMS_BASE }};
+
+    location = /nginx_basic_status {
+        if ($http_user_agent != "Zabbix nginx status check") {
+            rewrite ^ $scheme://$http_host permanent;
+        }
+        stub_status;
+    }
+{% endif %}
+    resolver 8.8.8.8;
+
+    client_max_body_size {{ RG_NGINX_LMS_CLIENT_MAX_BODY_SIZE }};
+
+    location '/.well-known/acme-challenge' {
+      allow all;
+      default_type "text/plain";
+      root /var/www/letsencrypt;
+    }
+{% if EDXAPP_EDXNOTES_PUBLIC_API is defined and '/edx_notes/' in EDXAPP_EDXNOTES_PUBLIC_API %}
+    location /edx_notes {
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Port $server_port;
+      proxy_set_header X-Forwarded-For $remote_addr;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://{{ localhost_ip_addr }}:8120/; # mind the slash!
+    }
+{% endif %}
+    location / {
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Port $server_port;
+      proxy_set_header X-Forwarded-For $remote_addr;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://{{ localhost_ip_addr }}:{{ EDXAPP_LMS_NGINX_PORT }};
+    }
+{% if EDXAPP_API_NGINX_ADDITIONAL_LOCATION is defined and EDXAPP_API_NGINX_ADDITIONAL_LOCATION %}
+    location /api {
+      proxy_read_timeout 600s;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Port $server_port;
+      proxy_set_header X-Forwarded-For $remote_addr;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://{{ localhost_ip_addr }}:18000;
+    }
+{% endif %}
+
+    {% for additional_header in NGINX_ADDITIONAL_HEADERS %}
+        add_header {{ additional_header }};
+    {% endfor %}
+
+}
+{% endif %}
+
+# CMS
+
+server {
+{% if nginx_ssl_template %}
+
+{% if nginx_http2 %}
+    listen 443 ssl http2;
+{% else %}
+    listen 443 ssl;
+{% endif %}
+    server_name {{ EDXAPP_CMS_BASE }};
+
+    {% if cms_ssl_certificate_path is defined and cms_ssl_certificate_path %}
+    ssl_certificate {{ cms_ssl_certificate_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate {{ letsencrypt_ssl_certificate | lower }};
+    {% endif %}
+    {% endif %}
+
+    {% if cms_ssl_certificate_key_path is defined and cms_ssl_certificate_key_path %}
+    ssl_certificate_key {{ cms_ssl_certificate_key_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate_key {{ letsencrypt_ssl_certificate_key | lower }};
+    {% endif %}
+    {% endif %}
+
+    ssl_protocols {{ NGINX_SSL_PROTOCOLS }};
+    ssl_dhparam {{ NGINX_DH_PARAMS_PATH }};
+    ssl_session_timeout 24h;
+    ssl_session_cache shared:SSL:50m;
+    ssl_ciphers {{ NGINX_SSL_CIPHERS }};
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_prefer_server_ciphers on;
+    ssl_trusted_certificate {{ ssl_trusted_certificate_path }};
+{% else %}
+    listen {{ nginx_http_port }};
+    server_name {{ EDXAPP_CMS_BASE }};
+{% endif %}
+    resolver 8.8.8.8;
+    
+    client_max_body_size {{ RG_NGINX_CMS_CLIENT_MAX_BODY_SIZE }};
+
+{% if NGINX_ROBOT_RULES|length > 0 %}
+    location /robots.txt {
+    root {{ nginx_app_dir }};
+    try_files $uri /robots.txt =404;
+    }
+{% endif %}
+
+    location '/.well-known/acme-challenge' {
+      allow all;
+      default_type "text/plain";
+      root /var/www/letsencrypt;
+    }
+    
+    location / {
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Port $server_port;
+      proxy_set_header X-Forwarded-For $remote_addr;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://{{ localhost_ip_addr }}:{{ EDXAPP_CMS_NGINX_PORT }};
+    }
+
+    {% for additional_header in NGINX_ADDITIONAL_HEADERS %}
+        add_header {{ additional_header }};
+    {% endfor %}
+
+}
+
+{% if insights %}
+
+# INSIGHTS
+
+server {
+{% if nginx_ssl_template %}
+
+{% if nginx_http2 %}
+    listen 443 ssl http2;
+{% else %}
+    listen 443 ssl;
+{% endif %}
+    server_name {{ INSIGHTS_BASE }};
+
+    {% if insights_ssl_certificate_path is defined and insights_ssl_certificate_path %}
+    ssl_certificate {{ insights_ssl_certificate_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate {{ letsencrypt_ssl_certificate | lower }};
+    {% endif %}
+    {% endif %}
+    {% if insights_ssl_certificate_key_path is defined and insights_ssl_certificate_key_path %}
+    ssl_certificate_key {{ insights_ssl_certificate_key_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate_key {{ letsencrypt_ssl_certificate_key | lower }};
+    {% endif %}
+    {% endif %}
+
+    ssl_protocols {{ NGINX_SSL_PROTOCOLS }};
+    ssl_dhparam {{ NGINX_DH_PARAMS_PATH }};
+    ssl_session_timeout 24h;
+    ssl_session_cache shared:SSL:50m;
+    ssl_ciphers {{ NGINX_SSL_CIPHERS }};
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_prefer_server_ciphers on;
+    ssl_trusted_certificate {{ ssl_trusted_certificate_path }};
+{% else %}
+    listen {{ nginx_http_port }};
+    server_name {{ INSIGHTS_BASE }};
+{% endif %}
+    resolver 8.8.8.8;
+    
+    client_max_body_size 50m;
+
+    location '/.well-known/acme-challenge' {
+      allow all;
+      default_type "text/plain";
+      root /var/www/letsencrypt;
+    }
+    
+    location / {
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Port $server_port;
+      proxy_set_header X-Forwarded-For $remote_addr;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://{{ localhost_ip_addr }}:{{ INSIGHTS_NGINX_PORT }};
+    }
+
+    {% for additional_header in NGINX_ADDITIONAL_HEADERS %}
+        add_header {{ additional_header }};
+    {% endfor %}
+
+}
+
+# INSIGHTS API
+
+server {
+{% if nginx_ssl_template %}
+
+{% if nginx_http2 %}
+    listen 443 ssl http2;
+{% else %}
+    listen 443 ssl;
+{% endif %}
+    server_name {{ ANALYTICS_API_BASE }};
+
+    {% if analytics_api_ssl_certificate_path is defined and analytics_api_ssl_certificate_path %}
+    ssl_certificate {{ analytics_api_ssl_certificate_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate {{ letsencrypt_ssl_certificate | lower }};
+    {% endif %}
+    {% endif %}
+
+    {% if analytics_api_ssl_certificate_key_path is defined and analytics_api_ssl_certificate_key_path %}
+    ssl_certificate_key {{ analytics_api_ssl_certificate_key_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate_key {{ letsencrypt_ssl_certificate_key | lower }};
+    {% endif %}
+    {% endif %}
+
+    ssl_protocols {{ NGINX_SSL_PROTOCOLS }};
+    ssl_dhparam {{ NGINX_DH_PARAMS_PATH }};
+    ssl_session_timeout 24h;
+    ssl_session_cache shared:SSL:50m;
+    ssl_ciphers {{ NGINX_SSL_CIPHERS }};
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_prefer_server_ciphers on;
+    ssl_trusted_certificate {{ ssl_trusted_certificate_path }};
+{% else %}
+    listen {{ nginx_http_port }};
+    server_name {{ ANALYTICS_API_BASE }};
+{% endif %}
+    resolver 8.8.8.8;
+    
+    client_max_body_size 50m;
+
+    location '/.well-known/acme-challenge' {
+      allow all;
+      default_type "text/plain";
+      root /var/www/letsencrypt;
+    }
+    
+    location / {
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Port $server_port;
+      proxy_set_header X-Forwarded-For $remote_addr;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://{{ localhost_ip_addr }}:{{ ANALYTICS_API_NGINX_PORT }};
+    }
+
+    {% for additional_header in NGINX_ADDITIONAL_HEADERS %}
+        add_header {{ additional_header }};
+    {% endfor %}
+
+}
+{% endif %}
+{% endif %}
+
+{% if NGINX_ADDITIONAL_SERVICES_CONFIG is defined %}
+{% if not nginx_edx_config %}
+server {
+    listen 80 default;
+    location /heartbeat {
+        return 200;
+    }
+    location = /nginx_basic_status {
+        if ($http_user_agent != "Zabbix nginx status check") {
+            rewrite ^ $scheme://$http_host permanent;
+        }
+        stub_status;
+    }
+    location / {
+        rewrite ^ https://$http_host$request_uri?  permanent;
+    }
+}
+{% endif %}
+{% for service in NGINX_ADDITIONAL_SERVICES_CONFIG %}
+# ADDITIONAL SERVICES
+
+server {
+{% if nginx_ssl_template %}
+
+{% if nginx_http2 %}
+    listen {{ service.nginx_port | default (443) }} ssl http2;
+{% else %}
+    listen {{ service.nginx_port | default (443) }} ssl;
+{% endif %}
+
+    server_name {{ service.server_name }};
+
+    {% if service.nginx_ssl_certificate_path is defined and service.nginx_ssl_certificate_path %}
+    ssl_certificate {{ service.nginx_ssl_certificate_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate {{ letsencrypt_ssl_certificate | lower }};
+    {% endif %}
+    {% endif %}
+
+    {% if service.nginx_ssl_certificate_key_path is defined and service.nginx_ssl_certificate_key_path %}
+    ssl_certificate_key {{ service.nginx_ssl_certificate_key_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate_key {{ letsencrypt_ssl_certificate_key | lower }};
+    {% endif %}
+    {% endif %}
+
+    ssl_protocols {{ NGINX_SSL_PROTOCOLS }};
+    ssl_dhparam {{ NGINX_DH_PARAMS_PATH }};
+    ssl_session_timeout 24h;
+    ssl_session_cache shared:SSL:50m;
+    ssl_ciphers {{ NGINX_SSL_CIPHERS }};
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_prefer_server_ciphers on;
+    ssl_trusted_certificate {{ ssl_trusted_certificate_path }};
+{% else %}
+    listen {{ nginx_http_port }};
+    server_name {{ service.server_name }};
+{% endif %}
+    resolver 8.8.8.8;
+
+    client_max_body_size 50m;
+
+    location '/.well-known/acme-challenge' {
+      allow all;
+      default_type "text/plain";
+      root /var/www/letsencrypt;
+    }
+
+    {% if service.htpasswd_enabled is defined and service.htpasswd_enabled %}
+    auth_basic "closed site";
+    auth_basic_user_file {{ service.htpasswd_file }};
+    {% endif %}
+
+    location / {
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Port $server_port;
+      proxy_set_header X-Forwarded-For $remote_addr;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://{{ localhost_ip_addr }}:{{ service.nging_proxy_pass_port }};
+    }
+    {% if service.extra_config is defined and service.extra_config %}
+    {{ service.extra_config }}
+    {% endif %}
+
+    
+    {% for additional_header in NGINX_ADDITIONAL_HEADERS %}
+        add_header {{ additional_header }};
+    {% endfor %}
+
+}
+{% endfor %}
+{% endif %}

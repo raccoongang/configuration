@@ -1,0 +1,25 @@
+---
+env: "stage"
+project_name: "etihad"
+cloud_provider: "azure"
+project_team: "Duck-Team"
+project_environment: "{{ env }}"
+
+zabbix_enabled: false
+zabbix_force_in_maintenance: true
+rg_support_package: "OnSupport"
+
+awx_http_hostname: "{{ ansible_host }}"
+awx_nginx_host_port: 18042
+awx_base_dir: /var/lib/awx
+awx_version: 8.0.0
+awx_inventory_vault_password: "{{ VAULT_AWX_VAULT_PASSWORD }}"
+
+awx_admin_password: "{{ VAULT_AWX_ADMIN_PASSWORD }}"
+awx_secret_key: "{{ VAULT_AWX_SECRET }}"
+awx_pg_password: "{{ VAULT_AWX_PG_PASSWORD }}"
+awx_host_port: 8042
+awx_dockerhub_version: "{{ awx_version }}"
+awx_dockerhub_base: ansible
+awx_official: true
+awx_alternate_dns_servers: "1.1.1.1,4.2.2.1,4.2.2.2"

@@ -1,0 +1,80 @@
+---
+SANDBOX_ENABLE_RABBITMQ: true
+JOURNALS_ENABLED: false
+
+EDXAPP_PLATFORM_NAME: "AIACADEMY PRE-PROD"
+EDXAPP_LANG: "en_US.UTF-8"
+EDXAPP_LANGUAGE_CODE: "en"
+EDXAPP_TIME_ZONE: "Europe/Dublin"
+
+EDXAPP_SITE_NAME: "Aiacademy.raccoon.bar"
+EDXAPP_CMS_SITE_NAME: "adminAiacademy.raccoon.bar"
+EDXAPP_PREVIEW_LMS_BASE: "previewAiacademy.raccoon.bar"
+EDXAPP_LMS_SITE_NAME: "{{ EDXAPP_SITE_NAME }}"
+EDXAPP_LMS_BASE: "{{ EDXAPP_SITE_NAME }}"
+EDXAPP_CMS_BASE: "{{ EDXAPP_CMS_SITE_NAME }}"
+
+COMMON_HOSTNAME: "{{ EDXAPP_SITE_NAME }}"
+RG_ADD_HOSTNAME_TO_HOSTS_FILE: true
+
+EDXAPP_LMS_ROOT_URL: "https://{{ EDXAPP_LMS_BASE }}"
+
+edx_platform_repo: https://github.com/raccoongang/edx-platform.git
+edx_platform_version: ficus-rg
+edx_ansible_source_repo: https://github.com/raccoongang/configuration.git
+# configuration_version: ficus-rg # configured in AWX project
+
+EDXAPP_PLATFORM_TWITTER_ACCOUNT: "@twitter"
+
+#grades ---------------------------------------------------------------------
+EDXAPP_DEFAULT_FILE_STORAGE: "django.core.files.storage.FileSystemStorage"
+EDXAPP_AZURE_CONTAINER: "aiacademy-openedx-prod-grades"
+EDXAPP_GRADE_STORAGE_TYPE: "azure"
+EDXAPP_GRADE_STORAGE_CLASS: "openedx.core.storage.AzureStorageExtended"
+EDXAPP_GRADE_STORAGE_KWARGS:
+  base_url: "{{ EDXAPP_MEDIA_URL }}/grades"
+  container: "{{ EDXAPP_AZURE_CONTAINER }}"
+  location: "{{ EDXAPP_MEDIA_ROOT }}/grades"
+EDXAPP_GRADE_STORAGE_CONTAINER: "{{ EDXAPP_AZURE_CONTAINER }}"
+azure_grades_blobstorage_create: no #create Azure container for grades
+#grades ---------------------------------------------------------------------
+
+#services -------------------------------------------------------------------
+configuration_version: ficus-rg
+
+forum_version: "open-release/ficus.3"
+NOTIFIER_VERSION: "open-release/ficus.3"
+xqueue_version: "open-release/ficus.3"
+certs_version: "open-release/ficus.3"
+demo_version: "open-release/ficus.3"
+
+COMMON_ENABLE_NEWRELIC_APP: False
+
+#services -------------------------------------------------------------------
+
+#defaults -------------------------------------------------------------------
+
+EDXAPP_FEATURES_OVERRIDE: {}
+
+EDXAPP_FEATURES: "{{ _EDXAPP_FEATURES | combine(EDXAPP_FEATURES_OVERRIDE, recursive=True) }}"
+
+EDXAPP_MKTG_URL_LINK_MAP: "{{ _EDXAPP_MKTG_URL_LINK_MAP }}"
+EDXAPP_CMS_MKTG_URLS: "{{ _EDXAPP_CMS_MKTG_URLS }}"
+EDXAPP_ELASTIC_SEARCH_CONFIG: "{{ _EDXAPP_ELASTIC_SEARCH_CONFIG }}"
+EDXAPP_LOCALESET_FROM_REQUEST: "{{ _EDXAPP_LOCALESET_FROM_REQUEST }}"
+MONGODB_LOG: "{{ _MONGODB_LOG }}"
+XQUEUE_QUEUES: "{{ _XQUEUE_QUEUES }}"
+
+#defaults -------------------------------------------------------------------
+
+filebeat_enable: false
+sentry_enable: false
+
+EDXAPP_ENV_EXTRA: {}
+
+EDXAPP_THIRD_PARTY_AUTH_BACKENDS:
+  - "social.backends.google.GoogleOAuth2"
+  - "social.backends.linkedin.LinkedinOAuth2"
+  - "social.backends.facebook.FacebookOAuth2"
+  - "social.backends.twitter.TwitterOAuth"
+  - "third_party_auth.saml.SAMLAuthBackend"

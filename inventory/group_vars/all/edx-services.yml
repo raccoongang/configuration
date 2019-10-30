@@ -1,0 +1,99 @@
+---
+##
+nginx_default_redirect_to_lms: false
+#### edx services hosts
+mysql_host: "127.0.0.1"
+worker_host: "127.0.0.1"
+memcached_host: "127.0.0.1"
+mongo_hosts: "127.0.0.1"
+elasticsearch_host: "127.0.0.1"
+rabbit_master: "127.0.0.1"
+xqueue_host: "127.0.0.1"
+certs_host: "127.0.0.1"
+forum_host: "127.0.0.1"
+edxapp_cms_gunicorn_host: "127.0.0.1"
+edxapp_lms_gunicorn_host: "127.0.0.1"
+#### edx service hosts
+
+migrate_db: "yes"
+
+edxapp_cms_gunicorn_port: 8010
+edxapp_lms_gunicorn_port: 8000
+EDXAPP_LMS_NGINX_PORT: 18000
+EDXAPP_CMS_NGINX_PORT: 18010
+NGINX_REDIRECT_TO_HTTPS: false
+
+
+#Mysql installation Variables
+EDXAPP_MYSQL_HOST: "{{ mysql_host }}"
+EDXAPP_MYSQL_CSMH_HOST: "{{ mysql_host }}"
+
+EDXAPP_MYSQL_PORT: "3306"
+
+#MongoDB installation variables
+EDXAPP_MONGO_HOSTS: "{{ mongo_hosts }}"
+
+mongo_create_users: True
+
+#Elasticserach installation variables
+EDXAPP_ELASTIC_SEARCH_HOST: "{{ elasticsearch_host }}"
+_EDXAPP_ELASTIC_SEARCH_CONFIG:
+  - host: "{{ elasticsearch_host }}"
+    port: 9200
+
+rabbitmq_ip: "{{ rabbit_master }}"
+
+#xqueue variables
+XQUEUE_NGINX_PORT: 18040
+_XQUEUE_QUEUES:
+  # push queue
+  'edX-Open_DemoX': 'http://127.0.0.1:18050'
+  # pull queues
+  'test-pull': !!null
+  'certificates': !!null
+  'open-ended': !!null
+  'open-ended-message': !!null
+XQUEUE_LOGGING_ENV: production
+
+XQUEUE_RABBITMQ_HOSTNAME: "{{ rabbit_master }}"
+XQUEUE_MYSQL_HOST: "{{ mysql_host }}"
+
+#Certs variables
+CERTS_QUEUE_URL: "http://{{ xqueue_host }}:18040"
+CERTS_URL: "http://{{ certs_host }}:18090"
+CERTS_DOWNLOAD_URL: "http://{{ certs_host }}:18090"
+CERTS_VERIFY_URL: "http://{{ certs_host }}:18090"
+
+#forum variables
+FORUM_MONGO_HOSTS: "{{ mongo_hosts }}"
+FORUM_MONGO_DATABASE: "cs_comments_service"
+FORUM_SINATRA_ENV: "production"
+FORUM_RACK_ENV: "production"
+FORUM_ELASTICSEARCH_HOST: "{{ elasticsearch_host }}"
+FORUM_ELASTICSEARCH_PORT: "9200"
+FORUM_MONGO_URL: "mongodb://{{ FORUM_MONGO_USER }}:{{ FORUM_MONGO_PASSWORD }}@{{ mongo_hosts }}:27017/{{ FORUM_MONGO_DATABASE }}"
+
+#edxapp variables
+EDXAPP_SESSION_COOKIE_DOMAIN: ""
+EDXAPP_COMMENTS_SERVICE_URL: 'http://{{ forum_host }}:18080'
+EDXAPP_RABBIT_HOSTNAME: "{{ rabbit_master }}"
+EDXAPP_XQUEUE_URL: 'http://{{ xqueue_host }}:18040'
+EDXAPP_OEE_URL: 'http://{{ ora_host }}:18040/'
+EDXAPP_MEMCACHE: ['{{memcached_host}}:11211']
+
+#ecommerce
+SANDBOX_ENABLE_ECOMMERCE: false
+
+#notifier
+NOTIFIER_LANGUAGE: "{{ EDXAPP_LANGUAGE_CODE }}"
+
+#NEWRELIC
+COMMON_ENABLE_NEWRELIC_APP: false
+NEWRELIC_LICENSE_KEY: ""
+EDXAPP_NEWRELIC_LMS_APPNAME: "{{ EDXAPP_SITE_NAME }}"
+EDXAPP_NEWRELIC_CMS_APPNAME: "{{ EDXAPP_CMS_SITE_NAME }}"
+
+COMMON_EDX_PPA_KEY_SERVER: "hkp://keyserver.ubuntu.com:80"
+MONGODB_APT_KEYSERVER: "{{ COMMON_EDX_PPA_KEY_SERVER }}"
+MONGO_CLIENT_MONGODB_APT_KEYSERVER: "{{ COMMON_EDX_PPA_KEY_SERVER }}"
+SERVER_UTILS_EDX_PPA_KEY_SERVER: "{{ COMMON_EDX_PPA_KEY_SERVER }}"

@@ -1,0 +1,70 @@
+---
+
+- name: Install required system packages
+  apt:
+    name: [ "python-dev", "virtualenv" ]
+    state: present
+
+- name: Clone AWX repository
+  include_role:
+    name: git_clone
+  vars:
+    repo_owner: root
+    GIT_CLONE_NO_LOGGING: false
+    GIT_REPOS:
+      - PROTOCOL: https
+        DESTINATION: "{{ awx_installer_dir }}"
+        DOMAIN: github.com
+        PATH: ansible
+        REPO: awx
+        VERSION: "{{ awx_version }}"
+
+- name: Create AWX installer inventory
+  template:
+    src: inventory.j2
+    dest: "{{ awx_installer_dir }}/local-inventory"
+    mode: 0600
+
+- name: Create AWX installer virtualenv
+  pip:
+    name: [ "ansible", "docker", "docker-compose" ]
+    virtualenv: "{{ awx_installer_dir }}/venv"
+
+- name: Start AWX provision ansible task
+  shell: ". {{ awx_installer_dir }}/venv/bin/activate && ansible-playbook -i {{ awx_installer_dir }}/local/local-inventory install.yml"
+  args:
+    chdir: "{{ awx_installer_dir }}/installer"
+
+- name: Create AWX specific directories
+  file:
+    name: "{{ item }}"
+    state: directory
+    mode: 0700
+  with_items:
+    - "{{ awx_project_data_dir }}/build"
+    - "{{ awx_project_data_dir }}/venv"
+
+- name: Prepare ansible 2.5.5 virtualenv
+  template:
+    src: "{{ item }}"
+    dest: "{{ awx_project_data_dir }}/{{ item }}"
+  with_items:
+    - venv_provision_requirements.txt
+    - venv_provision.sh
+
+- name: Prepate ansible 2.5.5 virtualenv AWX modules
+  copy:
+    src: "{{ awx_installer_dir }}/requirements/requirements_isolated.txt"
+    dest: "{{ awx_project_data_dir }}/requirements_isolated.txt"
+    remote_src: yes
+
+- name: Create ansible 2.5.5 virtualenv through task container
+  command: "{{ awx_installer_dir }}/venv/bin/docker-compose exec -T task bash /var/lib/awx/projects/venv_provision.sh"
+  args:
+    chdir: "{{ awx_project_data_dir }}"
+  
+- name: Dirtyhacks for vaulted extra-vars inside inventory
+  copy:
+    dest: "{{ awx_project_data_dir }}/.vaultfile"
+    content: "{{ awx_inventory_vault_password }}"
+    mode: 0600

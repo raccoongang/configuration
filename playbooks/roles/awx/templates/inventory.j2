@@ -1,0 +1,28 @@
+localhost ansible_connection=local ansible_python_interpreter="/usr/bin/env python"
+
+[all:vars]
+
+awx_official={{ awx_official }}
+dockerhub_base=ansible
+awx_task_hostname=awx
+awx_web_hostname=awxweb
+postgres_data_dir={{ awx_postgres_data_dir }}
+host_port={{ awx_host_port }}
+host_port_ssl={{ awx_host_port_ssl }}
+{% if awx_ssl_certificate is defined and awx_ssl_certificate %}
+ssl_certificate={{ awx_ssl_certificate }}
+{% endif %}
+docker_compose_dir={{ awx_docker_compose_dir }}
+pg_username=awxuser
+pg_password={{ awx_pg_password }}
+pg_admin_password={{ awx_pg_password }}
+pg_database=awxdb
+pg_port=5432
+rabbitmq_password=awxpassrabbit
+rabbitmq_erlang_cookie=doosh2IweifiNeeg9azae6iR
+admin_user=admin
+admin_password={{ awx_admin_password }}
+create_preload_data=False
+secret_key={{ awx_secret_key }}
+awx_alternate_dns_servers="{{ awx_alternate_dns_servers }}"
+project_data_dir={{ awx_project_data_dir }}

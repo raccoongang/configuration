@@ -1,0 +1,22 @@
+---
+- name: Bootstrap AWX instance(s)
+  hosts: awx
+  gather_facts: no
+  become: True
+  roles:
+    - python
+
+- name: Installing AWX
+  hosts: awx
+  become: True
+  gather_facts: True
+  roles:
+    - role: swapfile
+      when: SWAPFILE_SIZE is defined and SWAPFILE_SIZE != ''
+    - role: nginx
+      nginx_sites:
+      - awx
+      nginx_default_sites:
+      - awx
+    - role: awx
+      tags: [ "debuggg" ]

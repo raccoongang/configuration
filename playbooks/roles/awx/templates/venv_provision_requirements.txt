@@ -1,0 +1,10 @@
+ansible==2.5.5
+awscli
+boto3
+botocore
+datadog
+docker-compose
+Jinja2==2.8
+zabbix-api
+MySQL-python
+azure-cli

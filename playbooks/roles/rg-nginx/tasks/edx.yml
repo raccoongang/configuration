@@ -1,0 +1,103 @@
+---
+
+- name: Create robot rules
+  template:
+    src: robots.txt.j2
+    dest: "{{ nginx_app_dir }}/robots.txt"
+    owner: root
+    group: root
+    mode: 0644
+  when: NGINX_ROBOT_RULES|length > 0
+
+- name: update nginx_ssl_template variable for create nginx ssl template
+  set_fact:
+    nginx_ssl_template: yes
+
+- name: create nginx ssl-config in "{{ nginx_app_dir }} from template {{ nginx_config_template }}"
+  template:
+    src: "{{ nginx_config_template }}"
+    owner: root
+    group: root
+    mode: 0644
+    dest: "{{ nginx_ssl_config_path }}"
+    force: yes
+
+- name: remove link for nginx config if exist
+  file:
+    path: "{{ nginx_sites_enabled_dir }}/{{ nginx_config }}"
+    state: absent
+  when: nginx_ssl
+
+- name: remove ssl conf file if exist
+  file:
+    path: "{{ nginx_sites_enabled_dir }}/{{ nginx_ssl_config }}"
+    state: absent
+  when: nginx_ssl
+
+- name: create link for nginx ssl-config
+  file:
+    src: "{{ nginx_ssl_config_path }}"
+    dest: "{{ nginx_sites_enabled_dir }}/{{ nginx_ssl_config }}"
+    state: link
+    owner: root
+    group: root
+  when: nginx_ssl
+
+- name: update nginx_ssl_template variable for create nginx template
+  set_fact:
+    nginx_ssl_template: no
+
+- name: create nginx non-ssl-config in "{{ nginx_app_dir }} from template {{ nginx_config_template }}"
+  template:
+    src: "{{ nginx_config_template }}"
+    owner: root
+    group: root
+    mode: 0644
+    dest: "{{ nginx_config_path }}"
+    force: yes
+
+- name: Check if "{{ nginx_sites_enabled_dir }}/{{ nginx_ssl_config }}" exists
+  stat:
+    path: "{{ nginx_sites_enabled_dir }}/{{ nginx_ssl_config }}"
+  register: nginx_ssl_config_link
+  become_method: sudo
+  become: yes
+  become_user: root
+
+- name: Remove link for nginx ssl-config if exist
+  file:
+    dest: "{{ nginx_sites_enabled_dir }}/{{ nginx_ssl_config }}"
+    state: absent
+    src: "{{ nginx_config_path }}"
+  when: not nginx_ssl and nginx_ssl_config_link.stat.exists
+
+- name: create link for nginx config
+  file:
+    src: "{{ nginx_config_path }}"
+    dest: "{{ nginx_sites_enabled_dir }}/{{ nginx_config }}"
+    state: link
+    owner: root
+    group: root
+  when: not nginx_ssl
+
+- name: Create Diffie-Hellman parameters to prevent weak key exchange
+  command: openssl dhparam -out "{{ NGINX_DH_PARAMS_PATH | basename }}" {{ NGINX_DH_KEYSIZE }}
+  args:
+    chdir: "{{ NGINX_DH_PARAMS_PATH | dirname }}"
+    creates: "{{ NGINX_DH_PARAMS_PATH }}"
+
+- name: Restrict permissions of DH parameters file
+  file:
+    path: "{{ NGINX_DH_PARAMS_PATH }}"
+    owner: "root"
+    group: "root"
+    mode: 0600
+
+- name: test nginx config
+  command: "/usr/sbin/nginx -t"
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes

@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+
+/var/log/letsencrypt/*.log {
+  compress
+  dateext
+  dateformat -%Y%m%d-%s
+  missingok
+  monthly
+  rotate 4
+}

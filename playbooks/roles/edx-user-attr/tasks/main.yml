@@ -1,0 +1,7 @@
+---
+#
+# most tasks was a copy-paste from 
+# https://github.com/raccoongang/configuration/tree/ginkgo-rg/playbooks/roles/demo
+#
+- include: sett_user_arrts.yml
+  when: edx_user_attr

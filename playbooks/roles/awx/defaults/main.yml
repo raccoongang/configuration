@@ -1,0 +1,23 @@
+awx_source: https://github.com/ansible/awx
+awx_version: 8.0.0
+awx_base_dir: /var/lib/awx
+awx_installer_dir: "{{ awx_base_dir }}-installer"
+awx_http_hostname: "{{ ansible_host }}"
+awx_inventory_vault_password: "CHANGE_AND_VAULT_ME_ANSIBLE_VAULT_PASSWORD"
+
+#
+# documentation - https://github.com/ansible/awx/blob/8.0.0/INSTALL.md#docker-compose
+#
+awx_admin_password: "CHANGE_AND_VAULT_ME_AWX_ADMIN_PASSWORD"
+awx_secret_key: "CHANGE_AND_VAULT_ME_AWX_SECRET_KEY"
+awx_project_data_dir: "{{ awx_base_dir }}/projects"
+awx_postgres_data_dir: "{{ awx_base_dir }}/pgdocker"
+awx_pg_password: "CHANGE_AND_VAULT_ME_PG_PASSWORD"
+awx_host_port: 80
+awx_host_port_ssl: 443
+awx_ssl_certificate: !!null
+awx_dockerhub_version: "{{ awx_version }}"
+awx_dockerhub_base: ansible
+awx_docker_compose_dir: "{{ awx_base_dir }}"
+awx_official: true
+awx_alternate_dns_servers: "1.1.1.1,4.2.2.1,4.2.2.2"

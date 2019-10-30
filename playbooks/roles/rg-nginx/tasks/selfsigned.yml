@@ -1,0 +1,51 @@
+---
+- name: create destination dir
+  file:
+    path: "{{ nginx_ssl_selfsigned_path }}"
+    mode: 0700
+    state: directory
+
+- name: upload raccoongang selfsigned root sertificate and key
+  copy:
+    src: "files/{{ item }}"
+    dest: "{{ nginx_ssl_selfsigned_path }}/{{ item }}"
+    mode: 0600
+  with_items:
+    - "rg_selfsigned_root.crt"
+    - "rg_selfsigned_root.key"
+
+- name: create selfsigned extentions file
+  template:
+    src: selfsigned.ext.j2
+    dest: "{{ nginx_ssl_selfsigned_path }}/selfsigned.ext"
+
+- name: create key for selfsigned
+  shell: "openssl genrsa -out {{ nginx_ssl_selfsigned_path }}/selfsigned.key 2048 ; chmod og-wrx {{ nginx_ssl_selfsigned_path }}/selfsigned.key"
+
+- name: create csr
+  shell: "openssl req -new -sha256 -key {{ nginx_ssl_selfsigned_path }}/selfsigned.key -subj '/C=US/ST=FL/O=SelfSigned, Inc./CN={{ EDXAPP_SITE_NAME }}' -out {{ nginx_ssl_selfsigned_path }}/selfsigned.scr"
+
+- name: generate selfsigned cert
+  command: "openssl x509 -req -in {{ nginx_ssl_selfsigned_path }}/selfsigned.scr -CA {{ nginx_ssl_selfsigned_path }}/rg_selfsigned_root.crt -CAkey {{ nginx_ssl_selfsigned_path }}/rg_selfsigned_root.key -CAcreateserial -extfile {{ nginx_ssl_selfsigned_path }}/selfsigned.ext -out {{ nginx_ssl_selfsigned_path }}/selfsigned.crt -days 3650 -sha256"
+
+- name: remove extra files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ nginx_ssl_selfsigned_path }}/selfsigned.ext"
+    - "{{ nginx_ssl_selfsigned_path }}/selfsigned.scr"
+    - "{{ nginx_ssl_selfsigned_path }}/rg_selfsigned_root.crt"
+    - "{{ nginx_ssl_selfsigned_path }}/rg_selfsigned_root.key"
+    - "{{ nginx_ssl_selfsigned_path }}/rg_selfsigned_root.srl"
+
+- name: set facts for certs paths
+  set_fact:
+    lms_ssl_certificate_path: "{{ nginx_ssl_selfsigned_path }}/selfsigned.crt"
+    lms_ssl_certificate_key_path: "{{ nginx_ssl_selfsigned_path }}/selfsigned.key"
+    cms_ssl_certificate_path: "{{ nginx_ssl_selfsigned_path }}/selfsigned.crt"
+    cms_ssl_certificate_key_path: "{{ nginx_ssl_selfsigned_path }}/selfsigned.key"
+    insights_ssl_certificate_path: "{{ nginx_ssl_selfsigned_path }}/selfsigned.crt"
+    insights_ssl_certificate_key_path: "{{ nginx_ssl_selfsigned_path }}/selfsigned.key"
+    analytics_api_ssl_certificate_path: "{{ nginx_ssl_selfsigned_path }}/selfsigned.crt"
+    analytics_api_ssl_certificate_key_path: "{{ nginx_ssl_selfsigned_path }}/selfsigned.key"
