@@ -29,3 +29,22 @@
     update_cache: yes
   with_items: "{{ server_utils_debian_pkgs }}"
   when: ansible_distribution == 'Ubuntu'
+
+- name: applying sysctl settings
+  sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+  with_dict: "{{ sysctl_settings }}"
+  ignore_errors: true
+  become: true
+  become_method: 'sudo'
+
+- name: disabling email spam from cron about ubuntu upgrade
+  file:
+    path: "{{ item }}"
+    state: absent
+  become: true
+  become_method: 'sudo'
+  with_items:
+    - "/etc/cron.daily/update-notifier-common"
+    - "/etc/cron.weekly/update-notifier-common"

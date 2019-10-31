@@ -2,6 +2,21 @@
 # xenial+ cloud images don't have python2.7 installed, and ansible doesn't yet
 # support python3.
 
+- name: Check for expired apt keys
+  shell: "apt-key list | grep expired: | cat"
+  register: ppa_key_status
+
+- name: Update known expired repo keys
+  shell: "{{ item }}"
+  args:
+    warn: False
+  become: True
+  with_items:
+    - 'curl -L https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey | apt-key add -'
+    - 'apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 69464050'
+    - 'curl -L https://www.mongodb.org/static/pgp/server-3.2.asc | apt-key add -'
+  when: "'expired' in ppa_key_status.stdout"
+
 - name: Update apt-get
   raw: apt-get update -qq
 

@@ -40,3 +40,13 @@ server_utils_debian_pkgs:
   - netcat
 
 server_utils_redhat_pkgs: []
+
+sysctl_settings:
+  vm.swappiness: 1
+  net.core.rmem_max: 16777216
+  net.core.wmem_max: 16777216
+  net.ipv4.tcp_rmem: "4096 524288 16777216"
+  net.ipv4.tcp_wmem: "4096 524288 16777216"
+  net.core.netdev_max_backlog: 250000
+  net.ipv4.ip_local_port_range: "10240 65000"
+  net.ipv4.conf.all.send_redirects: 0

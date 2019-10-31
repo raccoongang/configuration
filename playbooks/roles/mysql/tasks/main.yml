@@ -36,3 +36,9 @@
     name: mysql
     state: restarted
   when: MYSQL_BIND_ADDRESS is defined and mysqld_cnf_update.changed
+
+- name: applying fix for mysql timezone information
+  shell: "mysql_tzinfo_to_sql /usr/share/zoneinfo | sed -e 's/Local time zone must be set--see zic manual page/local/' | mysql -u root mysql"
+  when: EDXAPP_MYSQL_HOST == 'localhost' or EDXAPP_MYSQL_HOST == '127.0.0.1'
+  become: true
+  become_method: 'sudo'
