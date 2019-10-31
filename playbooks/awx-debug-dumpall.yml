@@ -1,0 +1,35 @@
+---
+
+- hosts: all
+  gather_facts: yes
+
+  tasks:
+    - name: Print debug var1
+      debug:
+        msg: "{{ DEBUG_VAR1 }}"
+      when: DEBUG_VAR1 is defined
+
+    - name: Print debug var2
+      debug:
+        msg: "{{ DEBUG_VAR2 }}"
+      when: DEBUG_VAR2 is defined
+
+    - name: Module Variables (vars)
+      debug:
+        msg: "{{ vars | to_nice_json }}"
+      delegate_to: localhost
+
+    - name: GROUP NAMES Variables (group_names)
+      debug:
+        msg: "{{ group_names | to_nice_json }}"
+      delegate_to: localhost
+
+    - name: GROUPS Variables (groups)
+      debug:
+        msg: "{{ groups | to_nice_json }}"
+      delegate_to: localhost
+
+    - name: HOST Variables (hostvars)
+      debug:
+        msg: "{{ hostvars | to_nice_json }}"
+      delegate_to: localhost
