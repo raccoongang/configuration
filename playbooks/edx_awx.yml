@@ -13,10 +13,10 @@
   roles:
     - role: swapfile
       when: SWAPFILE_SIZE is defined and SWAPFILE_SIZE != ''
-    - role: nginx
-      nginx_sites:
-      - awx
-      nginx_default_sites:
-      - awx
     - role: awx
-      tags: [ "debuggg" ]
+    - role: rg-nginx
+      vars:
+        nginx_ssl: no
+    - role: rg-nginx
+      vars:
+        nginx_ssl: yes

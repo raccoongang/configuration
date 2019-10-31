@@ -1,0 +1,96 @@
+map $http_upgrade $connection_upgrade {
+        default upgrade;
+        ''      close;
+}
+
+upstream awx_server {
+		 server 127.0.0.1:{{ awx_host_port | default('8042', true) }};
+}
+
+server {
+
+    listen 80;
+    location /heartbeat {
+        return 200;
+    }
+    location = /nginx_basic_status {
+        if ($http_user_agent != "Zabbix nginx status check") {
+            rewrite ^ $scheme://$http_host permanent;
+        }
+        stub_status;
+    }
+    location '/.well-known/acme-challenge' {
+      allow all;
+      default_type "text/plain";
+      root /var/www/letsencrypt;
+    }
+{% if nginx_disable_http_https_redirect %}
+    client_max_body_size 50m;
+
+    location / {
+      proxy_http_version 1.1;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+      proxy_read_timeout 120;
+	  proxy_redirect off;
+	  proxy_pass http://awx_server;
+    }
+{% else %}
+    location / {
+        rewrite ^ https://$http_host$request_uri? permanent;
+    }
+{% endif %}
+}
+
+{% if nginx_ssl_template %}
+server {
+
+    listen 443 ssl http2;
+    server_name {{ awx_http_hostname }};
+
+    {% if lms_ssl_certificate_path is defined and lms_ssl_certificate_path %}
+    ssl_certificate {{ lms_ssl_certificate_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate {{ letsencrypt_ssl_certificate | lower }};
+    {% endif %}
+    {% endif %}
+    {% if lms_ssl_certificate_key_path is defined and lms_ssl_certificate_key_path %}
+    ssl_certificate_key {{ lms_ssl_certificate_key_path }};
+    {% else %}
+    {% if nginx_letsencrypt %}
+    ssl_certificate_key {{ letsencrypt_ssl_certificate_key | lower }};
+    {% endif %}
+    {% endif %}
+
+    ssl_protocols {{ NGINX_SSL_PROTOCOLS }};
+    ssl_dhparam {{ NGINX_DH_PARAMS_PATH }};
+    ssl_session_timeout 24h;
+    ssl_session_cache shared:SSL:50m;
+    ssl_ciphers {{ NGINX_SSL_CIPHERS }};
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_prefer_server_ciphers on;
+    ssl_trusted_certificate {{ ssl_trusted_certificate_path }};
+    resolver 8.8.8.8;
+
+    client_max_body_size 50m;
+
+    location / {
+      proxy_http_version 1.1;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+      proxy_read_timeout 120;
+	  proxy_redirect off;
+	  proxy_pass http://awx_server;
+    }
+}
+{% endif %}

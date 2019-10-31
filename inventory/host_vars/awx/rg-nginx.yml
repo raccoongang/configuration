@@ -1,0 +1,18 @@
+---
+nginx: yes
+nginx_ssl: yes
+nginx_letsencrypt: yes
+nginx_letsencrypt_setup: yes
+insights: no
+nginx_edx_config: no
+nginx_config_template: edx-ssl-awx.conf.j2
+nginx_config: edx-ssl-awx.conf.j2
+lms_ssl_certificate_path: ''
+lms_ssl_certificate_key_path: ''
+LETSENCRYPT_ADDITIONAL_DOMAIN: [ "{{ awx_http_hostname }}" ]
+EDXAPP_LMS_BASE: "{{ awx_http_hostname }}"
+NGINX_ADDITIONAL_SERVICES_CONFIG:
+  - name: awx
+    server_name: "{{ awx_http_hostname }}"
+    nginx_port: 443
+    nging_proxy_pass_port: "{{ awx_host_port }}"
