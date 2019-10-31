@@ -13,6 +13,7 @@ RG_NGINX_LMS_CLIENT_MAX_BODY_SIZE: 4m
 RG_NGINX_CMS_CLIENT_MAX_BODY_SIZE: 100m
 
 SWAPFILE_SIZE: ''
+COMMON_SSH_PASSWORD_AUTH: 'yes'
 
 sentry_enabled: False
 rggrpc_enabled: False

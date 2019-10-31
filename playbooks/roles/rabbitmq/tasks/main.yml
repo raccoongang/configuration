@@ -69,6 +69,7 @@
   service:
     name: rabbitmq-server
     state: stopped
+  when: installed_version.stdout is defined and installed_version.stdout == "not installed"
   tags:
     - "install"
     - "install:app-configuration"
@@ -76,7 +77,8 @@
 # In case there are lingering processes, ignore errors
 # silently
 - name: Send sigterm to any running rabbitmq processes
-  shell: "pkill -u rabbitmq || true"
+  shell: "( pkill -u rabbitmq ; killall epmd ) || true"
+  when: installed_version.stdout is defined and installed_version.stdout == "not installed"
   tags:
     - "install"
     - "install:app-configuration"
