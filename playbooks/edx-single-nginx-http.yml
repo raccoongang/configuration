@@ -1,0 +1,11 @@
+---
+- hosts: frontend
+  gather_facts: all
+  become: yes
+  vars:
+    nginx: yes
+    nginx_letsencrypt: no
+    nginx_letsencrypt_setup: no
+    insights: no
+  roles:
+   - { role: rg-nginx }

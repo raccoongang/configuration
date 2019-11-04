@@ -1,0 +1,16 @@
+---
+
+- hosts: frontend
+  gather_facts: yes
+  become: yes
+  vars:
+    nginx: yes
+    nginx_ssl: yes
+    nginx_letsencrypt: no
+    insights: no
+    lms_ssl_certificate_path: '{{ lms_ssl_crt }}'
+    lms_ssl_certificate_key_path: '{{ lms_ssl_cert_key }}'
+    cms_ssl_certificate_path: '{{ cms_ssl_crt }}'
+    cms_ssl_certificate_key_path: '{{ cms_ssl_cert_key }}'
+  roles:
+    - { role: rg-nginx }
