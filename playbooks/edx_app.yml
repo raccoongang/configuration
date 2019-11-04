@@ -17,13 +17,6 @@
         forum_host: "{{ hostvars['app'].ansible_host }}"
       tags: [ "always" ]
 
-- name: Bootstrap instance(s)
-  hosts: app
-  gather_facts: no
-  become: True
-  roles:
-    - python
-
 - name: Configure instance(s)
   hosts: app
   become: True

@@ -51,6 +51,7 @@
   with_items:
     - venv_provision_requirements.txt
     - venv_provision.sh
+    - ansible.cfg
 
 - name: Prepate ansible 2.5.5 virtualenv AWX modules
   copy:
