@@ -1,0 +1,15 @@
+---
+- include_role:
+    name: edx-user-attr
+  vars:
+    edx_users:
+      - email: "{{ LAAS_TEST_USER_EMAIL }}"
+        username: 'LaaS_Test'
+        password: "{{ LASS_TEST_USER_PASSWORD }}"
+        is_staff: False
+        is_superuser: False
+        is_active: True
+
+- include_tasks: test-course.yml
+- include_tasks: test-enroll.yml
+- include_tasks: setup-laas-oauth2.yml

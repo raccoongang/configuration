@@ -1,0 +1,6 @@
+---
+
+- name: enroll LaaS test users in the LaaS test course
+  shell: "/edx/bin/python.edxapp /edx/bin/manage.edxapp lms --settings=aws --service-variant lms enroll_user_in_course -e {{ LAAS_TEST_USER_EMAIL }} -c course-v1:Microsoft+Test101+2017"
+  become: yes
+  become_user: "{{ LASS_IMPORT_USER }}"

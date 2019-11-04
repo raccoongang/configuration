@@ -1,0 +1,13 @@
+---
+- name: executing manage.py create_oauth2_client
+  shell: >
+      /edx/bin/python.edxapp /edx/bin/manage.edxapp lms --settings=aws create_oauth2_client  \
+      https://academy.microsoft.com \
+      https://api.prod.mlxma.microsoft.com/api/v2.0/Authentication/LearningPartnerCallback  \
+      public \
+      --client_name=Microsoft \
+      --client_id={{ EDXAPP_RG_LAAS_OAUTH_CLIENT_ID }} \
+      --client_secret={{ EDXAPP_RG_LAAS_OAUTH_CLIENT_SECRET }} \
+      --trusted
+  become: yes
+  become_user: "{{ LASS_IMPORT_USER }}"

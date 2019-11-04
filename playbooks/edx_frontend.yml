@@ -33,6 +33,8 @@
     - role: edxlocal
     - role: edxapp
     - role: demo
+    - role: edx-laas
+      when: laas
     - role: oauth_client_setup
     - role: newrelic
       when: COMMON_ENABLE_NEWRELIC

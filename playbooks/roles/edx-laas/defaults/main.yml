@@ -1,0 +1,6 @@
+---
+LAAS_TEST_USER_EMAIL: 'LaaS_Test@outlook.com'
+LASS_TEST_USER_PASSWORD: "{{ EDXAPP_SITE_NAME }}#123"
+
+LASS_TEST_COURSE_DIR: '/edx/app/demo/laas-test-course'
+LASS_IMPORT_USER: 'www-data'

@@ -69,6 +69,7 @@ XQUEUE_QUEUES: "{{ _XQUEUE_QUEUES }}"
 
 filebeat_enable: false
 sentry_enable: false
+laas: True
 
 EDXAPP_ENV_EXTRA: {}
 

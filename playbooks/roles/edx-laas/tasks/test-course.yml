@@ -1,0 +1,25 @@
+---
+#
+# most of this task is copy-paste from configuration/playbooks/roles/demo
+
+- name: create demo app and data dirs
+  file:
+    path: "{{ LASS_TEST_COURSE_DIR }}"
+    state: directory
+    owner: "{{ LASS_IMPORT_USER }}"
+    group: "www-data"
+  become: yes
+
+- name: check out the LaaS test course
+  unarchive:
+    src: "files/Open_Edx_Test_Course-Test101-2017-fixed.tar.gz"
+    dest: "{{ LASS_TEST_COURSE_DIR }}"
+  become: yes
+  become_user: "{{ LASS_IMPORT_USER }}"
+  register: unarchive_result
+
+- name: import LaaS test course
+  shell: "/edx/bin/python.edxapp /edx/bin/manage.edxapp cms --settings=aws import /edx/app/edxapp/data {{ LASS_TEST_COURSE_DIR }}/course"
+  become: yes
+  become_user: "{{ LASS_IMPORT_USER }}"
+  when: unarchive_result.changed
