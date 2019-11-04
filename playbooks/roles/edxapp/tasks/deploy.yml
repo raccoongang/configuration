@@ -348,7 +348,6 @@
     config: "{{ supervisor_cfg }}"
     state: started
   become_user: "{{ supervisor_service_user }}"
-  when: celery_worker is not defined and not disable_edx_services
   tags:
     - manage
 
@@ -358,7 +357,6 @@
     supervisorctl_path: "{{ supervisor_ctl }}"
     config: "{{ supervisor_cfg }}"
     state: started
-  when: celery_worker is defined and not disable_edx_services
   become_user: "{{ supervisor_service_user }}"
   tags:
     - manage
@@ -423,7 +421,6 @@
     timeout: 2700
   when:
     - edxapp_installed is defined
-    - celery_worker is not defined
     - not disable_edx_services
     - edx_search_enabled
     - edx_search_configured is defined and not edx_search_configured.stat.exists
@@ -440,7 +437,6 @@
     timeout: 2700
   when:
     - edxapp_installed is defined
-    - celery_worker is not defined
     - not disable_edx_services
     - edx_search_enabled
     - not edx_search_configured.stat.exists
@@ -454,7 +450,6 @@
     state: touch
   when:
     - edxapp_installed is defined
-    - celery_worker is not defined
     - not disable_edx_services
     - edx_search_enabled
     - not edx_search_configured.stat.exists
@@ -469,7 +464,7 @@
     supervisorctl_path: "{{ supervisor_ctl }}"
     config: "{{ supervisor_cfg }}"
     state: restarted
-  when: edxapp_installed is defined and celery_worker is not defined and not disable_edx_services
+  when: edxapp_installed is defined
   become_user: "{{ supervisor_service_user }}"
   tags:
     - manage
@@ -480,7 +475,7 @@
     supervisorctl_path: "{{ supervisor_ctl }}"
     config: "{{ supervisor_cfg }}"
     state: restarted
-  when: edxapp_installed is defined and celery_worker is defined and not disable_edx_services
+  when: edxapp_installed is defined
   become_user: "{{ common_web_user }}"
   tags:
     - manage
