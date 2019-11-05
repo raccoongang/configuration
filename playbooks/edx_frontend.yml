@@ -33,6 +33,8 @@
     - role: edxlocal
     - role: edxapp
     - role: demo
+    - role: edx-powerbi
+      when: powerbi
     - role: edx-laas
       when: laas
     - role: oauth_client_setup

@@ -1,6 +1,10 @@
 ---
 ##
 nginx_default_redirect_to_lms: false
+####
+# this hosts will be redefined in deployment task
+# to corresponding group hosts
+#
 #### edx services hosts
 mysql_host: "127.0.0.1"
 worker_host: "127.0.0.1"

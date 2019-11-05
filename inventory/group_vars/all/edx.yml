@@ -7,9 +7,9 @@ EDXAPP_LANG: "en_US.UTF-8"
 EDXAPP_LANGUAGE_CODE: "en"
 EDXAPP_TIME_ZONE: "Europe/Dublin"
 
-EDXAPP_SITE_NAME: "aiacademy.etihadppe.ae"
-EDXAPP_CMS_SITE_NAME: "adminAiacademy.etihadppe.ae"
-EDXAPP_PREVIEW_LMS_BASE: "previewAiacademy.etihadppe.ae"
+EDXAPP_SITE_NAME: "PROD-LMS.etihadppe.ae"
+EDXAPP_CMS_SITE_NAME: "PROD-CMS.etihadppe.ae"
+EDXAPP_PREVIEW_LMS_BASE: "PROD-PREVIEW.etihadppe.ae"
 EDXAPP_LMS_SITE_NAME: "{{ EDXAPP_SITE_NAME }}"
 EDXAPP_LMS_BASE: "{{ EDXAPP_SITE_NAME }}"
 EDXAPP_CMS_BASE: "{{ EDXAPP_CMS_SITE_NAME }}"
@@ -28,7 +28,7 @@ EDXAPP_PLATFORM_TWITTER_ACCOUNT: "@twitter"
 
 #grades ---------------------------------------------------------------------
 EDXAPP_DEFAULT_FILE_STORAGE: "django.core.files.storage.FileSystemStorage"
-EDXAPP_AZURE_CONTAINER: "aiacademy-openedx-prod-grades"
+EDXAPP_AZURE_CONTAINER: "aiacademy-openedx-pre-prod-grades"
 EDXAPP_GRADE_STORAGE_TYPE: "azure"
 EDXAPP_GRADE_STORAGE_CLASS: "openedx.core.storage.AzureStorageExtended"
 EDXAPP_GRADE_STORAGE_KWARGS:
@@ -66,10 +66,6 @@ MONGODB_LOG: "{{ _MONGODB_LOG }}"
 XQUEUE_QUEUES: "{{ _XQUEUE_QUEUES }}"
 
 #defaults -------------------------------------------------------------------
-
-filebeat_enable: false
-sentry_enable: false
-laas: True
 
 EDXAPP_ENV_EXTRA: {}
 

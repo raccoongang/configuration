@@ -1,0 +1,6 @@
+---
+
+EDXAPP_SITE_NAME: "aiacademy.etihadppe.ae"
+EDXAPP_CMS_SITE_NAME: "adminAiacademy.etihadppe.ae"
+EDXAPP_PREVIEW_LMS_BASE: "previewAiacademy.etihadppe.ae"
+EDXAPP_AZURE_CONTAINER: "aiacademy-openedx-prod-grades"

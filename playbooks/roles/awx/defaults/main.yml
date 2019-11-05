@@ -8,6 +8,7 @@ awx_inventory_vault_password: "CHANGE_AND_VAULT_ME_ANSIBLE_VAULT_PASSWORD"
 #
 # documentation - https://github.com/ansible/awx/blob/8.0.0/INSTALL.md#docker-compose
 #
+awx_admin_user: "admin"
 awx_admin_password: "CHANGE_AND_VAULT_ME_AWX_ADMIN_PASSWORD"
 awx_secret_key: "CHANGE_AND_VAULT_ME_AWX_SECRET_KEY"
 awx_project_data_dir: "{{ awx_base_dir }}/projects"
