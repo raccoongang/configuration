@@ -1,0 +1,2 @@
+---
+- include_tasks: persistent-grades-enable.yml

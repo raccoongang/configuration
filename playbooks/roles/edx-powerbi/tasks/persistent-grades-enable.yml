@@ -1,0 +1,20 @@
+---
+#
+# copy-paste from configuration:playbooks/edx-east/populate_configuration_model.yml
+
+- name: Copy config file to remote server
+  copy:
+    src: "files/persistentgradesenabledflag.json"
+    dest: "/tmp/ansible_persistentgradesenabledflag.json"
+
+- name: Manage persistentgradesenabledflag configurations
+  shell: "/edx/bin/python.edxapp /edx/bin/manage.edxapp lms --settings=aws populate_model -f /tmp/ansible_persistentgradesenabledflag.json -u staff"
+  register: command_result
+  changed_when: "'Import complete, 0 new entries created' not in command_result.stdout"
+  become: true
+  become_user: www-data
+
+- name: Clean up tempdir
+  file:
+    path: "/tmp/ansible_persistentgradesenabledflag.json"
+    state: absent

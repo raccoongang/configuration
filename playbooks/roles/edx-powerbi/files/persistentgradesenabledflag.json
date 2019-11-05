@@ -1,0 +1,10 @@
+{
+  "model": "grades.PersistentGradesEnabledFlag",
+  "data":
+    [
+      {
+        "enabled": true,
+        "enabled_for_all_courses": true
+      }
+    ]
+}
