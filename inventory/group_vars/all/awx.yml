@@ -15,6 +15,22 @@ rggrpc_enabled: False
 zabbix_enabled: false
 zabbix_force_in_maintenance: true
 rg_support_package: "OnSupport"
+backup_enabled: True
+aws_backup_region: '{{ region_location }}'
+backup_cron_schedule: "1 23 * * *"
+edx_backup_duplicity_profiles:
+  - name: 'mysql'
+    type: 'mysql'
+    mysql_user: '{{ COMMON_MYSQL_READ_ONLY_USER }}'
+    mysql_password: '{{ COMMON_MYSQL_READ_ONLY_PASS }}'
+    mysql_host: '{{ EDXAPP_MYSQL_HOST | default("127.0.0.1") }}'
+
+  - name: 'mongo'
+    type: 'mongo'
+    mongo_user: '{{ MONGO_ADMIN_USER | default("admin") }}'
+    mongo_password: '{{ MONGO_ADMIN_PASSWORD }}'
+    mongo_authdb: 'admin'
+    mongo_host: '{{ EDXAPP_MONGO_HOSTS | default("127.0.0.1") }}'
 
 awx_http_hostname: "{{ ansible_host }}"
 awx_base_dir: /var/lib/awx

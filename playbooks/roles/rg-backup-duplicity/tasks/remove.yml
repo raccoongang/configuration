@@ -1,0 +1,12 @@
+---
+- name: Uninstalling duplicity backups
+  file: 
+    state: absent
+    path: "{{ item }}"
+  with_items:
+  - "{{ backup_home }}"
+  - "{{ backup_work }}"
+  - "{{ backup_temp_dir }}"
+  - "{{ backup_status_dir }}"
+  - "/var/log/duplicity"
+  - "/etc/cron.d/backup"
