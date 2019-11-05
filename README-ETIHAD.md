@@ -34,6 +34,7 @@ cat inventory/pre-prod.id_rsa.pub | ssh azureuser@1.2.3.4 -c 'tee -a .ssh/author
 Run Ansible Tower AWX provision task
 ------------------------------------
 
+- source venv/bin/activate
 - cd playbooks
 - ansible-playbook -i ../inventory/pre-prod.hosts --ask-vault-pass --private-key=../inventory/pre-prod.id_rsa edx_awx.yml
 

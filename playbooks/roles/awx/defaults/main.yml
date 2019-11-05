@@ -4,6 +4,7 @@ awx_base_dir: /var/lib/awx
 awx_installer_dir: "{{ awx_base_dir }}-installer"
 awx_http_hostname: "{{ ansible_host }}"
 awx_inventory_vault_password: "CHANGE_AND_VAULT_ME_ANSIBLE_VAULT_PASSWORD"
+awx_force_dump_restore: False
 
 #
 # documentation - https://github.com/ansible/awx/blob/8.0.0/INSTALL.md#docker-compose

@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-yum install -y gcc python-devel
+yum install -y gcc python-devel mariadb-devel
 VENV="/var/lib/awx/projects/venv/ansible-2.5.5"
 mkdir -p ${VENV}
 virtualenv --python=/usr/bin/python2.7 ${VENV}

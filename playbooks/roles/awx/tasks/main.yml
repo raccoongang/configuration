@@ -1,5 +1,9 @@
 ---
 
+- name: Determine first install
+  command: "docker ps"
+  register: awx_first_install
+
 - name: Install required system packages
   apt:
     name: [ "python-dev", "virtualenv" ]
@@ -31,9 +35,45 @@
     virtualenv: "{{ awx_installer_dir }}/venv"
 
 - name: Start AWX provision ansible task
-  shell: ". {{ awx_installer_dir }}/venv/bin/activate && ansible-playbook -i {{ awx_installer_dir }}/local/local-inventory install.yml"
+  shell: ". {{ awx_installer_dir }}/venv/bin/activate && ansible-playbook -i {{ awx_installer_dir }}/local-inventory install.yml"
   args:
     chdir: "{{ awx_installer_dir }}/installer"
+
+- name: If first install then transfer prepared dump
+  copy:
+    src: 'files/awx_pg_dump.sql.gz.vault'
+    dest: '/tmp/awx_pg_dump.sql.gz'
+  when: not "awx_postgres" in awx_first_install.stdout or awx_force_dump_restore
+
+- name: If first install stop web and task containers and restore prepared postgres dump
+  command: "{{ awx_installer_dir }}/venv/bin/docker-compose stop {{ item }}"
+  args:
+    chdir: "{{ awx_project_data_dir }}"
+  when: not "awx_postgres" in awx_first_install.stdout or awx_force_dump_restore
+  with_items:
+    - task
+    - web
+
+- name: If first install restore prepared postgres dump
+  shell: "zcat /tmp/awx_pg_dump.sql.gz | {{ awx_installer_dir }}/venv/bin/docker-compose exec -T postgres psql postgres awxuser"
+  args:
+    chdir: "{{ awx_project_data_dir }}"
+  when: not "awx_postgres" in awx_first_install.stdout or awx_force_dump_restore
+
+- name: If first install then remove temporary files
+  file:
+    path: '/tmp/awx_pg_dump.sql.gz'
+    state: absent
+  when: not "awx_postgres" in awx_first_install.stdout or awx_force_dump_restore
+
+- name: If first install start web and task containers and restore prepared postgres dump
+  command: "{{ awx_installer_dir }}/venv/bin/docker-compose start {{ item }}"
+  args:
+    chdir: "{{ awx_project_data_dir }}"
+  when: not "awx_postgres" in awx_first_install.stdout or awx_force_dump_restore
+  with_items:
+    - task
+    - web
 
 - name: Create AWX specific directories
   file:
