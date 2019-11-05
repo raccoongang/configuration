@@ -20,9 +20,9 @@ RG_ADD_HOSTNAME_TO_HOSTS_FILE: true
 EDXAPP_LMS_ROOT_URL: "https://{{ EDXAPP_LMS_BASE }}"
 
 edx_platform_repo: https://github.com/raccoongang/edx-platform.git
-edx_platform_version: ficus-rg
+edx_platform_version: etihad-ficus-prod
 edx_ansible_source_repo: https://github.com/raccoongang/configuration.git
-# configuration_version: ficus-rg # configured in AWX project
+# configuration_version: etihad-ficus # configured in AWX project
 
 EDXAPP_PLATFORM_TWITTER_ACCOUNT: "@twitter"
 
