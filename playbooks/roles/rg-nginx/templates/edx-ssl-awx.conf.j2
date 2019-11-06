@@ -92,5 +92,8 @@ server {
 	  proxy_redirect off;
 	  proxy_pass http://awx_server;
     }
+    location /saml/ {
+      alias /var/www/saml/;
+    }
 }
 {% endif %}
