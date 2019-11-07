@@ -23,6 +23,7 @@ nginx_ssl_config_path: "{{ nginx_app_dir }}/edx-template-{{ nginx_ssl_config }}"
 nginx_config: "edx-http.conf"
 nginx_config_template: "edx-ssl.conf.j2"
 nginx_config_path: "{{ nginx_app_dir }}/edx-template-{{ nginx_config }}"
+default_ssl_path: /etc/nginx/ssl
 NGINX_DH_PARAMS_PATH: "/etc/ssl/private/dhparams.pem"
 NGINX_DH_KEYSIZE: 2048
 NGINX_SSL_PROTOCOLS: 'TLSv1 TLSv1.1 TLSv1.2'
@@ -63,7 +64,7 @@ letsencrypt_ssl_certificate_key: /etc/letsencrypt/live/{{ EDXAPP_LMS_BASE }}/pri
 NGINX_ADDITIONAL_SERVICES_CONFIG: []
 
 use_raccoongang_ssl: False
-raccoongang_ssl_path: /etc/nginx/ssl
+raccoongang_ssl_path: "{{ default_ssl_path }}"
 raccoongang_ssl_src_path: "{{ playbook_dir }}/vault/roles/nginx"
 raccoongang_ssl_crt: raccoongang-ssl.crt
 raccoongang_ssl_key: raccoongang-ssl.key
@@ -75,3 +76,5 @@ nginx_default_conf_path: /etc/nginx/conf.d/default.conf
 nginx_default_conf_delete: yes
 
 ssl_trusted_certificate_path: /etc/ssl/certs/ca-certificates.crt
+
+use_client_bundle_ssl: no

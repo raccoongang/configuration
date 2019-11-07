@@ -4,7 +4,8 @@
 server {
     listen {{ nginx_http_port }} default;
     location /heartbeat {
-        return 200;
+      proxy_redirect off;
+      proxy_pass http://{{ localhost_ip_addr }}:{{ EDXAPP_LMS_NGINX_PORT }};
     }
     location = /nginx_basic_status {
         if ($http_user_agent != "Zabbix nginx status check") {

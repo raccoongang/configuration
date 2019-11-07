@@ -1,0 +1,34 @@
+---
+
+- name: Create "{{ default_ssl_path }}"
+  file:
+    path: "{{ default_ssl_path }}"
+    state: directory
+
+- name: Deploy clients certs
+  copy:
+    content: "{{ item.value }}"
+    dest: "{{ default_ssl_path }}/{{ item.key }}.pem"
+    mode: 0600
+  with_dict: "{{ client_ssl_bundles }}"
+  no_log: True
+
+- name: set lms_ssl_certificate_path fact
+  set_fact:
+    lms_ssl_certificate_path: "{{ default_ssl_path }}/lms.pem"
+    lms_ssl_certificate_key_path: "{{ default_ssl_path }}/lms.pem"
+
+- name: set cms_ssl_certificate_path fact
+  set_fact:
+    cms_ssl_certificate_path: "{{ default_ssl_path }}/cms.pem"
+    cms_ssl_certificate_key_path: "{{ default_ssl_path }}/cms.pem"
+
+- name: set insights_ssl_certificate_path fact
+  set_fact:
+    insights_ssl_certificate_path: "{{ default_ssl_path }}/insights.pem"
+    insights_ssl_certificate_key_path: "{{ default_ssl_path }}/insights.pem"
+
+- name: set analytics_api_ssl_certificate_path fact
+  set_fact:
+    analytics_api_ssl_certificate_path: "{{ default_ssl_path }}/analytics.pem"
+    analytics_api_ssl_certificate_key_path: "{{ default_ssl_path }}/analytics.pem"
