@@ -41,8 +41,6 @@
     - role: elasticsearch
       when: "'localhost' in EDXAPP_ELASTIC_SEARCH_CONFIG|map(attribute='host') or '127.0.0.1' in EDXAPP_ELASTIC_SEARCH_CONFIG|map(attribute='host')"
     - role: edxapp
-      celery_worker: True
-    - role: edxapp
     - role: ecommerce
       when: SANDBOX_ENABLE_ECOMMERCE is defined and SANDBOX_ENABLE_ECOMMERCE
     - role: ecomworker

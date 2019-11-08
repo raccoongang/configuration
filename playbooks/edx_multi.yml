@@ -144,9 +144,6 @@
     - role: edxlocal
 
     - role: edxapp
-      celery_worker: True
-
-    - role: edxapp
 
     - role: demo
 

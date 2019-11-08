@@ -109,7 +109,7 @@
     force: yes
   become_user: "{{ supervisor_user }}"
   with_items: "{{ service_variants_enabled }}"
-  when: celery_worker is not defined and not disable_edx_services
+  when: not disable_edx_services
   tags:
     - install
     - install:configuration
@@ -121,7 +121,7 @@
     state: link
     force: yes
   become_user: "{{ supervisor_user }}"
-  when: celery_worker is defined and not disable_edx_services
+  when: not disable_edx_services
   tags:
     - install
     - install:configuration
@@ -173,7 +173,7 @@
       owner: "{{ edxapp_user }}"
       group: "{{ common_web_group }}"
       mode:  "0755"
-  when: celery_worker is not defined and not devstack and EDXAPP_RG_REMOVE_STATICFILES_DIR_DURING_UPDATE
+  when: not devstack and EDXAPP_RG_REMOVE_STATICFILES_DIR_DURING_UPDATE
   with_items: ['absent', 'directory']
   tags:
     - gather_static_assets
@@ -183,17 +183,17 @@
   file:
     path: "{{ edxapp_staticfile_dir }}-prev"
     state: absent
-  when: celery_worker is not defined and not devstack and not EDXAPP_RG_REMOVE_STATICFILES_DIR_DURING_UPDATE
+  when: not devstack and not EDXAPP_RG_REMOVE_STATICFILES_DIR_DURING_UPDATE
 
 # custom rule was applied to nginx configuration to serve /static from both directories
 - name: Rotate staticfiles version - current to previuos
   command: mv "{{ edxapp_staticfile_dir }}" "{{ edxapp_staticfile_dir }}-prev"
-  when: celery_worker is not defined and not devstack and not EDXAPP_RG_REMOVE_STATICFILES_DIR_DURING_UPDATE
+  when: not devstack and not EDXAPP_RG_REMOVE_STATICFILES_DIR_DURING_UPDATE
 
 # Gather assets using paver if possible
 - name: "gather static assets with paver"
   command: "{{ COMMON_BIN_DIR }}/edxapp-update-assets"
-  when: celery_worker is not defined and not devstack
+  when: not devstack
   tags:
     - gather_static_assets
     - assets
