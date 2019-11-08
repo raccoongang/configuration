@@ -37,7 +37,6 @@
       when: "'localhost' in EDXAPP_MONGO_HOSTS or '127.0.0.1' in EDXAPP_MONGO_HOSTS"
     - role: rabbitmq
       rabbitmq_ip: 127.0.0.1
-    - role: oraclejdk
     - role: elasticsearch
       when: "'localhost' in EDXAPP_ELASTIC_SEARCH_CONFIG|map(attribute='host') or '127.0.0.1' in EDXAPP_ELASTIC_SEARCH_CONFIG|map(attribute='host')"
     - role: edxapp
