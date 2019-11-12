@@ -443,15 +443,73 @@
     - manage
     - manage:db
 
-- name: reindex all courses
-  shell: "{{ edxapp_venv_bin }}/python ./manage.py cms reindex_course --setup --settings={{ edxapp_settings }}"
-  args:
+- set_fact:
+    edx_search_enabled: false
+
+- set_fact:
+    edx_search_enabled: true
+  when:
+    - EDXAPP_FEATURES['ENABLE_COURSEWARE_INDEX'] | default(false)
+    - EDXAPP_REINDEX_ALL_COURSES
+
+- name: edx_search - prepare course reindexing
+  file:
+    path: "{{ edxapp_data_dir }}/edx_search_configured"
+    state: absent
+  when: not edx_search_enabled
+  become_user: "{{ edxapp_user }}"
+
+- name: edx_search - determine the need of course reindexing
+  stat:
+    path: "{{ edxapp_data_dir }}/edx_search_configured"
+  register: edx_search_configured
+
+- name: edx_search - reindex courses
+  expect:
+    command: "{{ edxapp_venv_bin }}/python {{ edxapp_code_dir }}/manage.py cms --settings={{ edxapp_settings }} reindex_course --all"
     chdir: "{{ edxapp_code_dir }}"
+    responses:
+      "Do you want to continue": "y"
+    timeout: 2700
+  when:
+    - edxapp_installed is defined
+    - not disable_edx_services
+    - edx_search_enabled
+    - (edx_search_configured is defined and not edx_search_configured.stat.exists) or EDXAPP_FORCE_REINDEX_ALL_COURSES
   become_user: "{{ common_web_user }}"
-  when: EDXAPP_REINDEX_ALL_COURSES
   tags:
     - install
     - install:base
+    - manage
+
+- name: edx_search - reindex libraries
+  expect:
+    command: "{{ edxapp_venv_bin }}/python {{ edxapp_code_dir }}/manage.py cms --settings={{ edxapp_settings }} reindex_library --all"
+    chdir: "{{ edxapp_code_dir }}"
+    responses:
+      "Do you want to continue": "y"
+    timeout: 2700
+  when:
+    - edxapp_installed is defined
+    - not disable_edx_services
+    - edx_search_enabled
+    - (edx_search_configured is defined and not edx_search_configured.stat.exists) or EDXAPP_FORCE_REINDEX_ALL_COURSES
+  become_user: "{{ common_web_user }}"
+  tags:
+    - install
+    - install:base
+    - manage
+
+- name: edx_search - save configuration state for future use
+  file:
+    path: "{{ edxapp_data_dir }}/edx_search_configured"
+    state: touch
+  when:
+    - edxapp_installed is defined
+    - not disable_edx_services
+    - edx_search_enabled
+    - (edx_search_configured is defined and not edx_search_configured.stat.exists) or EDXAPP_FORCE_REINDEX_ALL_COURSES
+  become_user: "{{ edxapp_user }}"
 
 - name: install cron job to run clearsessions
   cron:
