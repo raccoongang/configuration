@@ -116,4 +116,7 @@
     password: "{{ POWERBI_RO_MYSQL_PASS }}"
     host: "{{ POWERBI_RO_MYSQL_HOST }}"
     priv: "{{ EDXAPP_MYSQL_DB_NAME }}.*:SELECT"
+    login_host: "{{ mysql_host }}"
+    login_user: "{{ COMMON_MYSQL_ADMIN_USER }}"
+    login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
   when: POWERBI_RO_MYSQL_USER is defined
