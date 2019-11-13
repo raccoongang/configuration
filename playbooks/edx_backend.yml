@@ -15,6 +15,7 @@
         xqueue_host: "{{ hostvars['app'].ansible_host }}"
         certs_host: "{{ hostvars['app'].ansible_host }}"
         forum_host: "{{ hostvars['app'].ansible_host }}"
+        ora_host: "{{ hostvars['frontend'].ansible_host }}"
       tags: [ "always" ]
 
 - name: Configure instance(s)

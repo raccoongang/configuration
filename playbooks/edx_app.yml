@@ -15,6 +15,7 @@
         xqueue_host: "{{ hostvars['app'].ansible_host }}"
         certs_host: "{{ hostvars['app'].ansible_host }}"
         forum_host: "{{ hostvars['app'].ansible_host }}"
+        ora_host: "{{ hostvars['frontend'].ansible_host }}"
       tags: [ "always" ]
 
 - name: Configure instance(s)
@@ -27,6 +28,7 @@
     - role: swapfile
       when: SWAPFILE_SIZE is defined and SWAPFILE_SIZE != ''
     - role: nginx
+      rbenv_dir: "{{ forum_rbenv_dir }}"
       nginx_sites:
       - forum
     - role: edxlocal
