@@ -1,0 +1,26 @@
+---
+
+- name: Install chrony
+  apt:
+    name: chrony
+    state: present
+
+- name: Enable chrony
+  service:
+    name: chrony
+    enabled: yes
+
+# https://docs.microsoft.com/en-us/azure/virtual-machines/linux/time-sync
+
+- name: Configure HyperV PTP PHC
+  lineinfile:
+    path: /etc/chrony/chrony.conf
+    line: 'refclock PHC /dev/ptp0 poll 3 dpoll -2 offset 0'
+    state: present
+  register: chrony_config
+
+- name: Restart chrony
+  service:
+    name: chrony
+    state: restarted
+  when: chrony_config is changed

@@ -6,3 +6,4 @@
   become: True
   roles:
     - role: python
+    - role: azure_time_sync
