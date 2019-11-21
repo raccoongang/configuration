@@ -6,15 +6,18 @@ nginx_default_redirect_to_lms: false
 # to corresponding group hosts
 #
 #### edx services hosts
-mysql_host: "127.0.0.1"
-worker_host: "127.0.0.1"
-memcached_host: "127.0.0.1"
-mongo_hosts: "127.0.0.1"
-elasticsearch_host: "127.0.0.1"
-rabbit_master: "127.0.0.1"
-xqueue_host: "127.0.0.1"
-certs_host: "127.0.0.1"
-forum_host: "127.0.0.1"
+app_host: '10.10.2.4'
+frontend_host: '10.10.0.4'
+backend_host: '10.10.1.4'
+mysql_host: "{{ backend_host }}"
+memcached_host: "{{ app_host }}"
+mongo_hosts: "{{ backend_host }}"
+elasticsearch_host: "{{ app_host }}"
+rabbit_master: "{{ app_host }}"
+xqueue_host: "{{ app_host }}"
+certs_host: "{{ app_host }}"
+forum_host: "{{ app_host }}"
+ora_host: "{{ frontend_host }}"
 edxapp_cms_gunicorn_host: "127.0.0.1"
 edxapp_lms_gunicorn_host: "127.0.0.1"
 #### edx service hosts

@@ -1,23 +1,5 @@
 ---
 
-- name: Set ip address of services
-  hosts: all
-  become: False
-  gather_facts: no
-  tasks:
-    - name: set instances ip addresses
-      set_fact:
-        mysql_host: "{{ hostvars['backend'].ansible_host }}"
-        memcached_host: "{{ hostvars['app'].ansible_host }}"
-        mongo_hosts: "{{ hostvars['backend'].ansible_host }}"
-        elasticsearch_host: "{{ hostvars['app'].ansible_host }}"
-        rabbit_master: "{{ hostvars['app'].ansible_host }}"
-        xqueue_host: "{{ hostvars['app'].ansible_host }}"
-        certs_host: "{{ hostvars['app'].ansible_host }}"
-        forum_host: "{{ hostvars['app'].ansible_host }}"
-        ora_host: "{{ hostvars['frontend'].ansible_host }}"
-      tags: [ "always" ]
-
 - name: Configure instance(s)
   hosts: frontend
   become: True

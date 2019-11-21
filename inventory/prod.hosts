@@ -1,5 +1,4 @@
 [prod]
-frontend ansible_host=10.0.0.4 ansible_port=22 ansible_user=automation
-app ansible_host=10.0.2.4 ansible_port=22 ansible_user=automation
-backend ansible_host=10.0.1.4 ansible_port=22 ansible_user=automation
-awx ansible_host=prod-automation-aiacademy.uaenorth.cloudapp.azure.com ansible_port=22 ansible_user=azureuser
+frontend ansible_host=20.46.150.42 ansible_port=22 ansible_user=automation
+app ansible_host=20.46.150.60 ansible_port=22 ansible_user=automation
+backend ansible_host=20.46.150.43 ansible_port=22 ansible_user=automation
