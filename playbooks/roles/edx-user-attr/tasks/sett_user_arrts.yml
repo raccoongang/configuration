@@ -1,25 +1,5 @@
 ---
 
-- name: Set user_password_manage_script version 0
-  set_fact:
-    user_password_manage_script: "{{ user_password_manage_script_v0 }}"
-  when: project_version in manage_script_v0
-
-- name: Set user_password_manage_script version 1
-  set_fact:
-    user_password_manage_script: "{{ user_password_manage_script_v1 }}"
-  when: project_version not in manage_script_v0
-
-- name: copy "{{ user_password_manage_script }} to {{ edxapp_app_dir }}"
-  copy:
-    src: "{{ user_password_manage_script }}"
-    dest: "{{ edxapp_app_dir }}/{{ user_password_manage_script }}"
-    owner: "{{ edxapp_user }}"
-    group: "{{ edxapp_user }}"
-    mode: 0644
-  become: True
-  become_user: "{{ edxapp_user }}"
-
 - name: create edX users
   shell: "{{ edxapp_venv_bin }}/python {{ edxapp_code_dir }}/manage.py lms --settings={{ COMMON_EDXAPP_SETTINGS }} \
            --service-variant lms manage_user {{ item.username }} {{ item.email }} \
@@ -27,26 +7,17 @@
            {% if item.is_staff %} --staff{% endif %} \
            {% if item.is_superuser %}--superuser{% endif %}"
   with_items: "{{ edx_users }}"
-  no_log: True
   become: True
   become_user: "{{ edxapp_user }}"
 
-- name: update passwords for edX users
-  shell: "{{ edxapp_venv_bin }}/python {{ edxapp_app_dir }}/{{ user_password_manage_script }} lms --settings={{ COMMON_EDXAPP_SETTINGS }} \
-           --username={{ item.username}} \
-           --email={{ item.email }} \
-           --password={{ item.password }} \
-           {% if item.is_staff %}--is_staff=1 {% else %}--is_staff=0{% endif %} \
-           {% if item.is_active %}--is_active=1 {% else %}--is_active=0{% endif %} \
-           {% if item.is_superuser %}--is_superuser=1 {% else %}--is_superuser=0{% endif %}"
+- name: set user password
+  expect:
+    command: >
+      {{ edxapp_venv_bin }}/python {{ edxapp_code_dir }}/manage.py lms --settings={{ COMMON_EDXAPP_SETTINGS }}
+      changepassword {{ item.username }}
+    responses:
+      "Password": "{{ item.password }}"
+    timeout: 30
   with_items: "{{ edx_users }}"
-  no_log: True
-  become: True
-  become_user: "{{ edxapp_user }}"
-
-- name: remove "{{ user_password_manage_script }} from {{ edxapp_app_dir }}"
-  file:
-    path: "{{ edxapp_app_dir }}/{{ user_password_manage_script }}"
-    state: absent
   become: True
   become_user: "{{ edxapp_user }}"

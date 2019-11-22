@@ -16,6 +16,7 @@
     - role: edxlocal
     - role: edxapp
     - role: demo
+    - role: edx-user-attr
     - role: edx-powerbi
       when: powerbi
     - role: edx-laas
