@@ -1,6 +1,6 @@
 ---
 
-EDXAPP_PLATFORM_NAME: "AIACADEMY PRE-PROD"
+EDXAPP_PLATFORM_NAME: "AI ACADEMY PRE-PROD"
 EDXAPP_SITE_NAME: "aiacademy.etihadppe.ae"
 EDXAPP_CMS_SITE_NAME: "adminAiacademy.etihadppe.ae"
 EDXAPP_PREVIEW_LMS_BASE: "previewAiacademy.etihadppe.ae"
