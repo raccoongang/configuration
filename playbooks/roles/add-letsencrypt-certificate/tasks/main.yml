@@ -106,16 +106,6 @@
   with_items:
   - "{{ letsencrypt_webroot }}"
 
-- name: ensure that /usr/share/nginx/html dir exits
-  file:
-    path: "{{ item }}"
-    state: directory
-  with_items:
-  - "{{ letsencrypt_webroot }}"
-  become_method: sudo
-  become: yes
-  become_user: root
-
 - name: Add auto-renewal task in cron
   cron: 
     name: "Automatic renewal letsencrypt certificate" 
