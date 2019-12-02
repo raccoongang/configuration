@@ -10,7 +10,7 @@ before_script:
 build-base-image:
     stage: build
     variables:
-        BASE_IMAGE: registry-gitlab.raccoongang.com/devops/configuration:$CI_COMMIT_REF_SLUG-develop
+        BASE_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-develop
     script:
         - docker build -t $BASE_IMAGE .
         - docker push $BASE_IMAGE
@@ -19,11 +19,12 @@ build-base-image:
         - ficus-rg
         - ginkgo-rg
         - hawthorn-rg
+        - ironwood-rg
 
 build-version-image:
     stage: build
     variables:
-        BASE_IMAGE: registry-gitlab.raccoongang.com/devops/configuration:$CI_COMMIT_REF_SLUG
+        BASE_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
     script:
         - FULL_VERSION=$BASE_IMAGE
         - MINOR_VERSION=$(echo $FULL_VERSION | sed -n -e "s/\(^.*\)-.*$/\1/p")
@@ -34,5 +35,9 @@ build-version-image:
         - docker push $FULL_VERSION
         - docker push $MINOR_VERSION
         - docker push $MAJOR_VERSION
+        - echo Images built
+        - echo FULL_VERSION=$FULL_VERSION
+        - echo MINOR_VERSION=$MINOR_VERSION
+        - echo MAJOR_VERSION=$MAJOR_VERSION
     only:
         - tags
