@@ -1,6 +1,6 @@
 FROM python:2
 
-RUN pip install ansible
+RUN pip install ansible datadog zabbix-api && rm -rf ~/.cache
 
 RUN adduser --system --home /home/ansible --disabled-password  --group ansible
 
