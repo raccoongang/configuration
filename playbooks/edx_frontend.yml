@@ -22,6 +22,7 @@
     - role: edx-laas
       when: laas
     - role: oauth_client_setup
+    - role: custom
     - role: newrelic
       when: COMMON_ENABLE_NEWRELIC
     - role: datadog

@@ -1,0 +1,15 @@
+---
+
+- name: create custom directory
+  file:
+    path: "{{ edxapp_media_dir }}/saml"
+    state: directory
+    owner: root
+    mode: 0775
+
+- name: upload saml metadata
+  copy:
+    src: "metadata_{{ env }}.xml.vault"
+    dest: "{{ edxapp_media_dir }}/saml/oktametadata.xml"
+    owner: root
+    mode: 0664

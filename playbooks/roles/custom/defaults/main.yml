@@ -1,0 +1,4 @@
+---
+
+edxapp_data_dir: "{{ COMMON_DATA_DIR }}/edxapp"
+edxapp_media_dir: "{{ edxapp_data_dir }}/media"
