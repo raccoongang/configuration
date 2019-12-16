@@ -873,8 +873,9 @@ ECOMMERCE_SERVICE_USER_EMAIL: "ecommerce_worker@example.com"
 ECOMMERCE_SERVICE_USER_NAME: "ecommerce_worker"
 
 # Configuration needed for LMS to communicate with the Credentials service
-CREDENTIALS_SERVICE_USER_EMAIL: "credentials_worker@example.com"
-CREDENTIALS_SERVICE_USER_NAME: "credentials_worker"
+# username hardcoded here - edx-platform:lms/envs/common.py:3313
+CREDENTIALS_SERVICE_USER_EMAIL: "credentials_service_user@example.com"
+CREDENTIALS_SERVICE_USER_NAME: "credentials_service_user"
 
 # Configuration needed for LMS to communicate with the Insights service
 INSIGHTS_SERVICE_USER_EMAIL: "insights_worker@example.com"
