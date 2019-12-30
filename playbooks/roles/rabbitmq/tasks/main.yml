@@ -65,24 +65,6 @@
     - "install"
     - "install:app-requirements"
 
-- name: Patching /usr/sbin/rabbitmqctl (https://github.com/ansible/ansible/issues/49978)
-  lineinfile:
-    path: /usr/sbin/rabbitmqctl
-    regexp: 'exec \/sbin\/runuser -u rabbitmq --'
-    line: '        exec /sbin/runuser -u rabbitmq -- "/usr/lib/rabbitmq/bin/$SCRIPT" "$@" | grep -v "^vhost.*configure.*write.*read"'
-  tags:
-    - "install"
-    - "install:app-requirements"
-
-- name: Patching /usr/sbin/rabbitmqctl (https://github.com/ansible/ansible/issues/49978)
-  lineinfile:
-    path: /usr/sbin/rabbitmqctl
-    regexp: 'exec \/sbin\/runuser -s \/bin\/sh --'
-    line: '        exec /sbin/runuser -s /bin/sh -- rabbitmq "/usr/lib/rabbitmq/bin/$SCRIPT" "$@" | grep -v "^vhost.*configure.*write.*read"'
-  tags:
-    - "install"
-    - "install:app-requirements"
-
 - name: Stop rabbit cluster
   service:
     name: rabbitmq-server
@@ -262,7 +244,7 @@
     - "install:app-configuration"
 
 - name: Remove guest user
-  rabbitmq_user:
+  rabbitmq38_user:
     user: "guest"
     state: absent
   tags:
@@ -293,7 +275,7 @@
     - "manage:app-users"
 
 - name: Add admin users
-  rabbitmq_user:
+  rabbitmq38_user:
     user: "{{ item.name }}"
     password: "{{ item.password }}"
     tags: "administrator"
