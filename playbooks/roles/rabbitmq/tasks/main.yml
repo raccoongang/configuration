@@ -35,32 +35,13 @@
     - "install"
     - "install:app-requirements"
 
-# If we don't set pipefail first, `||` will be looking at the exit code of the last command in the pipe
-- name: Check if rabbit is installed
-  shell: |
-    set -o pipefail
-    dpkg -s rabbitmq-server | grep Version | sed -r 's/.*: (.*)/\1/' || echo 'not installed'
-  args:
-    executable: /bin/bash
-  register: installed_version
-  tags:
-    - "install"
-    - "install:app-requirements"
-
-- name: Warn if wrong rabbit version is installed
-  debug: msg="Expected rabbitmq version {{ RABBITMQ_VERSION }}, found {{ installed_version.stdout }} - will not upgrade in place"
-  when: installed_version.stdout is defined and installed_version.stdout not in [RABBITMQ_VERSION, 'not installed']
-  tags:
-    - "install"
-    - "install:app-requirements"
-
 - name: Install rabbit package
   apt:
     name: "rabbitmq-server={{ RABBITMQ_VERSION }}"
     state: present
     force: yes
     update_cache: yes
-  when: installed_version.stdout is defined and installed_version.stdout == "not installed"
+  register: install_rabbitmq
   tags:
     - "install"
     - "install:app-requirements"
@@ -69,6 +50,7 @@
   service:
     name: rabbitmq-server
     state: stopped
+  when: install_rabbitmq.changed
   tags:
     - "install"
     - "install:app-configuration"
@@ -76,7 +58,8 @@
 # In case there are lingering processes, ignore errors
 # silently
 - name: Send sigterm to any running rabbitmq processes
-  shell: "pkill -u rabbitmq || true"
+  shell: "(pkill -u rabbitmq; epmd -kill) || true"
+  when: install_rabbitmq.changed
   tags:
     - "install"
     - "install:app-configuration"
@@ -190,6 +173,7 @@
     owner: root
     group: root
     mode: "0644"
+  register: env_configuration
   tags:
     - "install"
     - "install:app-configuration"
@@ -211,6 +195,22 @@
     names: "{{ item }}"
     state: enabled
   with_items: "{{ rabbitmq_plugins }}"
+  tags:
+    - "install"
+    - "install:app-configuration"
+
+- name: Stop rabbit cluster
+  service:
+    name: rabbitmq-server
+    state: stopped
+  when: erlang_cookie.changed or cluster_configuration.changed or env_configuration.changed or rabbitmq_refresh
+  tags:
+    - "install"
+    - "install:app-configuration"
+
+- name: Send sigterm to any running rabbitmq processes
+  shell: "(pkill -u rabbitmq; epmd -kill) || true"
+  when: erlang_cookie.changed or cluster_configuration.changed or env_configuration.changed or rabbitmq_refresh
   tags:
     - "install"
     - "install:app-configuration"
