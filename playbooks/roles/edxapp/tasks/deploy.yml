@@ -510,6 +510,10 @@
     - edx_search_enabled
     - (edx_search_configured is defined and not edx_search_configured.stat.exists) or EDXAPP_FORCE_REINDEX_ALL_COURSES
   become_user: "{{ edxapp_user }}"
+  tags:
+    - install
+    - install:base
+    - manage
 
 - name: install cron job to run clearsessions
   cron:
