@@ -1,7 +1,5 @@
 backup_enabled: false
 
-backup_duplicity: []
-
 edx_backup_duplicity_profiles:
   - name: 'mysql'
     type: 'mysql'
