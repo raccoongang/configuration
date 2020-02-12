@@ -11,8 +11,10 @@ password = ''
 database = 'test'
 host = '127.0.0.1'
 port = 27017
+replica_name = ''
+use_ssl = False
 
-config = ConfigParser.SafeConfigParser( { 'host': host, 'port': str(port), 'user': user, 'password': password, 'database': database } )
+config = ConfigParser.SafeConfigParser( { 'host': host, 'port': str(port), 'user': user, 'password': password, 'database': database, 'replica_name': replica_name, 'use_ssl': use_ssl} )
 if config.read(os.path.dirname(os.path.realpath(__file__)) + '/scripts.cfg'):
 
     user = config.get('mongo', 'user')
@@ -20,11 +22,17 @@ if config.read(os.path.dirname(os.path.realpath(__file__)) + '/scripts.cfg'):
     database = config.get('mongo', 'database')
     host = config.get('mongo', 'host')
     port = config.getint('mongo', 'port')
+    replica_name = config.get('mongo', 'replica_name')
+    use_ssl = config.getboolean('mongo', 'use_ssl')
+
 
 def responder(array,item):
 
     try:
-        client = MongoClient(host, port)
+        if replica_name:
+            client = MongoClient(host, port, ssl=use_ssl, replicaSet=replica_name)
+        else:
+            client = MongoClient(host, port, ssl=use_ssl)
         db = client[database]
         db.authenticate(user, password)
         assert isinstance(db, object)
