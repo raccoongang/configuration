@@ -11,6 +11,7 @@
   register: hosts
   when: zabbix_enabled
   delegate_to: localhost
+  become: False
   tags:
     - skip_ansible_lint
 
@@ -26,6 +27,7 @@
     login_password: "{{ vault_zabbix_api_password }}"
   when: zabbix_enabled and hosts.stdout != ''
   delegate_to: localhost
+  become: False
 
 - name: Update expired rabbitmq repo key
   shell: "curl -L https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey | apt-key add -"
