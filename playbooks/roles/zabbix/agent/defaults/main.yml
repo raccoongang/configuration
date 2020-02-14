@@ -1,7 +1,10 @@
 ---
-zabbix_version_latest: "3.4"
+zabbix_version_latest: "4.4"
 zabbix_version:
   Ubuntu:
+    bionic:
+      version: "{{ zabbix_version_latest }}"
+      repo_key: "DF517F33E709712C"
     xenial:
       version: "{{ zabbix_version_latest }}"
       repo_key: "DF517F33E709712C"
@@ -54,6 +57,8 @@ zabbix_agent_mongo_host: "localhost"
 zabbix_agent_mongo_user: "admin"
 zabbix_agent_mongo_password: ""
 zabbix_agent_mongo_auth_db: "admin"
+zabbix_agent_mongo_replica_set_name: ""
+zabbix_agent_mongo_use_ssl: False
 
 zabbix_agent_mysql_host: "localhost"
 zabbix_agent_mysql_user: "root"

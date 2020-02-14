@@ -37,7 +37,7 @@ sysmem=`grep MemTotal /proc/meminfo | awk '{print $2*1024;}'`
 # CLK_TCK - man 5 proc
 syscpu=`grep ^cpu" " /proc/stat | awk '{ print ($2 + $3 + $4 + $5 + $6 + $7 + $8)*1000000000/'${CLK_TCK}'+1; }'`
 
-docker ps -a --no-trunc | grep -v "CONTAINER ID" | awk '{ print $1" "$(NF); }' | while read id name ; do
+docker ps --no-trunc | grep -v "CONTAINER ID" | awk '{ print $1" "$(NF); }' | while read id name ; do
 
   # memory
   memlimit=`cat /sys/fs/cgroup/memory/docker/${id}/memory.limit_in_bytes`
@@ -82,6 +82,7 @@ docker ps -a --no-trunc | grep -v "CONTAINER ID" | awk '{ print $1" "$(NF); }' |
   # fuck!
   mounts=`echo ${inspect} | cut -f 6 -d : | sed 's|{|\n{|g' | sed 's|^[^/]*\(/[^ ]*\).*$|\1|' | grep ^/`
   if test -z "${mounts}" ; then
+    diskusage="0"
     OUT=${OUT}" diskusage:0"
   else
     diskusage=`du -sx ${mounts} | sed 's| |\n|g' | awk 'BEGIN { sum=0; } { s+=($1*1024); } END { printf(s); }'`

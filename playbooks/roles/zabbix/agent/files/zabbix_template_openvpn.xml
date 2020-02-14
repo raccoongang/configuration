@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>4.4</version>
+    <date>2020-01-27T17:06:39Z</date>
+    <groups>
+        <group>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Active Template App OpenVPN</template>
+            <name>Active Template App OpenVPN</name>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>OpenVPN</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>OpenVPN TCP port state</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>net.tcp.service[tcp,,11941]</key>
+                    <history>1w</history>
+                    <trends>1w</trends>
+                    <valuemap>
+                        <name>Service state</name>
+                    </valuemap>
+                    <request_method>POST</request_method>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}=0</expression>
+                            <name>OpenVPN TCP port is not present on {HOST.NAME}</name>
+                            <priority>HIGH</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>OpenVPN UDP port state</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>net.udp.listen[11940]</key>
+                    <history>1w</history>
+                    <trends>1w</trends>
+                    <valuemap>
+                        <name>Service state</name>
+                    </valuemap>
+                    <request_method>POST</request_method>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}=0</expression>
+                            <name>OpenVPN UDP port is not present on {HOST.NAME}</name>
+                            <priority>HIGH</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>OpenVPN registered users</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>num_user.openvpn</key>
+                    <delay>1h</delay>
+                    <applications>
+                        <application>
+                            <name>OpenVPN</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>OpenVPN online users</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>num_users_online.openvpn</key>
+                    <delay>120</delay>
+                    <applications>
+                        <application>
+                            <name>OpenVPN</name>
+                        </application>
+                    </applications>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>OpenVPN vpn_user</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>discovery.openvpn</key>
+                    <delay>15m</delay>
+                    <lifetime>60d</lifetime>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>OpenVPN byte_received {#VPNUSER}</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>user_byte_received.openvpn[{#VPNUSER}]</key>
+                            <delay>120</delay>
+                            <units>b\s</units>
+                            <applications>
+                                <application>
+                                    <name>OpenVPN</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>OpenVPN byte_sent {#VPNUSER}</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>user_byte_sent.openvpn[{#VPNUSER}]</key>
+                            <delay>120</delay>
+                            <units>b\s</units>
+                            <applications>
+                                <application>
+                                    <name>OpenVPN</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>OpenVPN user_status {#VPNUSER}</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>user_status.openvpn[{#VPNUSER}]</key>
+                            <delay>120</delay>
+                            <applications>
+                                <application>
+                                    <name>OpenVPN</name>
+                                </application>
+                            </applications>
+                            <valuemap>
+                                <name>Service state</name>
+                            </valuemap>
+                        </item_prototype>
+                    </item_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <name>OpenVPN Status {#VPNUSER}</name>
+                            <graph_items>
+                                <graph_item>
+                                    <color>1A7C11</color>
+                                    <item>
+                                        <host>Active Template App OpenVPN</host>
+                                        <key>user_status.openvpn[{#VPNUSER}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>OpenVPN traffic {#VPNUSER}</name>
+                            <graph_items>
+                                <graph_item>
+                                    <color>1A7C11</color>
+                                    <item>
+                                        <host>Active Template App OpenVPN</host>
+                                        <key>user_byte_received.openvpn[{#VPNUSER}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>F63100</color>
+                                    <item>
+                                        <host>Active Template App OpenVPN</host>
+                                        <key>user_byte_sent.openvpn[{#VPNUSER}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+            <screens>
+                <screen>
+                    <name>1OpenVPN</name>
+                    <hsize>1</hsize>
+                    <vsize>2</vsize>
+                    <screen_items>
+                        <screen_item>
+                            <resourcetype>1</resourcetype>
+                            <style>0</style>
+                            <resource>
+                                <key>num_users_online.openvpn</key>
+                                <host>Active Template App OpenVPN</host>
+                            </resource>
+                            <width>500</width>
+                            <height>100</height>
+                            <x>0</x>
+                            <y>0</y>
+                            <colspan>1</colspan>
+                            <rowspan>1</rowspan>
+                            <elements>0</elements>
+                            <valign>0</valign>
+                            <halign>0</halign>
+                            <dynamic>0</dynamic>
+                            <sort_triggers>0</sort_triggers>
+                            <url/>
+                            <application/>
+                            <max_columns>3</max_columns>
+                        </screen_item>
+                        <screen_item>
+                            <resourcetype>20</resourcetype>
+                            <style>0</style>
+                            <resource>
+                                <name>OpenVPN Status {#VPNUSER}</name>
+                                <host>Active Template App OpenVPN</host>
+                            </resource>
+                            <width>500</width>
+                            <height>100</height>
+                            <x>0</x>
+                            <y>1</y>
+                            <colspan>1</colspan>
+                            <rowspan>1</rowspan>
+                            <elements>0</elements>
+                            <valign>0</valign>
+                            <halign>0</halign>
+                            <dynamic>0</dynamic>
+                            <sort_triggers>0</sort_triggers>
+                            <url/>
+                            <application/>
+                            <max_columns>3</max_columns>
+                        </screen_item>
+                    </screen_items>
+                </screen>
+            </screens>
+        </template>
+    </templates>
+    <graphs>
+        <graph>
+            <name>OpenVPN online users</name>
+            <graph_items>
+                <graph_item>
+                    <color>199C0D</color>
+                    <item>
+                        <host>Active Template App OpenVPN</host>
+                        <key>num_users_online.openvpn</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>F63100</color>
+                    <item>
+                        <host>Active Template App OpenVPN</host>
+                        <key>num_user.openvpn</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+    </graphs>
+    <value_maps>
+        <value_map>
+            <name>Service state</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>Down</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Up</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+    </value_maps>
+</zabbix_export>

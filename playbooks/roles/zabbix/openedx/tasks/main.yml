@@ -9,6 +9,8 @@
     zabbix_agent_mongo_auth_db: "admin"
     zabbix_agent_mongo_user: "{{ MONGO_ADMIN_USER | default('admin') }}"
     zabbix_agent_mongo_password: "{{ MONGO_ADMIN_PASSWORD | default('password') }}"
+    zabbix_agent_mongo_replica_set_name: "{{ EDXAPP_MONGO_REPLICASET | default ('') }}"
+    zabbix_agent_mongo_use_ssl: "{{ EDXAPP_MONGO_USE_SSL | default('False') }}"
     zabbix_agent_mysql_host: "{{ EDXAPP_MYSQL_HOST | default('localhost') }}"
     zabbix_agent_mysql_user: "{{ COMMON_MYSQL_READ_ONLY_USER | default('root') }}"
     zabbix_agent_mysql_password: "{{ COMMON_MYSQL_READ_ONLY_PASS | default('') }}"
@@ -27,7 +29,7 @@
 
 - name: setting up rg_support_package dependencies
   set_fact:
-    zabbix_server_host_groups: "{{ zabbix_support_conf[rg_support_package]['groups'] | default('Test-Maintenance') }}"
+    zabbix_server_host_groups: "{{ zabbix_support_conf[rg_support_package]['groups'] | default(['Test-Maintenance']) }}"
     zabbix_server_host_link_templates: "{{ zabbix_support_conf[rg_support_package]['templates'] | default('Active Template OS Linux') }}"
   when: zabbix_support_conf is defined and rg_support_package is defined
 

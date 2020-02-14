@@ -25,7 +25,7 @@
     msg: "interfaces_ip = {{ interfaces_ip }} interfaces_dns = {{ interfaces_dns }}"
 
 - name: checking {{ zabbix_server_host_name }} is already exists on Zabbix server
-  shell: "python {{ role_path }}/files/get_visiblename.py {{ zabbix_server_host_name }}"
+  shell: "python {{ role_path }}/files/get_visiblename.py '{{ zabbix_server_host_name }}'"
   environment:
     ZABBIX_USER: "{{ zabbix_server_user }}"
     ZABBIX_PASS: "{{ zabbix_server_password }}"
