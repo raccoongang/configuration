@@ -1,0 +1,1 @@
+../../discovery/files/update_discovery.sh

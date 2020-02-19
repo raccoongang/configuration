@@ -1,0 +1,16 @@
+---
+#
+# install discovery syncronization cron task on LMS instance
+#
+- name: Create script for LMS-Discovery syncronization
+  copy:
+    src: "update_discovery.sh"
+    dest: "{{ COMMON_BIN_DIR }}/update_discovery.sh"
+    mode: 0755
+
+- name: Create crontab job for LMS-Discovery syncronization
+  cron:
+    name: "LMS-Discovery syncronization"
+    user: "root"
+    job: "{{ COMMON_BIN_DIR }}/update_discovery.sh"
+    minute: "*/10"

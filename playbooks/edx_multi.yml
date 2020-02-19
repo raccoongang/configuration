@@ -149,6 +149,9 @@
 
     - role: oauth_client_setup
 
+    - role: discovery-edxapp-cron
+      when: SANDBOX_ENABLE_DISCOVERY is defined and SANDBOX_ENABLE_DISCOVERY
+
 - name: Post tasks for all instance(s)
   hosts: all
   gather_facts: no
