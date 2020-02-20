@@ -52,10 +52,10 @@
     install_recommends: yes
     force: yes 
     update_cache: yes
+  notify: Restart elastic
   tags:
     - install
     - install:base
-  register: elasticsearch_reinstall
 
 - name: create directories
   file:
@@ -75,6 +75,7 @@
   template:
     src: etc/default/elasticsearch.j2 
     dest: /etc/default/elasticsearch
+  notify: Restart elastic
   tags:
     - install
     - install:configuration
@@ -84,6 +85,7 @@
     src: edx/etc/elasticsearch/elasticsearch.yml.j2 
     dest: "{{ elasticsearch_cfg_dir }}/elasticsearch.yml"
     mode: 0744
+  notify: Restart elastic
   tags:
     - install
     - install:configuration
@@ -93,6 +95,7 @@
     src: edx/etc/elasticsearch/logging.yml.j2 
     dest: "{{ elasticsearch_cfg_dir }}/logging.yml"
     mode: 0744
+  notify: Restart elastic
   tags:
     - install
     - install:configuration
@@ -105,14 +108,3 @@
   tags:
     - manage
     - manage:start
-
-- name: Restart elastic when there has been an upgrade
-  service: 
-    name: elasticsearch 
-    state: restarted 
-    enabled: yes
-  when: elasticsearch_reinstall.changed
-  tags:
-    - manage
-    - manage:restart
-    - install
