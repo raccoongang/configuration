@@ -42,6 +42,9 @@ discovery.zen.ping.unicast.hosts: ['{{ELASTICSEARCH_CLUSTER_MEMBERS|join("\',\'"
 {% if vagrant_cluster|bool %}
 network:
   host: {{ ansible_ssh_host }}
+{% elif elasticsearch_host is defined and (elasticsearch_host == '127.0.0.1' or elasticsearch_host == 'localhost') %}
+network:
+  host:  127.0.0.1
 {% endif %}
 
 {% if ELASTICSEARCH_CLUSTERED is defined and not ELASTICSEARCH_CLUSTERED | bool %}

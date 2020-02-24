@@ -1,0 +1,6 @@
+---
+- name: Restart elastic
+  service: 
+    name: elasticsearch 
+    state: restarted 
+    enabled: yes
