@@ -11,6 +11,8 @@
 # Defaults for role server_utils
 #
 
+server_utils_role_finished: False
+
 #
 # vars are namespaced with the module name.
 #
