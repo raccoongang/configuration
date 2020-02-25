@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>4.4</version>
-    <date>2020-02-11T11:04:34Z</date>
+    <date>2020-02-25T09:24:00Z</date>
     <groups>
         <group>
             <name>Templates</name>
@@ -27,15 +27,15 @@
                     <name>Custom Services LLD</name>
                     <type>ZABBIX_ACTIVE</type>
                     <key>custom_services_discovery[{$CUSTOM_SERVICES_STATUS_DIRS}]</key>
-                    <delay>1h</delay>
-                    <lifetime>3h</lifetime>
+                    <delay>2h</delay>
+                    <lifetime>4h</lifetime>
                     <description>Discovers custom services in directories set in {$CUSTOM_SERVICE_STATUS_DIRS} macro</description>
                     <item_prototypes>
                         <item_prototype>
                             <name>Custom service exit code {#CUSTOM_SERVICE}</name>
                             <type>ZABBIX_ACTIVE</type>
                             <key>custom_service[{#CUSTOM_SERVICE_DIR},{#CUSTOM_SERVICE},code]</key>
-                            <delay>10m</delay>
+                            <delay>15m</delay>
                             <description>content of *_code file</description>
                             <applications>
                                 <application>
@@ -45,7 +45,7 @@
                             <trigger_prototypes>
                                 <trigger_prototype>
                                     <expression>{last()}&lt;&gt;0</expression>
-                                    <name>Custom service {#CUSTOM_SERVICE} no zero exit code</name>
+                                    <name>Custom service {#CUSTOM_SERVICE} non zero exit code</name>
                                     <priority>HIGH</priority>
                                     <description>file {#CUSTOM_SERVICE_DIR}/{#CUSTOM_SERVICE} contain non zero value</description>
                                 </trigger_prototype>
@@ -55,7 +55,7 @@
                             <name>Custom service error message {#CUSTOM_SERVICE}</name>
                             <type>ZABBIX_ACTIVE</type>
                             <key>custom_service[{#CUSTOM_SERVICE_DIR},{#CUSTOM_SERVICE},error]</key>
-                            <delay>10m</delay>
+                            <delay>15m</delay>
                             <trends>0</trends>
                             <value_type>CHAR</value_type>
                             <description>content of *_error file</description>
@@ -77,7 +77,7 @@
                             <name>Custom service last execution timestamp of {#CUSTOM_SERVICE}</name>
                             <type>ZABBIX_ACTIVE</type>
                             <key>vfs.file.time[{#CUSTOM_SERVICE_DIR}/{#CUSTOM_SERVICE}_lastrun]</key>
-                            <delay>10m</delay>
+                            <delay>15m</delay>
                             <units>unixtime</units>
                             <description>timestamp of *_lastrun file</description>
                             <applications>

@@ -2,19 +2,25 @@
 
 set -e
 
-for DIR in `echo $1 | tr ':' ' '` ; do
-  if [ "${DIR}" = "/var/tmp/zabbix_example1" -o "${DIR}" = "/var/tmp/zabbix_example2" ] ; then
-    echo "$0: please do not use zabbix_example1 or zabbix_example2 directories" >&2
-    exit 1
-  elif [ ! -d "${DIR}" ] ; then
-    echo "$0: directory ${DIR} not found" >&2
-    exit 1
-  fi
-done
+# return empty LLD json when {$CUSTOM_SERVICES_STATUS_DIRS}
+# zabbix macro defined as empty string to allow to disable
+# checks and alerts
+if [ -z "$1" ] ; then
+  cat << EOF
+{
+  "data": [
+  ]
+}
+EOF
+  exit
+fi
 
 FIRST="yes"
 for DIR in `echo $1 | tr ':' ' '` ; do
-  for s in `ls -1 ${DIR} | sed 's/^\(.*\)_\w\+$/\1/' | uniq`; do
+  # check directory existence and
+  # group CUSTOM_SERVICE_lastrun CUSTOM_SERVICE_code CUSTOM_SERVICE_error
+  # files by CUSTOM_SERVICE value
+  for service in `(test -d ${DIR} && ls -1 ${DIR} 2> /dev/null || echo "DIR-NOT-FOUND-${DIR}/") | sed 's/^\(.*\)_\w\+$/\1/' | uniq`; do
     if [ "${FIRST}" = "yes" ]; then
       echo '{'
       echo '  "data": ['
@@ -23,7 +29,7 @@ for DIR in `echo $1 | tr ':' ' '` ; do
       echo ','
     fi
     echo '    {'
-    echo '      "{#CUSTOM_SERVICE}": "'${s}'",'
+    echo '      "{#CUSTOM_SERVICE}": "'${service}'",'
     echo '      "{#CUSTOM_SERVICE_DIR}": "'${DIR}'"'
     echo -n '    }'
   done
