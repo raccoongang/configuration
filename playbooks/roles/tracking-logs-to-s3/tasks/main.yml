@@ -1,0 +1,37 @@
+---
+- name: Create tracking-logs-s3-upload.yml in {{ COMMON_DATA_DIR }} (on current edx instance)
+  template:
+    src: "tracking-log-s3-upload.yml.j2"
+    dest: "{{ edxapp_app_dir }}/tracking-logs-s3-upload.yml"
+    owner: "{{ edxapp_user }}"
+    group: "{{ edxapp_user }}"
+  become_method: sudo
+  become: yes
+  become_user: "{{ edxapp_user }}"
+
+- name: Ensure "{{ tracking_logs_upload_log_dir }}" exist
+  file:
+    path: "{{ tracking_logs_upload_log_dir }}"
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+  become_method: sudo
+  become: yes
+  become_user: root
+
+- name: install python requirements into venv
+  pip:
+    name: "{{ item }}"
+    virtualenv: "{{ tracking_logs_venv }}"
+  with_items: "{{ tracking_logs_venv_packages }}"
+
+- name: Create cron 'Tracking logs to s3 upload' job
+  cron:
+    user: root
+    name: "Tracking logs to s3 upload"
+    job: '{{ tracking_logs_venv }}/bin/ansible-playbook -c local -i ",localhost" {{ edxapp_app_dir }}/tracking-logs-s3-upload.yml -e "ansible_python_interpreter={{ tracking_logs_venv }}/bin/python"> {{ tracking_logs_upload_log_dir }}/tracking-logs-s3-upload.log 2>&1'
+    hour: 0
+    minute: 05
+  become_method: sudo
+  become: yes
+  become_user: root

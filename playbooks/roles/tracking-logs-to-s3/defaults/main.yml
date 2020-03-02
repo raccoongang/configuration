@@ -1,0 +1,23 @@
+---
+
+COMMON_BASE_DIR: /edx
+COMMON_APP_DIR: /edx/app
+COMMON_LOG_DIR: "{{ COMMON_DATA_DIR }}/log"
+COMMON_DATA_DIR: "{{ COMMON_BASE_DIR}}/var"
+edxapp_user: edxapp
+edxapp_app_dir: /edx/app/edxapp
+tracking_files_tmp: /tmp/tracking
+
+tracking_logs_upload_log_dir: "{{ COMMON_LOG_DIR }}/tracking_logs_s3_upload"
+
+tracking_logs_venv: /edx/app/venvs/tracking-logs
+tracking_logs_venv_packages:
+  - ansible==2.3.2.0
+  - boto==2.48.0
+  - boto3==1.4.4
+  - botocore==1.5.95
+  - s3transfer==0.1.10
+
+EDXAPP_AWS_ACCESS_KEY_ID: ''
+EDXAPP_AWS_SECRET_ACCESS_KEY: ''
+ANALITICS_TRACKING_LOGS_BUCKET: 'tracking_logs'

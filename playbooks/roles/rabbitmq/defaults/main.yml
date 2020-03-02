@@ -15,11 +15,11 @@ RABBIT_ADMIN_PASSWORD: 'the example admin password'
 RABBIT_ERLANG_COOKIE: 'DEFAULT_COOKIE'
 RABBIT_USERS:
   - name: 'admin'
-    password: "{{ RABBIT_ADMIN_PASSWORD }}"
+    password: "{{ RABBIT_ADMIN_PASSWORD | default('admin') }}"
   - name: 'edx'
-    password: 'edx'
+    password: "{{ XQUEUE_RABBITMQ_PASS | default('edx') }}"
   - name: 'celery'
-    password: 'celery'
+    password: "{{ EDXAPP_CELERY_PASSWORD | default('celery') }}"
 
 RABBITMQ_VHOSTS:
   - '/'

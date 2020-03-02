@@ -43,3 +43,9 @@ discovery.zen.ping.unicast.hosts: ['{{ELASTICSEARCH_CLUSTER_MEMBERS|join("\',\'"
 network:
   host: {{ ansible_ssh_host }}
 {% endif %}
+
+{% if ELASTICSEARCH_CLUSTERED is defined and not ELASTICSEARCH_CLUSTERED | bool %}
+# RG fix:
+discovery.zen.ping.multicast.enabled: false
+node.local: true
+{% endif %}

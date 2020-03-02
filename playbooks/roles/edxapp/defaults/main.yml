@@ -48,6 +48,13 @@ EDXAPP_OPENEDX_LEARNERS_GLOBAL_ANALYTICS:
   STATISTICS_LEVEL: "paranoid"
 #OLGA
 
+EDXAPP_XLOG_MONGO_DB_NAME: 'xlog'
+
+EDXAPP_S3_USE_SIGV4: false
+EDXAPP_S3_HOST: null
+
+EDXAPP_RG_SENTRY_DSN: "{{ COMMON_RG_SENTRY_DSN }}"
+EDXAPP_REINDEX_ALL_COURSES: true
 ## END RACCOONGANG ##
 
 # Bucket used for xblock file storage
@@ -822,6 +829,13 @@ edxapp_generic_auth_config:  &edxapp_generic_auth
     basic_auth: "{{ EDXAPP_XQUEUE_BASIC_AUTH }}"
     django_auth: "{{ EDXAPP_XQUEUE_DJANGO_AUTH }}"
     url: "{{ EDXAPP_XQUEUE_URL }}"
+  MONGODB_LOG:
+    db: "{{ EDXAPP_XLOG_MONGO_DB_NAME }}"
+    host: "{{ EDXAPP_MONGO_HOSTS }}"
+    password: "{{ EDXAPP_MONGO_PASSWORD }}"
+    port: "{{ EDXAPP_MONGO_PORT }}"
+    user: "{{ EDXAPP_MONGO_USER }}"
+    ssl: "{{ EDXAPP_MONGO_USE_SSL }}"  
   CONTENTSTORE:
     ENGINE:  'xmodule.contentstore.mongo.MongoContentStore'
     #
@@ -858,6 +872,7 @@ edxapp_generic_auth_config:  &edxapp_generic_auth
   #Microsoft Azure AD SSO
   AZURE_AD_ID: "{{ EDXAPP_AZURE_AD_ID }}"
   #Microsoft Azure AD SSO
+  RG_SENTRY_DSN: "{{ EDXAPP_RG_SENTRY_DSN }}"
   ## END RACCOONGANG ##
 
 generic_cache_config: &default_generic_cache
@@ -1039,6 +1054,8 @@ generic_env_config:  &edxapp_generic_env
   #Microsoft Azure AD SSO
   THIRD_PARTY_AUTH_BACKENDS: "{{ EDXAPP_THIRD_PARTY_AUTH_BACKENDS }}"
   #Microsoft Azure AD SSO
+  S3_USE_SIGV4: "{{ EDXAPP_S3_USE_SIGV4 }}"
+  S3_HOST: "{{ EDXAPP_S3_HOST }}"
   # END RACCOONGANG
 
 lms_auth_config:
@@ -1116,6 +1133,7 @@ lms_env_config:
   ALTERNATE_WORKER_QUEUES: "cms"
   ## RACCOONGANG ##
   OPENEDX_LEARNERS_GLOBAL_ANALYTICS: "{{ EDXAPP_OPENEDX_LEARNERS_GLOBAL_ANALYTICS }}"
+  THIRD_PARTY_AUTH_BACKENDS: "{{ EDXAPP_THIRD_PARTY_AUTH_BACKENDS }}"
   ## END RACCOONGANG ##
 
 cms_auth_config:

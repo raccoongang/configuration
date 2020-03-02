@@ -13,14 +13,23 @@
     # python installation
     #
     /usr/lib/python2.7/lib-dynload/_json.so mr,
+    /usr/lib/python2.7/lib-dynload/_json.x86_64-linux-gnu.so mr,
     /usr/lib/python2.7/lib-dynload/_ctypes.so mr,
+    /usr/lib/python2.7/lib-dynload/_ctypes.x86_64-linux-gnu.so mr,
     /usr/lib/python2.7/lib-dynload/_heapq.so mr,
+    /usr/lib/python2.7/lib-dynload/_heapq.x86_64-linux-gnu.so mr,
     /usr/lib/python2.7/lib-dynload/_io.so mr,
+    /usr/lib/python2.7/lib-dynload/_io.x86_64-linux-gnu.so mr,
     /usr/lib/python2.7/lib-dynload/_csv.so mr,
+    /usr/lib/python2.7/lib-dynload/_csv.x86_64-linux-gnu.so mr,
     /usr/lib/python2.7/lib-dynload/datetime.so mr,
+    /usr/lib/python2.7/lib-dynload/datetime.x86_64-linux-gnu.so mr,
     /usr/lib/python2.7/lib-dynload/_elementtree.so mr,
+    /usr/lib/python2.7/lib-dynload/_elementtree.x86_64-linux-gnu.so mr,
     /usr/lib/python2.7/lib-dynload/pyexpat.so mr,
+    /usr/lib/python2.7/lib-dynload/pyexpat.x86_64-linux-gnu.so mr,
     /usr/lib/python2.7/lib-dynload/future_builtins.so mr,
+    /usr/lib/python2.7/lib-dynload/future_builtins.x86_64-linux-gnu.so mr,
 
     # Matplot lib  needs a place for temp caches
     {{ edxapp_sandbox_venv_dir }}/.config/ wrix,
@@ -30,7 +39,9 @@
 
     # Matplotlib related libraries
     /usr/lib/python2.7/lib-dynload/termios.so mr,
+    /usr/lib/python2.7/lib-dynload/termios.x86_64-linux-gnu.so mr,
     /usr/lib/python2.7/lib-dynload/parser.so mr,
+    /usr/lib/python2.7/lib-dynload/parser.x86_64-linux-gnu.so mr,
 
     # Matplot lib needs fonts to make graphs
     /usr/share/fonts/ r,
