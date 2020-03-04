@@ -30,4 +30,4 @@ shutdown() {
 trap "shutdown" SIGINT SIGTERM
 
 source {{ ecommerce_worker_home }}/{{ ecommerce_worker_service_name }}_env
-stdbuf -o0 -e0 {{ executable }} -A ecommerce_worker worker --app ecommerce_worker.celery_app:app --concurrency={{ ECOMMERCE_WORKER_CONCURRENCY }} --loglevel=info --queue=fulfillment,email_marketing
+stdbuf -o0 -e0 {{ executable }} -A ecommerce_worker worker --app ecommerce_worker.celery_app:app --concurrency={{ ECOMMERCE_WORKER_CONCURRENCY }} --loglevel=info --queue=fulfillment,email_marketing,ospp
