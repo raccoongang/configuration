@@ -9,7 +9,7 @@ import time
 
 user = 'root'
 password = ''
-database = 'mysql'
+database = 'edxapp'
 host = 'localhost'
 port = 3306
 touchfile = "/tmp/zabbix_check_edx_loggedinusers_py.touch"
@@ -37,7 +37,7 @@ if host == '127.0.0.1': # special for OpenEdx
     host = 'localhost'
 
 try:
-    query = 'SELECT COUNT(*) FROM edxapp.auth_user WHERE last_login>FROM_UNIXTIME({lastcheck})'.format(lastcheck=lastcheck)
+    query = 'SELECT COUNT(*) FROM {database}.auth_user WHERE last_login>FROM_UNIXTIME({lastcheck})'.format(database=database,lastcheck=lastcheck)
 
     client = MySQLdb.connect(host=host, port=port, user=user, passwd=password, connect_timeout=3)
     cursor = client.cursor()

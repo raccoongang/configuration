@@ -14,6 +14,7 @@
     zabbix_agent_mysql_host: "{{ EDXAPP_MYSQL_HOST | default('localhost') }}"
     zabbix_agent_mysql_user: "{{ COMMON_MYSQL_READ_ONLY_USER | default('root') }}"
     zabbix_agent_mysql_password: "{{ COMMON_MYSQL_READ_ONLY_PASS | default('') }}"
+    zabbix_agent_mysql_database: "{{ EDXAPP_MYSQL_DB_NAME | default('edxapp') }}"
     zabbix_agent_memcached_host: "{{ memcached_host | default('localhost') }}"
     zabbix_agent_elasticsearch_host: "{{ elasticsearch_host | default('localhost') }}"
     zabbix_agent_rabbitmq_host: "{{ rabbitmq_ip | default('localhost') }}"
