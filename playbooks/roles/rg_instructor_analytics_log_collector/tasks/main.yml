@@ -1,0 +1,56 @@
+---
+- name: write supervisor configs
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ supervisor_available_dir }}/{{ item }}.conf"
+    mode: 0650
+    owner: "{{ supervisor_user }}"
+    group: "{{ common_web_user }}"
+  with_items:
+    - analytics_log_watcher
+    - analytics_processors
+  tags:
+    - install
+    - install:configuration
+
+- name: adding '{{ common_web_user }}' to adm group
+  user:
+    name: '{{ common_web_user }}'
+    groups: adm
+    append: yes
+
+- name: enable supervisor script
+  file:
+    src: "{{ supervisor_available_dir }}/{{ item }}.conf"
+    dest: "{{ supervisor_cfg_dir }}/{{ item }}.conf"
+    state: link
+    force: yes
+  with_items:
+    - "{{ analytics_log_watcher_service_name }}"
+    - "{{ analytics_processors_service_name }}"
+  when: not disable_edx_services
+  tags:
+    - install
+    - install:configuration
+
+- name: update supervisor configuration
+  shell: "{{ supervisor_ctl }} -c {{ supervisor_cfg }} update"
+  when: not disable_edx_services
+  tags:
+    - manage
+    - manage:start
+
+- name: restart the application
+  supervisorctl:
+    state: restarted
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    name: "{{ item }}"
+  with_items:
+    - "{{ analytics_log_watcher_service_name }}"
+    - "{{ analytics_processors_service_name }}"
+  when: not disable_edx_services
+  become_user: "{{ supervisor_service_user }}"
+  tags:
+    - manage
+    - manage:start

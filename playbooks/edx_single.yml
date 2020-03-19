@@ -42,6 +42,8 @@
     - role: certs
     - role: edx_notes_api
       when: EDXAPP_ENABLE_EDXNOTES
+    - role: rg_instructor_analytics_log_collector
+      when: "{{ EDXAPP_RG_INSTRUCTOR_ANALYTICS_ENABLE | default(False) }}"
     - role: newrelic
       when: COMMON_ENABLE_NEWRELIC
     - role: datadog

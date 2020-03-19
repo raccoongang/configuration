@@ -27,3 +27,5 @@ playbooks/edx-east/travis-test.yml
 
 ## Local virtualenv
 /venv
+
+*.retry
