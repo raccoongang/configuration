@@ -8,7 +8,6 @@
     group: "{{ common_web_user }}"
   with_items:
     - analytics_log_watcher
-    - analytics_processors
   tags:
     - install
     - install:configuration
@@ -30,7 +29,6 @@
     force: yes
   with_items:
     - "{{ analytics_log_watcher_service_name }}"
-    - "{{ analytics_processors_service_name }}"
   when: not disable_edx_services
   tags:
     - install
@@ -51,7 +49,6 @@
     name: "{{ item }}"
   with_items:
     - "{{ analytics_log_watcher_service_name }}"
-    - "{{ analytics_processors_service_name }}"
   when: not disable_edx_services
   become_user: "{{ supervisor_service_user }}"
   tags:
