@@ -394,6 +394,73 @@
     - aws
 
 - set_fact:
+    edx_search_enabled: false
+
+- set_fact:
+    edx_search_enabled: true
+  when:
+    - EDXAPP_FEATURES['ENABLE_COURSEWARE_INDEX'] | default(false)
+    - EDXAPP_REINDEX_ALL_COURSES
+
+- name: edx_search - prepare course reindexing
+  file:
+    path: "{{ edxapp_data_dir }}/edx_search_configured"
+    state: absent
+  when: not edx_search_enabled
+  become_user: "{{ edxapp_user }}"
+
+- name: edx_search - determine the need of course reindexing
+  stat:
+    path: "{{ edxapp_data_dir }}/edx_search_configured"
+  register: edx_search_configured
+
+- name: edx_search - reindex courses
+  expect:
+    command: "{{ edxapp_venv_bin }}/python {{ edxapp_code_dir }}/manage.py cms --settings={{ edxapp_settings }} reindex_course --all"
+    chdir: "{{ edxapp_code_dir }}"
+    responses:
+      "Do you want to continue": "y"
+    timeout: 2700
+  when:
+    - edxapp_installed is defined
+    - celery_worker is not defined
+    - not disable_edx_services
+    - edx_search_enabled
+    - edx_search_configured is defined and not edx_search_configured.stat.exists
+  become_user: "{{ common_web_user }}"
+  tags:
+    - manage
+
+- name: edx_search - reindex libraries
+  expect:
+    command: "{{ edxapp_venv_bin }}/python {{ edxapp_code_dir }}/manage.py cms --settings={{ edxapp_settings }} reindex_library --all"
+    chdir: "{{ edxapp_code_dir }}"
+    responses:
+      "Do you want to continue": "y"
+    timeout: 2700
+  when:
+    - edxapp_installed is defined
+    - celery_worker is not defined
+    - not disable_edx_services
+    - edx_search_enabled
+    - not edx_search_configured.stat.exists
+  become_user: "{{ common_web_user }}"
+  tags:
+    - manage
+
+- name: edx_search - save configuration state for future use
+  file:
+    path: "{{ edxapp_data_dir }}/edx_search_configured"
+    state: touch
+  when:
+    - edxapp_installed is defined
+    - celery_worker is not defined
+    - not disable_edx_services
+    - edx_search_enabled
+    - not edx_search_configured.stat.exists
+  become_user: "{{ edxapp_user }}"
+
+- set_fact:
     edxapp_installed: true
 
 - name: restart edxapp
@@ -414,30 +481,6 @@
     config: "{{ supervisor_cfg }}"
     state: restarted
   when: edxapp_installed is defined and celery_worker is defined and not disable_edx_services
-  become_user: "{{ common_web_user }}"
-  tags:
-    - manage
-
-- name: reindex courses
-  expect:
-    command: "{{ edxapp_venv_bin }}/python {{ edxapp_code_dir }}/manage.py cms --settings={{ edxapp_settings }} reindex_course --all"
-    chdir: "{{ edxapp_code_dir }}"
-    responses:
-      "Do you want to continue": "y"
-    timeout: 2700
-  when: edxapp_installed is defined and celery_worker is not defined and not disable_edx_services
-  become_user: "{{ common_web_user }}"
-  tags:
-    - manage
-
-- name: reindex libraries
-  expect:
-    command: "{{ edxapp_venv_bin }}/python {{ edxapp_code_dir }}/manage.py cms --settings={{ edxapp_settings }} reindex_library --all"
-    chdir: "{{ edxapp_code_dir }}"
-    responses:
-      "Do you want to continue": "y"
-    timeout: 2700
-  when: edxapp_installed is defined and celery_worker is not defined and not disable_edx_services
   become_user: "{{ common_web_user }}"
   tags:
     - manage
