@@ -1,0 +1,5 @@
+---
+dependencies:
+  - common
+  - edxapp_common
+  - supervisor
