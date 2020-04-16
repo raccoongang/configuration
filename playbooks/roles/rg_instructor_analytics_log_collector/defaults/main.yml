@@ -1,20 +1,23 @@
 ---
-analytics_log_watcher_service_name: analytics_log_watcher
-analytics_log_watcher_sleep_time: 300
 
-COMMON_BASE_DIR: /edx
-COMMON_DATA_DIR: "{{ COMMON_BASE_DIR}}/var"
-edxapp_data_dir: "{{ COMMON_DATA_DIR }}/edxapp"
-COMMON_APP_DIR: "/edx/app"
-COMMON_LOG_DIR: "{{ COMMON_DATA_DIR }}/log"
+analytics_log_watcher_service_name: analytics_log_watcher
+analytics_log_watcher_sleep_time: 1200
+analytics_log_watcher_addl_arguments: "--delete-logs"
+
 tracking_directory: '{{ COMMON_LOG_DIR }}/tracking'
-edxapp_log_dir: "{{ COMMON_LOG_DIR }}/edx"
 edxapp_app_dir: "{{ COMMON_APP_DIR }}/edxapp"
 edxapp_venvs_dir: "{{ edxapp_app_dir }}/venvs"
 edxapp_venv_dir: "{{ edxapp_venvs_dir }}/edxapp"
 edxapp_venv_bin: "{{ edxapp_venv_dir }}/bin"
 
-supervisor_available_dir: "{{ supervisor_app_dir }}/conf.available.d"
-supervisor_app_dir: "{{ COMMON_APP_DIR }}/supervisor"
-supervisor_user: supervisor
-common_web_user: www-data
+# list of used external variables imported via meta roles
+#
+# COMMON_BASE_DIR: /edx
+# COMMON_DATA_DIR: "{{ COMMON_BASE_DIR}}/var"
+# edxapp_data_dir: "{{ COMMON_DATA_DIR }}/edxapp"
+# COMMON_APP_DIR: "/edx/app"
+# COMMON_LOG_DIR: "{{ COMMON_DATA_DIR }}/log"
+# supervisor_available_dir: "{{ supervisor_app_dir }}/conf.available.d"
+# supervisor_app_dir: "{{ COMMON_APP_DIR }}/supervisor"
+# supervisor_user: supervisor
+# common_web_user: www-data
