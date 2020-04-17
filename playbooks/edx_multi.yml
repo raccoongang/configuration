@@ -69,39 +69,33 @@
 
     - role: swapfile
       when: SWAPFILE_SIZE is defined and SWAPFILE_SIZE != ''
-
+ 
     - role: nginx
       nginx_sites:
       - certs
       - forum
       - xqueue
-
+ 
     - role: edxlocal
-
+ 
     - role: memcache
-
+ 
     - role: rabbitmq
-
+ 
     - role: elasticsearch
-
+ 
     - role: discovery
       when: SANDBOX_ENABLE_DISCOVERY is defined and SANDBOX_ENABLE_DISCOVERY
-
+ 
     - role: credentials
       when: SANDBOX_ENABLE_CREDENTIALS is defined and SANDBOX_ENABLE_CREDENTIALS
-
+ 
     - role: ecommerce
       when: SANDBOX_ENABLE_ECOMMERCE | default(False)
-
+ 
     - role: ecomworker
       ECOMMERCE_WORKER_BROKER_HOST: 127.0.0.1
       when: SANDBOX_ENABLE_ECOMMERCE | default(False)
-
-    - role: rg_instructor_analytics_log_collector
-      when: EDXAPP_RG_INSTRUCTOR_ANALYTICS_ENABLE | default(False)
-
-    - role: celerybeat
-      when: EDXAPP_CELERY_BEAT.enabled | default(False)
 
     - role: analytics_api
       when: SANDBOX_ENABLE_ANALYTICS_API | default(False)
@@ -111,6 +105,9 @@
 
     - role: edx_notes_api
       when: EDXAPP_ENABLE_EDXNOTES | default(False)
+
+    - role: celerybeat
+      when: EDXAPP_CELERY_BEAT.enabled | default(False)
 
     - role: forum
 

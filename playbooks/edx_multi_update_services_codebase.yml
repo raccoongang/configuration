@@ -1,0 +1,33 @@
+#
+# please call me like this
+# ansible-playbook --vault-password-file=~/work/awx/.vaultpass -i ~/work/awx/awx-deployment/inventories/edx/fastlane-lakeside/prod-hosts.ini --private-key=~/notes/rg/stuff/jenkins.id_rsa edx_multi_update_services_codebase.yml --tags "install:app-configuration,install:base,install:code,install:app-requirements"
+---
+
+- name: Set ip address of services
+  hosts: all
+  become: False
+  gather_facts: no
+  tasks:
+    - name: set instances ip addresses
+      set_fact:
+        mysql_host: "{{ hostvars['mysql'].ansible_host }}"
+        memcached_host: "{{ hostvars['services'].ansible_host }}"
+        mongo_hosts: "{{ hostvars['mongo'].ansible_host }}"
+        elasticsearch_host: "{{ hostvars['services'].ansible_host }}"
+        rabbit_master: "{{ hostvars['services'].ansible_host }}"
+        xqueue_host: "{{ hostvars['services'].ansible_host }}"
+        certs_host: "{{ hostvars['services'].ansible_host }}"
+        forum_host: "{{ hostvars['services'].ansible_host }}"
+      tags: [ "always" ]
+
+- name: Setup services
+  hosts: services
+  become: True
+  gather_facts: True
+  roles:
+    - role: edxapp
+      vars:
+        migrate_db: False
+        skip_static_assets: True
+        server_utils_role_finished: True
+        common_role_finished: True
