@@ -63,6 +63,7 @@ zabbix_agent_mongo_use_ssl: False
 zabbix_agent_mysql_host: "localhost"
 zabbix_agent_mysql_user: "root"
 zabbix_agent_mysql_password: ""
+zabbix_agent_mysql_database: "mysql"
 
 zabbix_agent_elasticsearch_host: "localhost"
 
