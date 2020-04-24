@@ -5,3 +5,4 @@
 # side-effects.  Any vars requred by this role should be added to
 # common_vars/defaults/main.yml
 #
+common_role_finished: False
