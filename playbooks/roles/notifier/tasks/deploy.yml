@@ -57,6 +57,17 @@
   notify:
     - restart notifier-celery-workers
 
+- name: Install python2.7 pip and setuptools
+  pip:
+    name: [ 'setuptools<45', 'pip==9.0.1' ]
+    virtualenv: "{{ NOTIFIER_VENV_DIR }}"
+    state: present
+  become: true
+  become_user: "{{ notifier_user }}"
+  notify:
+    - restart notifier-scheduler
+    - restart notifier-celery-workers
+
 - name: Install application requirements
   pip:
     requirements: "{{ NOTIFIER_REQUIREMENTS_FILE }}"
