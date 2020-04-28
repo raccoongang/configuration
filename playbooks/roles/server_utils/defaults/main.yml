@@ -40,3 +40,5 @@ server_utils_debian_pkgs:
   - netcat
 
 server_utils_redhat_pkgs: []
+
+server_utils_role_finished: False
