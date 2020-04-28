@@ -73,6 +73,14 @@
     state: absent
   when: CERTS_GIT_IDENTITY != "none"
 
+- name: Install python2.7 pip and setuptools
+  pip:
+    name: [ 'setuptools<45', 'pip==9.0.1' ]
+    virtualenv: "{{ certs_venv_dir }}"
+    state: present
+    extra_args: "-i {{ COMMON_PYPI_MIRROR_URL }}"
+  become_user: "{{ certs_user }}"
+
 - name: Install python requirements
   pip:
     requirements: "{{ certs_requirements_file }}"
