@@ -1,0 +1,31 @@
+---
+- name: write supervisor configs
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ supervisor_available_dir }}/{{ item }}"
+    mode: 0650
+    owner: "{{ supervisor_user }}"
+    group: "{{ common_web_user }}"
+  with_items:
+    - celerybeat.conf
+  notify:
+    - restart supervisor service
+  tags:
+    - install
+    - install:configuration
+
+- name: enable supervisor script
+  file:
+    src: "{{ supervisor_available_dir }}/{{ item }}.conf"
+    dest: "{{ supervisor_cfg_dir }}/{{ item }}.conf"
+    state: link
+    force: yes
+    owner: "{{ supervisor_user }}"
+    group: "{{ common_web_user }}"
+  with_items:
+    - "{{ celery_beat_service_name }}"
+  notify:
+    - restart supervisor service
+  tags:
+    - install
+    - install:configuration
