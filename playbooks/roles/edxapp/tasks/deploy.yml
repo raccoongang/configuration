@@ -270,6 +270,28 @@
     - install
     - install:app-requirements
 
+- name: code sandbox | Create the virtualenv to install the Python requirements
+  command: "virtualenv {{ edxapp_sandbox_venv_dir }}"
+  args:
+    chdir: "{{ edxapp_code_dir }}"
+    creates: "{{ edxapp_sandbox_venv_dir }}/bin/pip"
+  become_user: "{{ edxapp_sandbox_user }}"
+  environment: "{{ edxapp_environment }}"
+  tags:
+    - edxapp-sandbox
+    - install
+    - install:app-requirements
+
+- name: code sandbox | Pin pip to a specific version.
+  command: "{{ edxapp_sandbox_venv_dir }}/bin/pip install pip=={{ common_pip_version }}"
+  args:
+    chdir: "{{ edxapp_code_dir }}"
+  become_user: "{{ edxapp_sandbox_user }}"
+  tags:
+    - edxapp-sandbox
+    - install
+    - install:app-requirements
+
 - name: code sandbox | Install base sandbox requirements and create sandbox virtualenv
   pip:
     chdir: "{{ edxapp_code_dir }}"
