@@ -1,59 +1,53 @@
 ---
-- name: write supervisor configs
-  template:
-    src: "{{ item }}.j2"
-    dest: "{{ supervisor_available_dir }}/{{ item }}.conf"
-    mode: 0650
-    owner: "{{ supervisor_user }}"
-    group: "{{ common_web_user }}"
-  with_items:
-    - analytics_log_watcher
-    - analytics_processors
-  tags:
-    - install
-    - install:configuration
+
+# TODO: refactor to use roles/supervisor as meta role
 
 - name: adding '{{ common_web_user }}' to adm group
   user:
     name: '{{ common_web_user }}'
     groups: adm
     append: yes
-  notify:
-    - stop all processes
-    - restart supervisor
+  notify: restart_supervisor
 
-- name: enable supervisor script
+- name: write analytics_log_watcher supervisor configs
+  template:
+    src: "analytics_log_watcher.j2"
+    dest: "{{ supervisor_available_dir }}/{{ analytics_log_watcher_service_name }}.conf"
+    mode: 0650
+    owner: "{{ supervisor_user }}"
+    group: "{{ common_web_user }}"
+  notify: update_supervisor
+
+- name: enable analytics_log_watcher supervisor script
   file:
-    src: "{{ supervisor_available_dir }}/{{ item }}.conf"
-    dest: "{{ supervisor_cfg_dir }}/{{ item }}.conf"
+    src: "{{ supervisor_available_dir }}/{{ analytics_log_watcher_service_name }}.conf"
+    dest: "{{ supervisor_cfg_dir }}/{{ analytics_log_watcher_service_name }}.conf"
     state: link
     force: yes
-  with_items:
-    - "{{ analytics_log_watcher_service_name }}"
-    - "{{ analytics_processors_service_name }}"
-  when: not disable_edx_services
-  tags:
-    - install
-    - install:configuration
+  notify: update_supervisor
 
-- name: update supervisor configuration
-  shell: "{{ supervisor_ctl }} -c {{ supervisor_cfg }} update"
-  when: not disable_edx_services
-  tags:
-    - manage
-    - manage:start
+- name: write analytics_processors supervisor configs
+  template:
+    src: "analytics_processors.j2"
+    dest: "{{ supervisor_available_dir }}/{{ analytics_processors_service_name }}.conf"
+    mode: 0650
+    owner: "{{ supervisor_user }}"
+    group: "{{ common_web_user }}"
+  when: not RG_ANALYTICS_VERSION_2_3
+  notify: update_supervisor
 
-- name: restart the application
-  supervisorctl:
-    state: restarted
-    supervisorctl_path: "{{ supervisor_ctl }}"
-    config: "{{ supervisor_cfg }}"
-    name: "{{ item }}"
-  with_items:
-    - "{{ analytics_log_watcher_service_name }}"
-    - "{{ analytics_processors_service_name }}"
-  when: not disable_edx_services
-  become_user: "{{ supervisor_service_user }}"
-  tags:
-    - manage
-    - manage:start
+- name: enable analytics_processors supervisor script
+  file:
+    src: "{{ supervisor_available_dir }}/{{ analytics_processors_service_name }}.conf"
+    dest: "{{ supervisor_cfg_dir }}/{{ analytics_processors_service_name }}.conf"
+    state: link
+    force: yes
+  when: not RG_ANALYTICS_VERSION_2_3
+  notify: update_supervisor
+
+- name: remove analytics_processors on upgrade
+  file:
+    path: "{{ supervisor_available_dir }}/{{ analytics_processors_service_name }}.conf"
+    state: absent
+  when: RG_ANALYTICS_VERSION_2_3
+  notify: update_supervisor
