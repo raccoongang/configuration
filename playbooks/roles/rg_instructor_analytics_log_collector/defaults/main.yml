@@ -1,10 +1,13 @@
 ---
+
+RG_ANALYTICS_VERSION_2_3: False
+
 analytics_log_watcher_service_name: analytics_log_watcher
-analytics_log_watcher_sleep_time: 300
+analytics_log_watcher_sleep_time: 1200
 
 analytics_processors_service_name: analytics_processors
 analytics_processors_aliases: enrollment
-analytics_processors_sleep_time: 300
+analytics_processors_sleep_time: 1200
 
 COMMON_BASE_DIR: /edx
 COMMON_DATA_DIR: "{{ COMMON_BASE_DIR}}/var"
@@ -20,5 +23,12 @@ edxapp_venv_bin: "{{ edxapp_venv_dir }}/bin"
 
 supervisor_available_dir: "{{ supervisor_app_dir }}/conf.available.d"
 supervisor_app_dir: "{{ COMMON_APP_DIR }}/supervisor"
+supervisor_log_dir: "{{ COMMON_LOG_DIR }}/supervisor"
+supervisor_cfg_dir: "{{ supervisor_app_dir }}/conf.d"
+supervisor_ctl: "{{ supervisor_venv_bin }}/supervisorctl"
+supervisor_venvs_dir: "{{ supervisor_app_dir }}/venvs"
+supervisor_venv_dir: "{{ supervisor_venvs_dir }}/supervisor"
+supervisor_venv_bin: "{{ supervisor_venv_dir }}/bin"
+supervisor_cfg: "{{ supervisor_app_dir }}/supervisord.conf"
 supervisor_user: supervisor
 common_web_user: www-data
