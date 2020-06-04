@@ -1,8 +1,19 @@
 ---
+
+- name: reread supervisor configuration
+  shell: "{{ supervisor_ctl }} -c {{ supervisor_cfg }} reread"
+  listen: update_supervisor
+
+- name: update supervisor configuration
+  shell: "{{ supervisor_ctl }} -c {{ supervisor_cfg }} update"
+  listen: update_supervisor
+
 - name: stop all processes
   shell: "{{ supervisor_ctl }} stop all"
+  listen: restart_supervisor
 
-- name: restart supervisor 
+- name: restart supervisor
   service:
     name: supervisor
     state: restarted
+  listen: restart_supervisor
