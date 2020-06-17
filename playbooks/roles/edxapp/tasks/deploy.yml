@@ -17,12 +17,12 @@
 
 - name: install read-only ssh key
   copy:
-    content: "{{ GITLAB_DEPLOY_KEY }}"
+    content: "{{ EDXAPP_GIT_IDENTITY }}"
     dest: "{{ edxapp_git_identity }}"
     owner: "{{ edxapp_user }}"
     mode: "0600"
   become_user: "{{ edxapp_user }}"
-  when: GITLAB_DEPLOY_KEY is defined
+  when: EDXAPP_GIT_IDENTITY is defined
   tags:
     - install
     - install:base
@@ -413,7 +413,7 @@
   file:
     path: "{{ edxapp_git_identity }}"
     state: absent
-  when: GITLAB_DEPLOY_KEY is defined
+  when: EDXAPP_GIT_IDENTITY is defined
   tags:
     - install
     - install:configuration
