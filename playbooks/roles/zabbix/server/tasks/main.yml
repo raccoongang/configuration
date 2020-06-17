@@ -22,7 +22,7 @@
 
 - name: debug
   debug:
-    msg: "interfaces_ip = {{ interfaces_ip }} interfaces_dns = {{ interfaces_dns }}"
+    msg: "interfaces_ip = {{ interfaces_ip }} interfaces_dns = {{ interfaces_dns }} zabbix_server_host_name = {{ zabbix_server_host_name }}"
 
 - name: checking {{ zabbix_server_host_name }} is already exists on Zabbix server
   shell: "python {{ role_path }}/files/get_visiblename.py '{{ zabbix_server_host_name }}'"

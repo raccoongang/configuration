@@ -33,3 +33,14 @@
   with_items:
     "{{ zabbix_requirements[ansible_distribution] }}"
 
+- name: Find rpm install artifacts
+  find:
+    paths: [ "/etc/zabbix/zabbix_agentd.d/" ]
+    patterns: "*.rpmsave,*.rpmnew"
+  register: rpmsave_res
+
+- name: Remove rpm install artifacts
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ rpmsave_res.files }}"

@@ -16,12 +16,30 @@
     src: "zabbix_agentd.conf.j2"
     dest: "/etc/zabbix/zabbix_agentd.conf"
   notify: restart zabbix-agent
+  tags:
+    - zabbix-agent-config
 
 - name: Installing python requirements into venv
   pip:
     name: "{{ item }}"
     virtualenv: "/etc/zabbix/.venv"
   with_items: "{{ zabbix_requirements_pip }}"
+
+# deploying all scripts and userparams into separate
+# directory to not raise false alerts due to script
+# logic changes or new configuration settings
+# after that fast swap directories and restart agent
+
+- name: Preserve previous versions to notify restart handler on changes
+  shell: "{{ item }}"
+  args:
+    warn: False
+  with_items:
+    - "rm -rf /etc/zabbix/scripts.new /etc/zabbix/zabbix_agentd.d.new"
+    - "test -d /etc/zabbix/scripts && cp -Rap /etc/zabbix/scripts /etc/zabbix/scripts.new || true"
+    - "test -d /etc/zabbix/zabbix_agentd.d && cp -Rap /etc/zabbix/zabbix_agentd.d /etc/zabbix/zabbix_agentd.d.new || true"
+  tags:
+    - skip_ansible_lint
 
 - name: Deploying RG userparameters
   copy:
@@ -39,7 +57,6 @@
     mode: "0750"
     owner: zabbix
     group: zabbix
-  notify: restart zabbix-agent
 
 - name: Adding zabbix scripts configuration file
   template:
@@ -49,6 +66,8 @@
     owner: zabbix
     group: zabbix
   notify: restart zabbix-agent
+  tags:
+    - zabbix-agent-config
 
 - name: Adding NOPASSWOD in sudoers for zabbix user
   lineinfile:
@@ -59,12 +78,12 @@
 
 - name: Cleaning stale scripts
   file:
-    path: "{{ item }}"
+    path: "/etc/zabbix/scripts"
     state: "absent"
-  with_items:
-    - "/etc/zabbix/scripts"
-    - "/var/lib/zabbix/.my.cnf"
-  notify: restart zabbix-agent
+
+# copy module does not support recursive copy
+# up to ansible 2.8
+# TODO: upgrade ansible on AWX to 2.8 or greater
 
 - name: Installing scripts
   command: "mv /etc/zabbix/scripts.new /etc/zabbix/scripts"
@@ -75,12 +94,18 @@
   file:
     path: "/etc/zabbix/zabbix_agentd.d"
     state: "absent"
-  notify: restart zabbix-agent
 
 - name: Installing userparameters
   command: "mv /etc/zabbix/zabbix_agentd.d.new /etc/zabbix/zabbix_agentd.d"
   tags:
     - skip_ansible_lint
+
+- name: Removing deprecated .my.cnf
+  file:
+    path: "/var/lib/zabbix/.my.cnf"
+    state: "absent"
+  tags:
+    - zabbix-agent-config
 
 - name: Adding zabbix-agent service to startup
   service:

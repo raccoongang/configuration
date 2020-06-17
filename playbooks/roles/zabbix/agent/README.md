@@ -51,3 +51,8 @@ where:
 - 10.0.0.1 - instance where zabbix-agent will be installed
 - multitenant_id_rsa - private key to access lexoxaadmin@10.0.0.1 from azureuser@123.123.123.123
 
+deploy zabbix agent without changing any configuration files (update userparams and scripts only):
+```
+ansible-playbook -i,p.raccoon.bar -uraccoon run_role.yml -erole=zabbix/agent -ezabbix_enabled=true --tags zabbix-agent --skip-tags zabbix-agent-config
+```
+```

@@ -5,7 +5,7 @@ if [ "$1" = "status" ]; then
         if echo "${ST}" | grep -q alarms ; then
             echo "${ST}" | grep "alarms,\[\]" | wc -l
         else
-            echo "${ST}" | grep "uptime" | wc -l
+            echo "${ST}" | grep "[Uu]ptime" | wc -l
         fi
         exit
 fi
