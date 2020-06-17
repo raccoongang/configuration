@@ -1,0 +1,42 @@
+---
+- name: set backup_enabled
+  set_fact:
+    backup_enabled: "{{ backup_enabled | default(false) | bool }}"
+  when: backup_enabled # fix for unnecessary backup role for DevEnv
+
+- name: configure default backup profiles for AWS
+  set_fact:
+    backup_duplicity:
+      target: "s3://{{ EDXAPP_S3_HOST | default('s3.amazonaws.com') }}/{{ project_name | lower | regex_replace('_','-') }}-{{ env | lower }}-backups"
+      target_method: "s3"
+      target_user: "{{ EDXAPP_AWS_ACCESS_KEY_ID }}"
+      target_pass: "{{ EDXAPP_AWS_SECRET_ACCESS_KEY }}"
+  when: backup_enabled and cloud_provider is defined and cloud_provider == "aws" and backup_duplicity is not defined
+
+- name: configure default backup profiles for Azure
+  set_fact:
+    backup_duplicity:
+      target: "azure://{{ project_name | lower }}-{{ env | lower }}-backups"
+      target_method: "azure"
+      target_user: "{{ EDXAPP_AZURE_ACCOUNT_NAME }}"
+      target_pass: "{{ EDXAPP_AZURE_ACCOUNT_KEY }}"
+  when: backup_enabled and cloud_provider is defined and cloud_provider == "azure" and backup_duplicity is not defined
+
+- name: configure backup method (azure, s3, ftp, rsync, etc, etc...)
+  set_fact:
+    backup_target_method_default: "{{ backup_duplicity['target'] | regex_replace('^(.+)://.*$', '\\1') }}"
+  when: backup_enabled
+
+- import_role:
+    name: backup-duplicity
+  vars:
+    backup_target: "{{ backup_duplicity['target'] }}"
+    backup_target_method: "{{ backup_duplicity['target_method'] | default(backup_target_method_default) }}"
+    backup_target_user: "{{ backup_duplicity['target_user'] }}"
+    backup_target_pass: "{{ backup_duplicity['target_pass'] }}"
+    backup_profiles: "{{ backup_duplicity['profiles'] | default(edx_backup_duplicity_profiles) }}"
+    backup_runas_user: "{{ backup_duplicity['runas_user'] | default(backup_user) }}"
+  tags:
+    - backup
+    - backup_duplicity
+  when: backup_enabled and backup_duplicity is defined and backup_duplicity | list | length > 0

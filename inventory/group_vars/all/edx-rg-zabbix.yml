@@ -1,0 +1,53 @@
+---
+slack_notification_channels:
+  dev: []
+  stage: []
+  prod: []
+
+rg_support_package: "Default"
+
+zabbix_enabled: false
+zabbix_force_in_maintenance: false
+
+zabbix_support_conf:
+  Default:
+    groups:
+      - "Client Prod"
+    templates:
+      - "Active Template OS Linux"
+      - "Template App HTTPS Service"
+      - "Nginx connections"
+  OnSupport:
+    groups:
+      - "Client Prod on support"
+    templates:
+      - "Active Template OS Linux"
+      - "Template App HTTPS Service"
+      - "Active Template App EDX AD"
+      - "Nginx connections"
+  Strong:
+    groups:
+      - "Client Prod on support"
+    templates:
+      - "Active Template OS Linux"
+      - "Template App HTTPS Service"
+      - "Active Template App EDX AD"
+      - "Active Template App Elasticsearch node"
+      - "Active Template App Memcached"
+      - "Active Template App MongoDB"
+      - "Active Template App MySQL"
+      - "Active Template App RabbitMQ"
+      - "Nginx connections"
+  VIP:
+    groups:
+      - "Client VIP Support"
+    templates:
+      - "Active Template OS Linux"
+      - "Template App HTTPS Service"
+      - "Active Template App EDX AD"
+      - "Active Template App Elasticsearch node"
+      - "Active Template App Memcached"
+      - "Active Template App MongoDB"
+      - "Active Template App MySQL"
+      - "Active Template App RabbitMQ"
+      - "Nginx connections"

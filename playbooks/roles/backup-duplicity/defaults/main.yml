@@ -1,0 +1,151 @@
+---
+
+backup_enabled: false          # fix for unnecessary backup role for DevEnv
+
+backup_cron: yes               # Setup cron tasks for backup
+backup_cron_schedule: "11 1 * * *"
+
+backup_method: ""              # s3, azure, ssh, rsync, ftp
+                               # if you planing to use aws s3 in region different from us-east-1
+                               # please set aws_backup_region variable
+
+azure_backup_blobstorage_create: no
+
+backup_user: "duplicity"
+backup_runas_user: "{{ backup_user }}"    # Run backups as user
+
+backup_home: "/etc/duplicity"             # Backup configuration directory
+backup_work: "/var/duplicity"             # Working directory
+backup_temp_dir: "{{ backup_work }}/tmp"
+backup_status_dir: "/var/tmp/duplicity"
+
+backup_sys_packages:
+  Ubuntu:
+    common:
+      - gzip
+      - python-boto
+      - cron
+      - build-essential
+      - python-dev
+      - librsync-dev
+    ftp:
+      - ncftp
+      - lftp
+  CentOS:
+    common:
+      - gzip
+      - python-boto
+      - gcc
+      - python-devel
+      - python-virtualenv
+      - python-pip
+      - mysql-devel
+      - cronie
+      - librsync-devel
+      - mongodb-org-shell
+    ftp:
+      - ncftp
+      - lftp
+  Amazon:
+    common:
+      - gzip
+      - python-boto
+      - gcc
+      - python-devel
+      - python-virtualenv
+      - python-pip
+      - mysql-devel
+      - cronie
+      - librsync-devel
+      - mongodb-org-shell
+    ftp:
+      - ncftp
+      - lftp
+
+backup_venv: "{{ backup_home }}/.venv"
+backup_venv_packages:
+  common:
+    - duplicity
+  s3:
+    - boto==2.48.0
+    - boto3==1.4.4
+    - botocore==1.5.95
+    - s3transfer==0.1.10
+    - s3cmd
+  rsync:
+    - pyrsync
+  ftp:
+    - pyftp
+  azure:
+    - azure==2.0.0
+    - azure-storage==0.20.0
+
+backup_duply_template: "duply" # duply_2.0.4_rg, duply_1.9.1_rg
+backup_logdir: "/var/log/duplicity"
+
+# GPG
+backup_gpg_key: disabled
+backup_gpg_keys_enc:
+backup_gpg_key_sign:
+backup_gpg_pw:
+backup_gpg_opts:
+backup_gpg_pw_sign:
+
+# TARGET
+# syntax is
+#   scheme://[user:password@]host[:port]/[/]path
+# probably one out of
+#   file://[/absolute_]path
+#   ftp[s]://user[:password]@other.host[:port]/some_dir
+#   hsi://user[:password]@other.host/some_dir
+#   cf+http://container_name
+#   imap[s]://user[:password]@host.com[/from_address_prefix]
+#   rsync://user[:password]@other.host[:port]::/module/some_dir
+#   rsync://user@other.host[:port]/relative_path
+#   rsync://user@other.host[:port]//absolute_path
+#   # for the s3 user/password are AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY
+#   s3://[user:password]@host/bucket_name[/prefix]
+#   s3+http://[user:password]@bucket_name[/prefix]
+#   ssh://user[:password]@other.host[:port]/some_dir
+#   tahoe://alias/directory
+#   webdav[s]://user[:password]@other.host/some_dir
+backup_target: 'file:///var/backup'
+backup_target_method: 'file'
+# optionally the username/password can be defined as extra variables
+backup_target_user: ''
+backup_target_pass: ''
+
+# Time frame for old backups to keep, Used for the "purge" command.  
+# see duplicity man page, chapter TIME_FORMATS)
+backup_max_age: 1M
+
+# Number of full backups to keep. Used for the "purge-full" command. 
+# See duplicity man page, action "remove-all-but-n-full".
+backup_max_full_backups: 1
+
+# forces a full backup if last full backup reaches a specified age
+backup_full_max_age: 1M
+
+# set the size of backup chunks to VOLSIZE MB instead of the default 25MB.
+backup_volsize: 50
+
+# verbosity of output (error 0, warning 1-2, notice 3-4, info 5-8, debug 9)
+backup_verbosity: 3
+
+backup_exclude: []
+backup_profiles: []
+                      # see https://wiki.archlinux.org/index.php/Duply
+                      # for allowed types see templates/profiles/
+                      #  - name: www
+                      #    type: file
+                      #    source: /var/www
+                      #    exclude:
+                      #      - + **.py
+                      #      - - **.pyc
+                      #  - name: mysql
+                      #    type: mysql
+                      #    source: postgresql://db_name
+                      #  - name: pgsql
+                      #    type: postgresql
+                      #    source: postgresql://db_name
+

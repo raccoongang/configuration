@@ -1,0 +1,121 @@
+---
+
+# Example sandbox configuration
+# for single server community
+# installs
+- include_vars: ~/playbooks/roles/backup-duplicity/defaults/main.yml
+- include_vars: ~/vault/roles/zabbix/zabbix-rg-api.yml
+
+- import_role:
+    name: python
+
+- import_role:
+    name: swapfile
+  when: SWAPFILE_SIZE is defined and SWAPFILE_SIZE != ''
+
+- import_role:
+    name: nginx
+  vars:
+    nginx_sites:
+        - certs
+        - cms
+        - lms
+        - forum
+        - xqueue
+    nginx_default_sites:
+        - lms
+
+- import_role:
+    name: edxlocal
+  when: EDXAPP_MYSQL_HOST == 'localhost' or EDXAPP_MYSQL_HOST == '127.0.0.1'
+
+- import_role:
+    name: memcache
+  when: "'localhost' in ' '.join(EDXAPP_MEMCACHE) or '127.0.0.1' in ' '.join(EDXAPP_MEMCACHE)"
+
+- import_role:
+    name: mongo_3_2
+  when: "'localhost' in EDXAPP_MONGO_HOSTS or '127.0.0.1' in EDXAPP_MONGO_HOSTS"
+
+- import_role:
+    name: rabbitmq
+  vars:
+    rabbitmq_ip: 127.0.0.1
+
+- import_role:
+    name: elasticsearch
+  when: "'localhost' in EDXAPP_ELASTIC_SEARCH_CONFIG|map(attribute='host') or '127.0.0.1' in EDXAPP_ELASTIC_SEARCH_CONFIG|map(attribute='host')"
+
+- import_role:
+    name: edxapp
+  vars:
+    celery_worker: True
+
+- import_role:
+    name: ecommerce
+  when: SANDBOX_ENABLE_ECOMMERCE is defined and SANDBOX_ENABLE_ECOMMERCE
+
+- import_role:
+    name: ecomworker
+  vars:
+    ECOMMERCE_WORKER_BROKER_HOST: 127.0.0.1
+  when: SANDBOX_ENABLE_ECOMMERCE is defined and SANDBOX_ENABLE_ECOMMERCE
+
+- import_role:
+    name: rg_instructor_analytics_log_collector
+  when: "{{ EDXAPP_RG_INSTRUCTOR_ANALYTICS_ENABLE | default(False) }}"
+
+- import_role:
+    name: celerybeat
+  when: EDXAPP_CELERY_BEAT.enabled | default(False)
+
+- import_role:
+    name: analytics_api
+  when: SANDBOX_ENABLE_ANALYTICS_API is defined and SANDBOX_ENABLE_ANALYTICS_API
+
+- import_role:
+    name: insights
+  when: SANDBOX_ENABLE_INSIGHTS is defined and SANDBOX_ENABLE_INSIGHTS
+
+- import_role:
+    name: demo
+
+- import_role:
+    name: oauth_client_setup
+
+- import_role:
+    name: oraclejdk
+
+- import_role:
+    name: forum
+
+- import_role:
+    name: discovery
+  when: SANDBOX_ENABLE_DISCOVERY is defined and SANDBOX_ENABLE_DISCOVERY
+
+- import_role:
+    name: credentials
+  when: SANDBOX_ENABLE_CREDENTIALS is defined and SANDBOX_ENABLE_CREDENTIALS
+
+- import_role:
+    name: journals
+  when: JOURNALS_ENABLED is defined and JOURNALS_ENABLED
+
+- import_role:
+    name: notifier
+
+- import_role:
+    name: xqueue
+  vars:
+    update_users: True
+
+- import_role:
+    name: certs
+
+- import_role:
+    name: datadog
+  when: COMMON_ENABLE_DATADOG
+
+- import_role:
+    name: datadog-uninstall
+  when: not COMMON_ENABLE_DATADOG

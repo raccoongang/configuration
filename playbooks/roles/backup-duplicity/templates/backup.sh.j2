@@ -1,0 +1,217 @@
+#! /bin/sh
+
+if [ x`whoami` != x{{ backup_runas_user }} ]; then
+    if [ x`whoami` = xroot ]; then
+        echo "$0: becoming {{ backup_runas_user }}..."
+        su - {{ backup_runas_user }} $0 $*
+        exit
+    fi
+    echo "Please run this script as {{ backup_runas_user }} user" 1>&2
+    echo "sudo -u {{ backup_runas_user }} $0 $*" 1>&2
+    echo " " 1>&2
+    echo "exiting..." 1>&2
+    exit 1
+fi
+
+# ########################
+
+DUPLICITY_HOME="{{ backup_home }}"
+export DUPLICITY_HOME
+DUPLICITY_STATUS="{{ backup_status_dir }}"
+DUPLICITY_LOGS="{{ backup_logdir }}"
+PATH="{{ backup_venv }}/bin:${PATH}"
+export PATH
+DUPLY="${DUPLICITY_HOME}/duply"
+ACTION="backup"
+
+CONFS=`ls -1 ${DUPLICITY_HOME}/*/conf | grep -v disabled | sed 's:/etc/duplicity/\(.*\)/conf:\1:'`
+
+if [ "$1" = "--help" -o "$1" = "-h" ]; then 
+    echo "Usage: $0 <action> <profile-name> [dulpy-options ...]"
+    echo " "
+    echo "  action:        backup, restore, status"
+    echo "  profile-name: name of profile. directory name in {{ backup_home }}"
+    echo "                which contain duply conf file."
+    echo "                to exclude profile rename conf file to conf.disabled"
+    echo " "
+    echo "Current profiles: ${CONFS}"
+    exit
+fi
+
+# ########################
+
+if [ "$1" = "list" ]; then
+    echo $CONFS
+    exit
+fi
+if [ ! -z "$1" ]; then
+    ACTION="$1"
+    shift
+fi
+if [ ! -z "$1" ]; then
+    CONFS="$1"
+    shift
+fi
+
+if [ -z "${CONFS}" ]; then
+    echo "No configurations found in ${DUPLICITY_HOME}. Exiting..." 1>&2
+    exit 1
+fi
+
+if [ ! -x ${DULPY} ]; then
+    echo "Executable for duply not found at ${DUPLY}. Exiting..." 1>&2
+    exit 1
+fi
+
+EXTRA_ARGS=$*
+
+# ########################
+
+duply_backup () {
+
+    for CONF in ${CONFS}; do
+
+        CONF_DIR="${DUPLICITY_HOME}/${CONF}"
+
+        # where to place metrics for monitoring
+        DUPLY_STATUS_SIZE="${DUPLICITY_STATUS}/${CONF}-status-size"
+        DUPLY_STATUS_ERRORS="${DUPLICITY_STATUS}/${CONF}-status-errors"
+        DUPLY_STATUS_RETCODE="${DUPLICITY_STATUS}/${CONF}-status-retcode"
+        DUPLY_STATUS_AGE="${DUPLICITY_STATUS}/${CONF}-status-age"
+
+        LOG_FILE="${DUPLICITY_LOGS}/${CONF}.log"
+        echo "" >> ${LOG_FILE} 2>&1
+        chmod o-wrx ${LOG_FILE} > /dev/null 2>&1
+
+        echo " " >> ${LOG_FILE}
+        echo "=== "`date` === backup ${CONF} >> ${LOG_FILE} 2>&1
+        ${DUPLY} ${CONF_DIR} backup --allow-source-mismatch ${EXTRA_ARGS} 2>&1 | tee ${DUPLY_STATUS_SIZE}.log  >> ${LOG_FILE}
+
+        echo " " >> ${LOG_FILE}
+        echo "=== "`date` === purge ${CONF} >> ${LOG_FILE} 2>&1
+        ${DUPLY} ${CONF_DIR} purge --force ${EXTRA_ARGS}  >> ${LOG_FILE} 2>&1
+
+        echo " " >> ${LOG_FILE}
+        echo "=== "`date` === writing backup status ${CONF} >> ${LOG_FILE} 2>&1
+
+        # write exit code of duply backup
+
+        grep "exit code" ${DUPLY_STATUS_SIZE}.log > ${DUPLY_STATUS_RETCODE}
+
+        # finding size of backuped files in duplicity log
+
+        SOURCE_SIZE=`cat ${DUPLY_STATUS_SIZE}.log | grep SourceFileSize | awk '{ print int($2/1024); }'`
+
+        SOURCE_SIZE=`expr 0${SOURCE_SIZE} + 0`
+        echo ${SOURCE_SIZE} > ${DUPLY_STATUS_SIZE}
+
+        # finding error counter in duplicity log
+
+        SOURCE_ERRORS=`cat ${DUPLY_STATUS_SIZE}.log | grep Errors | awk '{ print int($2); }'`
+        SOURCE_ERRORS=`expr 0${SOURCE_ERRORS} + 0`
+
+        echo ${SOURCE_ERRORS} > ${DUPLY_STATUS_ERRORS}
+
+        # calculating diff in days between NOW and LAST_CHAIN DATE
+
+        ${DUPLY} ${CONF_DIR} status > ${DUPLY_STATUS_SIZE}.log 2>&1 
+
+        LAST_TS=`grep "Chain end time" ${DUPLY_STATUS_SIZE}.log | cut -f 2- -d : | tail -n 1 | cut -f 2- -d " "`
+
+        if [ -z "${LAST_TS}" ]; then
+            LAST_TS="Thu Jan  1 00:00:00 1970"
+        fi
+        LAST_TS=`date --date="$LAST_TS" +%s`
+        NOW=`date +%s`
+        DELTA_DAYS=`expr 0${NOW} - 0${LAST_TS}`
+        DELTA_DAYS=`expr ${DELTA_DAYS} / 86400`
+        echo ${DELTA_DAYS} > ${DUPLY_STATUS_AGE}
+
+        rm -f ${DUPLY_STATUS_SIZE}.log
+
+        for STATUS in `ls -1 ${DUPLICITY_STATUS}/${CONF}*`; do
+            echo ${STATUS}: `cat ${STATUS}` >> ${LOG_FILE}
+        done
+
+        echo " " >> ${LOG_FILE}
+        echo "=== "`date`" === finished" ${CONF} >> ${LOG_FILE} 2>&1
+
+        unset LAST_TS NOW DELTA_DAYS DUPLY_STATUS_SIZE DUPLY_STATUS_AGE SOURCE_SIZE SOURCE_ERRORS
+
+    done
+}
+
+# ###########################
+
+duply_restore () {
+
+    EXTRA_DIR=`echo ${EXTRA_ARGS} | cut -f1 -d" "`
+    if [ ! -z "${EXTRA_DIR}" -a -d "${EXTRA_DIR}" ]; then
+        echo "$0: restoring to $EXTRA_ARGS..."
+        EXTRA_RESTORE_ARGS=`echo ${EXTRA_ARGS}" " | cut -f2- -d" "`
+    else
+        echo "$0: WARRNING: current state of data will be LOST and replaced with backup content!" 1>&2
+        echo "selected profiles: ${CONFS}" 1>&2
+        echo "waiting 60 seconds... press ctrl-c to abort" 1>&2
+        sleep 60
+        EXTRA_RESTORE_ARGS="${EXTRA_ARGS}"
+    fi
+
+    for CONF in ${CONFS}; do
+
+        CONF_DIR="${DUPLICITY_HOME}/${CONF}"
+
+        if [ ! -z "${EXTRA_DIR}" ]; then
+            RESTORE_DIR="${EXTRA_DIR}/${CONF}"
+            mkdir ${RESTORE_DIR}
+        fi
+
+        echo "running: ${DUPLY} ${CONF_DIR} restore ${RESTORE_DIR} ${EXTRA_RESTORE_ARGS}"
+        ${DUPLY} ${CONF_DIR} restore ${RESTORE_DIR} ${EXTRA_RESTORE_ARGS}
+
+    done
+}
+
+# ###########################
+
+duply_status () {
+
+    for CONF in ${CONFS}; do
+
+        CONF_DIR="${DUPLICITY_HOME}/${CONF}"
+
+        echo " "
+        echo "=== duply ${CONF} status: ============================"
+        ${DUPLY} ${CONF_DIR} status ${EXTRA_ARGS}
+        echo " "
+        echo "=== ${CONF} status files: ============================"
+        for STATUS in `ls -1 ${DUPLICITY_STATUS}/${CONF}*`; do
+            echo ${STATUS}: `cat ${STATUS}`
+        done
+        if [ -z "${STATUS}" ]; then
+            echo " "
+            echo "WARRNING! status files for profile ${CONF} was not found in ${DUPLICITY_STATUS}"
+            echo "          monitoring may generate alerts"
+            echo " "
+        fi
+
+    done
+}
+
+# ###########################
+
+case "$ACTION" in
+    backup)
+        duply_backup
+        ;;
+    status)
+        duply_status
+        ;;
+    restore)
+        duply_restore
+        ;;
+    *)
+        echo "$0: invalid action - $ACTION" 1>&2
+        exit 1
+esac
+

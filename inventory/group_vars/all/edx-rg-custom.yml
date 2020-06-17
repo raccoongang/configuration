@@ -1,0 +1,17 @@
+---
+
+EDXAPP_ENABLE_ADDITIONAL_MIDDLEWARE_CLASSES: false
+
+_EDXAPP_LOCALESET_FROM_REQUEST:
+  "en": "en_US.utf8"
+
+_MONGODB_LOG:
+  - host: "{{ mongo_hosts }}"
+    db: 'xlog'
+    user: "{{ EDXAPP_MONGO_USER }}"
+    password: "{{ EDXAPP_MONGO_PASSWORD }}"
+
+RG_NGINX_LMS_CLIENT_MAX_BODY_SIZE: 4m
+RG_NGINX_CMS_CLIENT_MAX_BODY_SIZE: 100m
+
+SWAPFILE_SIZE: "8GB"

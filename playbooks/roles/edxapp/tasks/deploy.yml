@@ -17,12 +17,12 @@
 
 - name: install read-only ssh key
   copy:
-    content: "{{ EDXAPP_GIT_IDENTITY }}"
+    content: "{{ GITLAB_DEPLOY_KEY }}"
     dest: "{{ edxapp_git_identity }}"
-    force: yes
     owner: "{{ edxapp_user }}"
     mode: "0600"
-  when: EDXAPP_USE_GIT_IDENTITY
+  become_user: "{{ edxapp_user }}"
+  when: GITLAB_DEPLOY_KEY is defined
   tags:
     - install
     - install:base
@@ -270,6 +270,28 @@
     - install
     - install:app-requirements
 
+- name: code sandbox | Create the virtualenv to install the Python requirements
+  command: "virtualenv {{ edxapp_sandbox_venv_dir }}"
+  args:
+    chdir: "{{ edxapp_code_dir }}"
+    creates: "{{ edxapp_sandbox_venv_dir }}/bin/pip"
+  become_user: "{{ edxapp_sandbox_user }}"
+  environment: "{{ edxapp_environment }}"
+  tags:
+    - edxapp-sandbox
+    - install
+    - install:app-requirements
+
+- name: code sandbox | Pin pip to a specific version.
+  command: "{{ edxapp_sandbox_venv_dir }}/bin/pip install pip=={{ common_pip_version }}"
+  args:
+    chdir: "{{ edxapp_code_dir }}"
+  become_user: "{{ edxapp_sandbox_user }}"
+  tags:
+    - edxapp-sandbox
+    - install
+    - install:app-requirements
+
 - name: code sandbox | Install base sandbox requirements and create sandbox virtualenv
   pip:
     chdir: "{{ edxapp_code_dir }}"
@@ -358,8 +380,7 @@
   become_user: "{{ supervisor_service_user }}"
   when: not disable_edx_services
   with_items:
-    - 'lms'
-    - 'cms'
+    - "{{ service_variants_enabled }}"
   tags:
     - manage
 
@@ -392,7 +413,7 @@
   file:
     path: "{{ edxapp_git_identity }}"
     state: absent
-  when: EDXAPP_USE_GIT_IDENTITY
+  when: GITLAB_DEPLOY_KEY is defined
   tags:
     - install
     - install:configuration
@@ -416,8 +437,7 @@
   when: not disable_edx_services
   become_user: "{{ supervisor_service_user }}"
   with_items:
-    - 'lms'
-    - 'cms'
+    - "{{ service_variants_enabled }}"
   tags:
     - manage
 

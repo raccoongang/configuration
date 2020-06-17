@@ -1,0 +1,3 @@
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+subjectAltName = DNS:{{ EDXAPP_LMS_SITE_NAME }},DNS:{{ EDXAPP_CMS_SITE_NAME }},DNS:{{ EDXAPP_PREVIEW_LMS_BASE }}{{ LETSENCRYPT_ADDITIONAL_DOMAIN | join(',DNS:') }}

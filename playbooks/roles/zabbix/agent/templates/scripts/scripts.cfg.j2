@@ -1,0 +1,25 @@
+[mongo]
+user = {{ zabbix_agent_mongo_user }}
+password = {{ zabbix_agent_mongo_password }}
+database = {{ zabbix_agent_mongo_auth_db }}
+host = {{ zabbix_agent_mongo_host }}
+replica_name = {{ zabbix_agent_mongo_replica_set_name }}
+use_ssl = {{ zabbix_agent_mongo_use_ssl }}
+
+[client]
+user = {{ zabbix_agent_mysql_user }}
+password = {{ zabbix_agent_mysql_password }}
+host = {{ zabbix_agent_mysql_host }}
+database = {{ zabbix_agent_mysql_database }}
+
+[elasticsearch]
+host = {{ zabbix_agent_elasticsearch_host }}
+
+[memcached]
+host = {{ zabbix_agent_memcached_host }}
+port = {{ zabbix_agent_memcached_port }}
+
+[rabbitmq]
+hostname = {{ zabbix_agent_rabbitmq_host }}
+username = {{ zabbix_agent_rabbitmq_user }}
+password = {{ zabbix_agent_rabbitmq_password }}

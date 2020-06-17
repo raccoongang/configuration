@@ -1,0 +1,77 @@
+---
+
+- name: Register le_cert_exists for nginx_edx_config
+  stat: path="/etc/letsencrypt/live/{{ EDXAPP_SITE_NAME }}/fullchain.pem"
+  register: le_cert_exists1
+  when: nginx_edx_config
+
+- name: Register le_cert_exists for non nginx_edx_config
+  stat: path="/etc/letsencrypt/live/{{ NGINX_ADDITIONAL_SERVICES_CONFIG[0].server_name }}/fullchain.pem"
+  register: le_cert_exists2
+  when: not nginx_edx_config
+
+- name: Combine nginx_edx_config register
+  set_fact:
+    le_cert_exists: "{{ le_cert_exists1 if nginx_edx_config else le_cert_exists2 }}"
+
+- name: Installing certbot dependencies
+  apt: name="{{ item }}" update_cache=yes
+  with_items: "{{ le_packages }}"
+
+- name: Creating check directory for nginx
+  file:
+    path: "{{ letsencrypt_webroot }}"
+    state: directory
+    mode: 0755
+    owner: www-data
+    group: www-data
+
+- name: Installing certbot
+  get_url:
+    url: https://dl.eff.org/certbot-auto
+    dest: /usr/local/bin/certbot-auto
+    mode: 0755
+
+- name: Performing post-installation setup
+  command: /usr/local/bin/certbot-auto --non-interactive --text --os-packages-only
+  when: le_cert_exists.stat.islnk is not defined
+
+- name: Compare LETSENCRYPT_MAIN_DOMAIN with LMS, CMS and PREVIEW
+  set_fact:
+    LETSENCRYPT_MAIN_DOMAIN: "{{ LETSENCRYPT_MAIN_DOMAIN|default([]) + [EDXAPP_LMS_SITE_NAME] + [EDXAPP_CMS_SITE_NAME] + [EDXAPP_PREVIEW_LMS_BASE]  }}"
+  when: nginx_edx_config
+
+- name: Compare LETSENCRYPT_MAIN_DOMAIN with LETSENCRYPT_ADDITIONAL_DOMAIN
+  set_fact:
+    LETSENCRYPT_ALL_DOMAIN: "{{ LETSENCRYPT_MAIN_DOMAIN + LETSENCRYPT_ADDITIONAL_DOMAIN }}"
+  when: nginx_edx_config
+
+- name: Set LETSENCRYPT_ALL_DOMAIN fact for non nginx_edx_config
+  set_fact:
+    LETSENCRYPT_ALL_DOMAIN: "{{ LETSENCRYPT_ADDITIONAL_DOMAIN }}"
+  when: not nginx_edx_config
+
+- name: Requesting for LMS, CMS and LETSENCRYPT_ADDITIONAL_DOMAIN certificates
+  command: /usr/local/bin/certbot-auto certonly --agree-tos --non-interactive --text --rsa-key-size 2048 --webroot -w /var/www/letsencrypt -d {{ LETSENCRYPT_ALL_DOMAIN|join(' -d ') }}  --register-unsafely-without-email --force-renewal
+  when: le_cert_exists.stat.islnk is not defined
+
+- name: Create certbot log directory
+  file:
+    path: "/var/log/letsencrypt"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: 0700
+
+- name: Create logratate configuration for certbot logs
+  template:
+    src: "logrotate-letsencrypt.j2"
+    dest: "/etc/logrotate.d/letsencrypt"
+
+- name: Add auto-renewal task in cron
+  cron:
+    name: "Automatic renewal letsencrypt certificate"
+    minute: "1"
+    hour: "1"
+    month: "*"
+    job: '/usr/local/bin/certbot-auto renew --webroot -w {{ letsencrypt_webroot }} --post-hook "service nginx restart" >> /var/log/letsencrypt/crontab.log 2>&1'

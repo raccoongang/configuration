@@ -1,0 +1,17 @@
+filebeat_enable: false
+filebeat:
+  version: 6
+  modules: []
+  paths: []
+  exclude_paths: []
+  shards: 1
+  index_pattern: '{{ ansible_fqdn }}-%{[beat.version]}-%{+yyyy.MM.dd}'
+  template_name: "{{ ansible_fqdn }}"
+  template_pattern: '{{ ansible_fqdn }}-*'
+  dashboards_index: '{{ ansible_fqdn }}-*'
+kibana:
+  host: https://logs.raccoongang.com
+  port: 443
+  security:
+    user: ''
+    password: ''

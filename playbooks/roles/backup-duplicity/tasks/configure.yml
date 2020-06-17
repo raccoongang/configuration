@@ -1,0 +1,151 @@
+---
+- name: include edx-defaults vars
+  include_vars: "inventories/edx-defaults/edx-rg-backups.yml"
+  when: not backup_profiles is defined or backup_profiles | list | length == 1 or not edx_backup_duplicity_profiles is defined
+
+- name: ensure for backup user is exists
+  user:
+    name: "{{ backup_user }}"
+
+- name: ensure for backup directories is exits
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0770
+    owner: "{{ backup_user }}"
+  with_items:
+  - "{{ backup_home }}"
+  - "{{ backup_work }}"
+  - "{{ backup_logdir }}"
+
+- name: creating world readable status directory
+  file:
+    path: "{{ backup_status_dir }}"
+    state: directory
+    mode: 0755
+    owner: "{{ backup_user }}"
+
+- name: install duply
+  copy:
+    src: "files/{{ backup_duply_template }}"
+    dest: "{{ backup_home }}/duply"
+    owner: "{{ backup_user }}"
+    mode: 0755
+
+- name: forcing duply to use duplicity virtualenv
+  lineinfile:
+    path: "{{ backup_home }}/duply"
+    line: ". {{ backup_venv }}/bin/activate"
+    insertafter: "^#!"
+    firstmatch: yes
+    state: present
+
+- name: patching duplicity for AWS_DEFAULT_REGION
+  command: "find {{ backup_venv }} -path '*/backends/_boto_single.py'"
+  register: _boto_single
+
+- name: patching duplicity for AWS_DEFAULT_REGION
+  lineinfile:
+    path: "{{ _boto_single.stdout }}"
+    regexp: "^( *)self.my_location = ''$"
+    line: "\\1self.my_location = os.environ.get('AWS_DEFAULT_REGION', '')"
+    backrefs: yes
+    state: present
+
+- name: install backup script
+  template:
+    src: backup.sh.j2
+    dest: "{{ backup_home }}/backup.sh"
+    owner: "{{ backup_user }}"
+    mode: 0750
+
+- name: install readme
+  template:
+    src: README.txt.j2
+    dest: "{{ backup_home }}/README.txt"
+    owner: "{{ backup_user }}"
+
+- name: create profile directories
+  file:
+    path: "{{ backup_home }}/{{ item.name }}"
+    state: directory
+    mode: 0700
+    owner: "{{ backup_user }}"
+  no_log: true
+  with_items: "{{ backup_profiles }}"
+
+- name: configure profiles
+  template:
+    src: "profiles/{{ item[0]['type'] }}/{{ item[1] }}.j2"
+    dest: "{{ backup_home }}/{{ item[0]['name'] }}/{{ item[1] }}"
+    owner: "{{ backup_user }}"
+  no_log: true
+  with_nested:
+    - "{{ backup_profiles }}"
+    - ['conf', 'exclude', 'pre', 'post', 'restore']
+
+- name: create work directories
+  file:
+    state: directory
+    path: "{{ backup_work }}/{{ item.name }}"
+    owner: "{{ backup_user }}"
+  no_log: true
+  with_items: "{{ backup_profiles }}"
+
+- name: create directories
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ backup_user }}"
+    mode: 0770
+  with_items:
+    - "{{ backup_logdir }}"
+    - "{{ backup_work }}"
+    - "{{ backup_temp_dir }}"
+
+- name: configure crontab
+  template:
+    src: cron.j2
+    dest: /etc/cron.d/backup
+    owner: root
+    group: root
+    mode: 0644
+
+- name: configure logrotate
+  template:
+    src: logrotate.j2
+    dest: /etc/logrotate.d/backup
+    owner: root
+    group: root
+    mode: 0644
+
+- name: GPG place priv key
+  copy:
+    dest: "{{ backup_home }}/gpg_priv.gpg"
+    content: "{{ backup_gpg_key_priv }}"
+    owner: "{{ backup_user }}"
+    mode: 0640
+  when: backup_gpg_key != 'disabled'
+
+- name: GPG place pub key
+  copy:
+    dest: "{{ backup_home }}/gpg_pub.gpg"
+    content: "{{ backup_gpg_key_pub }}"
+    owner: "{{ backup_user }}"
+    mode: 0640
+  when: backup_gpg_key != 'disabled'
+
+- name: GPG importing keys
+  shell: "gpg --import {{ backup_home }}/gpg_pub.gpg ; gpg --allow-secret-key-import --import {{ backup_home }}/gpg_priv.gpg"
+  become_user: "{{ backup_runas_user }}"
+  register: gpg_import
+  failed_when: gpg_import.rc == 1
+
+- name: GPG removing temp files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ backup_home }}/gpg_pub.gpg"
+    - "{{ backup_home }}/gpg_priv.gpg"
+  when: backup_gpg_key != 'disabled'

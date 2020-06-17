@@ -80,6 +80,9 @@ devstack_forum_env:
 
 forum_user: "forum"
 forum_ruby_version: "2.4.1"
+rbenv_user: "{{ forum_user }}"
+rbenv_dir: "{{ forum_app_dir }}"
+rbenv_ruby_version: "{{ forum_ruby_version }}"
 forum_source_repo: "https://github.com/edx/cs_comments_service.git"
 forum_version: "master"
 

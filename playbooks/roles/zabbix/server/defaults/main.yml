@@ -1,0 +1,13 @@
+---
+zabbix_server_url: "https://zabbix.raccoongang.com"
+zabbix_server_user: "{{ vault_zabbix_api_login }}"
+zabbix_server_password: "{{ vault_zabbix_api_password }}"
+zabbix_server_host_name: "{{ lms_url | default(inventory_hostname, true) }}"
+zabbix_server_host_visible_name: ""
+zabbix_server_host_dns: "{{ lms_url | default('', true) }}"
+zabbix_server_host_groups:
+  - "Test-Maintenance"
+zabbix_server_host_description: "Set up by ansible for {{ inventory_hostname }} at {{ ansible_date_time.date }} {{ ansible_date_time.time }}"
+
+zabbix_server_host_link_templates:
+  - "Active Template OS Linux"

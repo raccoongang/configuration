@@ -1,0 +1,24 @@
+---
+- include: edx-awx-start-update.yml
+
+- include: edx_single.yml
+
+- import_role:
+    name: edx-user-attr
+
+- import_role:
+    name: rg-nginx
+  vars:
+    nginx: yes
+    nginx_letsencrypt: no
+    nginx_letsencrypt_setup: no
+    insights: no
+
+- import_role:
+    name: filebeat
+
+- include: edx-backup-duplicity.yml
+
+- include: edx-zabbix-single.yml
+
+- include: edx-awx-stop-update.yml

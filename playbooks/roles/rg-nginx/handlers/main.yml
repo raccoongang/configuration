@@ -1,0 +1,18 @@
+# Trick for old buggy Ububntu. Rewrite it later
+- name: force restart nginx
+  shell: "killall -9 -r -w nginx && /etc/init.d/nginx restart"
+
+- name: restart nginx
+  command: "/usr/sbin/nginx -t"
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes
+
+- name: reload nginx
+  service:
+    name: nginx
+    state: reloaded
+

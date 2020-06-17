@@ -1,0 +1,57 @@
+---
+- include_vars: ~/vault/roles/zabbix/zabbix-rg-api.yml
+  tags:
+    - always
+
+- name: setting up default hostname
+  set_fact:
+    zabbix_server_host_dns: "{{ inventory_hostname }}"
+  when: zabbix_server_host_dns is not defined or zabbix_server_host_dns == ""
+  tags:
+    - zabbix-agent
+    - zabbix-server
+    - zabbix
+
+- name: setting up default values
+  set_fact:
+    zabbix_enabled: "{{ zabbix_enabled | default(False) | bool }}"
+    zabbix_force_in_maintenance: "{{ zabbix_force_in_maintenance | default(False) | bool }}"
+    zabbix_agent_hostname: "{{ zabbix_agent_hostname | default(zabbix_server_host_dns + '_' + ansible_default_ipv4.address) }}"
+    zabbix_server_host_name: "{{ zabbix_agent_hostname | default(zabbix_server_host_dns + '_' + ansible_default_ipv4.address) }}"
+  tags:
+    - zabbix-agent
+    - zabbix-server
+    - zabbix
+
+- name: setting up force in maintenance
+  set_fact:
+    zabbix_server_host_groups: "{{ zabbix_server_host_groups }} + ['Test-Maintenance']"
+  when: zabbix_force_in_maintenance
+  tags:
+    - zabbix-agent
+    - zabbix-server
+    - zabbix
+
+- import_role:
+    name: zabbix/openedx
+  when: EDXAPP_PLATFORM_NAME is defined and EDXAPP_PLATFORM_NAME
+  tags:
+    - zabbix-agent
+    - zabbix-server
+    - zabbix
+
+- import_role:
+    name: zabbix/agent
+  when: zabbix_enabled
+  tags:
+    - zabbix-agent
+    - zabbix
+
+- import_role:
+    name: zabbix/server
+  when: zabbix_enabled
+  delegate_to: localhost
+  become: false
+  tags:
+    - zabbix-server
+    - zabbix

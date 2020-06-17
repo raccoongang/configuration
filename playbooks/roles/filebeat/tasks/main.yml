@@ -1,0 +1,7 @@
+---
+- include: packages.yml
+  when: filebeat_enable
+- include: configuration.yml
+  when: filebeat_enable
+- include: uninstall.yml
+  when: not filebeat_enable

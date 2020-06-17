@@ -1,0 +1,46 @@
+---
+
+- name: Create "{{ raccoongang_ssl_path }}"
+  file:
+    path: "{{ raccoongang_ssl_path }}"
+    state: directory
+
+- name: raccoongang ssl crt and key
+  copy:
+    src: "{{ raccoongang_ssl_src_path }}/{{ item }}"
+    dest: "{{ raccoongang_ssl_path }}/{{ item }}"
+  with_items:
+    - "{{ raccoongang_ssl_crt }}"
+    - "{{ raccoongang_ssl_key }}"
+
+- name: set lms_ssl_certificate_path fact
+  set_fact:
+    lms_ssl_certificate_path: "{{ raccoongang_ssl_path }}/{{ raccoongang_ssl_crt }}"
+
+- name: set lms_ssl_certificate_key_path fact
+  set_fact:
+    lms_ssl_certificate_key_path: "{{ raccoongang_ssl_path }}/{{ raccoongang_ssl_key }}"
+
+- name: set cms_ssl_certificate_path fact
+  set_fact:
+    cms_ssl_certificate_path: "{{ raccoongang_ssl_path }}/{{ raccoongang_ssl_crt }}"
+
+- name: set cms_ssl_certificate_key_path fact
+  set_fact:
+    cms_ssl_certificate_key_path: "{{ raccoongang_ssl_path }}/{{ raccoongang_ssl_key }}"
+
+- name: set insights_ssl_certificate_path fact
+  set_fact:
+    insights_ssl_certificate_path: "{{ raccoongang_ssl_path }}/{{ raccoongang_ssl_crt }}"
+
+- name: set insights_ssl_certificate_key_path fact
+  set_fact:
+    insights_ssl_certificate_key_path: "{{ raccoongang_ssl_path }}/{{ raccoongang_ssl_key }}"
+
+- name: set analytics_api_ssl_certificate_path fact
+  set_fact:
+    analytics_api_ssl_certificate_path: "{{ raccoongang_ssl_path }}/{{ raccoongang_ssl_crt }}"
+
+- name: set analytics_api_ssl_certificate_key_path fact
+  set_fact:
+    analytics_api_ssl_certificate_key_path: "{{ raccoongang_ssl_path }}/{{ raccoongang_ssl_key }}"

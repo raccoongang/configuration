@@ -1,0 +1,54 @@
+duplicity backups environment
+=============================
+
+cron job location: /etc/cron.d/backup
+
+backup.sh
+=========
+
+by default (when run without arguments) script run `duply backup` and `duply purge`
+for all profiles in `{{ backup_home }}` and store backup status in `{{ backup_status_dir }}`
+
+backup status kept in separate files to allow monitoring:
+
+- <profile-name>-status-size: total size of stored remotely files in kilobytes
+- <profile-name>-status-age: time delta in days between NOW and last backup chain
+- <profile-name>-status-errors: the value of `Errors` from duplicity backup log
+- <profile-name>-status-retcode: the line contains `exit code` from duplicity
+                                 backup log when errors reported
+
+examples of usage
+=================
+
+- to start backup with single profile:
+
+  {{ backup_home }}/backup.sh backup <profile-name>
+
+- to get status of backup for all profiles:
+
+  {{ backup_home }}/backup.sh status
+
+- to get status of backup for single profile:
+
+  {{ backup_home }}/backup.sh status <profile-name>
+
+- to restore backup for single profile:
+
+  {{ backup_home }}/backup.sh restore <profile-name>
+
+- to write backup files to specific directory and skip profile restore procedure:
+
+  mkdir /tmp/files_to_analyze
+  {{ backup_home }}/backup.sh restore <profile-name> /tmp/my_files_to_analyze
+
+- to restore data state at point of specific time:
+
+  {{ backup_home }}/backup.sh restore --time 20170613T120000Z
+  {{ backup_home }}/backup.sh restore <profile-name> --time 20170613T120000Z
+
+- to extract files at point of specific time to specific directory and skip
+  profile restore procedure:
+
+  mkdir /tmp/files_to_analyze
+  {{ backup_home }}/backup.sh restore <profile-name> /tmp/my_files_to_analyze --time 20170613T120000Z
+

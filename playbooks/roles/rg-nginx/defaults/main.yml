@@ -1,0 +1,76 @@
+---
+nginx_not_skip_nebula_node_redirect: yes
+
+localhost_ip_addr: 127.0.0.1
+nginx_http_port: 80
+nginx_http_elb: no
+nginx_default_redirect_to_lms: false
+nginx_disable_http_https_redirect: false
+nginx_edx_config: True
+nginx: yes #enable role
+nginx_install: False
+nginx_ssl: no
+nginx_ssl_template: "{{ nginx_ssl }}"
+nginx_letsencrypt: no
+nginx_letsencrypt_setup: no
+nginx_http2: yes
+insights: no
+COMMON_APP_DIR: "/edx/app"
+nginx_app_dir: "{{ COMMON_APP_DIR }}/nginx"
+nginx_sites_enabled_dir: "/etc/nginx/sites-enabled"
+nginx_ssl_config: "ssl.conf"
+nginx_ssl_config_path: "{{ nginx_app_dir }}/edx-template-{{ nginx_ssl_config }}"
+nginx_config: "edx-http.conf"
+nginx_config_path: "{{ nginx_app_dir }}/edx-template-{{ nginx_config }}"
+NGINX_DH_PARAMS_PATH: "/etc/ssl/private/dhparams.pem"
+NGINX_DH_KEYSIZE: 2048
+NGINX_SSL_PROTOCOLS: 'TLSv1 TLSv1.1 TLSv1.2'
+NGINX_SSL_CIPHERS: 'HIGH:!aNULL:!MD5'
+
+NGINX_ADDITIONAL_HEADERS: []
+
+NGINX_ROBOT_RULES:
+  - agent: '*'
+    disallow: '/'
+
+htpasswd_enabled: False
+htpasswd_services: []
+EDXAPP_LMS_BASE: ''
+EDXAPP_CMS_BASE: ''
+EDXAPP_PREVIEW_LMS_BASE: ''
+EDXAPP_LMS_NGINX_PORT: ''
+EDXAPP_CMS_NGINX_PORT: ''
+
+RG_NGINX_LMS_CLIENT_MAX_BODY_SIZE: 4m
+RG_NGINX_CMS_CLIENT_MAX_BODY_SIZE: 100m
+
+le_packages:
+    - augeas-doc 
+    - augeas-tools
+    - libssl-dev
+    - dialog 
+    - python-virtualenv
+    - libssl1.0.0
+
+LETSENCRYPT_ADDITIONAL_DOMAIN: []
+LETSENCRYPT_DOMAIN_STING: []
+LETSENCRYPT_ALL_DOMAIN: ''
+letsencrypt_webroot: /var/www/letsencrypt
+letsencrypt_ssl_certificate: /etc/letsencrypt/live/{{ EDXAPP_LMS_BASE }}/fullchain.pem
+letsencrypt_ssl_certificate_key: /etc/letsencrypt/live/{{ EDXAPP_LMS_BASE }}/privkey.pem
+
+NGINX_ADDITIONAL_SERVICES_CONFIG: []
+
+use_raccoongang_ssl: False
+raccoongang_ssl_path: /etc/nginx/ssl
+raccoongang_ssl_src_path: ~/vault/roles/nginx
+raccoongang_ssl_crt: raccoongang-ssl.crt
+raccoongang_ssl_key: raccoongang-ssl.key
+
+nginx_ssl_selfsigned: no
+nginx_ssl_selfsigned_path: /etc/nginx/ssl
+
+nginx_default_conf_path: /etc/nginx/conf.d/default.conf
+nginx_default_conf_delete: yes
+
+ssl_trusted_certificate_path: /etc/ssl/certs/ca-certificates.crt

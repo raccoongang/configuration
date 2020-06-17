@@ -1,0 +1,59 @@
+---
+- name: setting up zabbix variables with edx values
+  set_fact:
+    # using lms.doman.ltd_10.0.0.1 hostname format to deal with "i forgot running zabbix agent on old host" problem
+    # when 2 instances sends metrics with same Hostname
+    zabbix_agent_hostname: "{{ EDXAPP_LMS_BASE | default(inventory_hostname) }}_{{ ansible_default_ipv4.address }}"
+    zabbix_server_host_name: "{{ EDXAPP_LMS_BASE | default(inventory_hostname) }}_{{ ansible_default_ipv4.address }}"
+    zabbix_agent_mongo_host: "{{ mongo_hosts | default('localhost') }}"
+    zabbix_agent_mongo_auth_db: "admin"
+    zabbix_agent_mongo_user: "{{ MONGO_ADMIN_USER | default('admin') }}"
+    zabbix_agent_mongo_password: "{{ MONGO_ADMIN_PASSWORD | default('password') }}"
+    zabbix_agent_mongo_replica_set_name: "{{ EDXAPP_MONGO_REPLICASET | default ('') }}"
+    zabbix_agent_mongo_use_ssl: "{{ EDXAPP_MONGO_USE_SSL | default('False') }}"
+    zabbix_agent_mysql_host: "{{ EDXAPP_MYSQL_HOST | default('localhost') }}"
+    zabbix_agent_mysql_user: "{{ COMMON_MYSQL_READ_ONLY_USER | default('root') }}"
+    zabbix_agent_mysql_password: "{{ COMMON_MYSQL_READ_ONLY_PASS | default('') }}"
+    zabbix_agent_mysql_database: "{{ EDXAPP_MYSQL_DB_NAME | default('edxapp') }}"
+    zabbix_agent_memcached_host: "{{ memcached_host | default('localhost') }}"
+    zabbix_agent_elasticsearch_host: "{{ elasticsearch_host | default('localhost') }}"
+    zabbix_agent_rabbitmq_host: "{{ rabbitmq_ip | default('localhost') }}"
+    zabbix_agent_rabbitmq_user: "{{ RABBIT_ADMIN_USER | default('admin') }}"
+    zabbix_agent_rabbitmq_password: "{{ RABBIT_ADMIN_PASSWORD | default('admin') }}"
+    zabbix_server_host_dns: "{{ EDXAPP_LMS_BASE | default(inventory_hostname) }}"
+    zabbix_server_host_visible_name: "{{ EDXAPP_PLATFORM_NAME | default(EDXAPP_LMS_BASE) | default(inventory_hostname) }}"
+
+- name: updating zabbix_server_host_visible_name for non prod instances to avoid duplicates of HostName
+  set_fact:
+    zabbix_server_host_visible_name: "{{ zabbix_server_host_visible_name }} {{ env }}"
+  when: env is defined and env != '' and env != 'prod'
+
+- name: setting up rg_support_package dependencies
+  set_fact:
+    zabbix_server_host_groups: "{{ zabbix_support_conf[rg_support_package]['groups'] | default(['Test-Maintenance']) }}"
+    zabbix_server_host_link_templates: "{{ zabbix_support_conf[rg_support_package]['templates'] | default('Active Template OS Linux') }}"
+  when: zabbix_support_conf is defined and rg_support_package is defined
+
+- name: adding duplicity status template when backup is enabled
+  set_fact:
+    zabbix_server_host_link_templates: "{{ zabbix_server_host_link_templates + ['Active Template Duplicity Status'] }}"
+  when: backup_enabled is defined and backup_enabled
+
+- name: setting up additional groups and templates
+  set_fact:
+    zabbix_server_host_groups: "{{ zabbix_server_host_groups + zabbix_addl_groups | default([]) }}"
+    zabbix_server_host_link_templates: "{{ zabbix_server_host_link_templates + zabbix_addl_templates | default([]) }}"
+  when: zabbix_addl_groups is defined or zabbix_addl_templates is defined
+
+- name: setting up rg_support_package dependencies for edx
+  set_fact:
+    zabbix_server_host_groups:
+      - "Test-Maintenance"
+    zabbix_server_host_link_templates:
+      - "Active Template OS Linux"
+  when: not zabbix_support_conf is defined or not rg_support_package is defined
+
+- name: setting up force in maintenance
+  set_fact:
+    zabbix_server_host_groups: "{{ zabbix_server_host_groups }} + ['Test-Maintenance']"
+  when: zabbix_force_in_maintenance

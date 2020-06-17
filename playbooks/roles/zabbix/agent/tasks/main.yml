@@ -1,0 +1,6 @@
+- include: "install_agent_{{ ansible_distribution }}.yml"
+  tags:
+    - zabbix-agent
+- include: config_agent.yml
+  tags:
+    - zabbix-agent

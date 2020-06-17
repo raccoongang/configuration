@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>4.4</version>
+    <date>2020-02-25T09:24:00Z</date>
+    <groups>
+        <group>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Active Template Custom Services</template>
+            <name>Active Template Custom Services</name>
+            <description>LLD template which discovers custom services statuses in directories specified in MACROS configuration. Directories may contains this files: SERVICENAME_code, SERVICENAME_error and SERVICENAME_lastrun</description>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Custom services</name>
+                </application>
+            </applications>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Custom Services LLD</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>custom_services_discovery[{$CUSTOM_SERVICES_STATUS_DIRS}]</key>
+                    <delay>2h</delay>
+                    <lifetime>4h</lifetime>
+                    <description>Discovers custom services in directories set in {$CUSTOM_SERVICE_STATUS_DIRS} macro</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Custom service exit code {#CUSTOM_SERVICE}</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>custom_service[{#CUSTOM_SERVICE_DIR},{#CUSTOM_SERVICE},code]</key>
+                            <delay>15m</delay>
+                            <description>content of *_code file</description>
+                            <applications>
+                                <application>
+                                    <name>Custom services</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}&lt;&gt;0</expression>
+                                    <name>Custom service {#CUSTOM_SERVICE} non zero exit code</name>
+                                    <priority>HIGH</priority>
+                                    <description>file {#CUSTOM_SERVICE_DIR}/{#CUSTOM_SERVICE} contain non zero value</description>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Custom service error message {#CUSTOM_SERVICE}</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>custom_service[{#CUSTOM_SERVICE_DIR},{#CUSTOM_SERVICE},error]</key>
+                            <delay>15m</delay>
+                            <trends>0</trends>
+                            <value_type>CHAR</value_type>
+                            <description>content of *_error file</description>
+                            <applications>
+                                <application>
+                                    <name>Custom services</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{strlen()}&lt;&gt;0</expression>
+                                    <name>Custom service {#CUSTOM_SERVICE} error reported</name>
+                                    <priority>HIGH</priority>
+                                    <description>file {#CUSTOM_SERVICE_DIR}/{#CUSTOM_SERVICE} contain a non empty content</description>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Custom service last execution timestamp of {#CUSTOM_SERVICE}</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>vfs.file.time[{#CUSTOM_SERVICE_DIR}/{#CUSTOM_SERVICE}_lastrun]</key>
+                            <delay>15m</delay>
+                            <units>unixtime</units>
+                            <description>timestamp of *_lastrun file</description>
+                            <applications>
+                                <application>
+                                    <name>Custom services</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{fuzzytime({$CUSTOM_SERVICES_LASTRUN_AVG})}=0</expression>
+                                    <name>Custom service {#CUSTOM_SERVICE} did not run too long</name>
+                                    <priority>AVERAGE</priority>
+                                    <description>service did not executed for {$CUSTOM_SERVICE_LASTRUN_AVG} seconds</description>
+                                    <dependencies>
+                                        <dependency>
+                                            <name>Custom service {#CUSTOM_SERVICE} did not run too long</name>
+                                            <expression>{Active Template Custom Services:vfs.file.time[{#CUSTOM_SERVICE_DIR}/{#CUSTOM_SERVICE}_lastrun].fuzzytime({$CUSTOM_SERVICES_LASTRUN_HIGH})}=0</expression>
+                                        </dependency>
+                                    </dependencies>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{fuzzytime({$CUSTOM_SERVICES_LASTRUN_DISASTER})}=0</expression>
+                                    <name>Custom service {#CUSTOM_SERVICE} did not run too long</name>
+                                    <priority>DISASTER</priority>
+                                    <description>service did not executed for {$CUSTOM_SERVICE_LASTRUN_DISASTER} seconds</description>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{fuzzytime({$CUSTOM_SERVICES_LASTRUN_HIGH})}=0</expression>
+                                    <name>Custom service {#CUSTOM_SERVICE} did not run too long</name>
+                                    <priority>HIGH</priority>
+                                    <description>service did executed for {$CUSTOM_SERVICE_LASTRUN_HIGH} seconds</description>
+                                    <dependencies>
+                                        <dependency>
+                                            <name>Custom service {#CUSTOM_SERVICE} did not run too long</name>
+                                            <expression>{Active Template Custom Services:vfs.file.time[{#CUSTOM_SERVICE_DIR}/{#CUSTOM_SERVICE}_lastrun].fuzzytime({$CUSTOM_SERVICES_LASTRUN_DISASTER})}=0</expression>
+                                        </dependency>
+                                    </dependencies>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{fuzzytime({$CUSTOM_SERVICES_LASTRUN_WARN})}=0</expression>
+                                    <name>Custom service {#CUSTOM_SERVICE} did not run too long</name>
+                                    <priority>WARNING</priority>
+                                    <description>service did not executed for {$CUSTOM_SERVICE_LASTRUN_WARN} seconds</description>
+                                    <dependencies>
+                                        <dependency>
+                                            <name>Custom service {#CUSTOM_SERVICE} did not run too long</name>
+                                            <expression>{Active Template Custom Services:vfs.file.time[{#CUSTOM_SERVICE_DIR}/{#CUSTOM_SERVICE}_lastrun].fuzzytime({$CUSTOM_SERVICES_LASTRUN_AVG})}=0</expression>
+                                        </dependency>
+                                    </dependencies>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+            <macros>
+                <macro>
+                    <macro>{$CUSTOM_SERVICES_LASTRUN_AVG}</macro>
+                    <value>172800</value>
+                    <description>avg trigger seconds (default: 2d)</description>
+                </macro>
+                <macro>
+                    <macro>{$CUSTOM_SERVICES_LASTRUN_DISASTER}</macro>
+                    <value>432000</value>
+                    <description>disaster trigger seconds (default: 5d)</description>
+                </macro>
+                <macro>
+                    <macro>{$CUSTOM_SERVICES_LASTRUN_HIGH}</macro>
+                    <value>259200</value>
+                    <description>high trigger seconds (default: 3d)</description>
+                </macro>
+                <macro>
+                    <macro>{$CUSTOM_SERVICES_LASTRUN_WARN}</macro>
+                    <value>86400</value>
+                    <description>warn trigger seconds (default: 1d)</description>
+                </macro>
+                <macro>
+                    <macro>{$CUSTOM_SERVICES_STATUS_DIRS}</macro>
+                    <value>/var/tmp/zabbix_example1:/var/tmp/zabbix_example2</value>
+                    <description>list of dirs which contains files with this suffixes: _code _error _lastrun</description>
+                </macro>
+            </macros>
+        </template>
+    </templates>
+</zabbix_export>
