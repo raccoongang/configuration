@@ -15,7 +15,7 @@ skip-external-locking
 bind-address		= {{ MYSQL_BIND_ADDRESS }}
 max_allowed_packet	= 16M
 thread_stack		= 192K
-myisam-recover      = BACKUP
+myisam-recover-options = BACKUP
 log_error = /var/log/mysql/error.log
 expire_logs_days	= 10
 max_binlog_size     = 100M
