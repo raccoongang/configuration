@@ -43,6 +43,9 @@ EDXAPP_S3_HOST: null
 
 EDXAPP_RG_SENTRY_DSN: "{{ COMMON_RG_SENTRY_DSN }}"
 EDXAPP_REINDEX_ALL_COURSES: true
+EDXAPP_CACHE_MAX_OBJECT_LENGTH: "{{ MEMCACHED_MAX_OBJECT_MB | default(1) * 1024 * 1024 }}"
+EDXAPP_CACHE_OPTIONS:
+  server_max_value_length: "{{ EDXAPP_CACHE_MAX_OBJECT_LENGTH }}"
 ## END RACCOONGANG ##
 
 # Bucket used for xblock file storage
@@ -856,6 +859,7 @@ edxapp_generic_auth_config:  &edxapp_generic_auth
 generic_cache_config: &default_generic_cache
   BACKEND:  'django.core.cache.backends.memcached.MemcachedCache'
   KEY_FUNCTION:  'util.memcache.safe_key'
+  OPTIONS: "{{ EDXAPP_CACHE_OPTIONS }}"
 
 generic_env_config:  &edxapp_generic_env
   ECOMMERCE_PUBLIC_URL_ROOT: "{{ EDXAPP_ECOMMERCE_PUBLIC_URL_ROOT }}"
