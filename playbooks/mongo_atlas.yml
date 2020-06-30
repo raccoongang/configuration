@@ -1,0 +1,6 @@
+---
+- hosts: localhost
+  connection: local
+  roles:
+    - role: mongodb_atlas
+      users: "{{ mongodb_users }}"

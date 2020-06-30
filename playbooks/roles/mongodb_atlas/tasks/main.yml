@@ -1,0 +1,12 @@
+---
+- name: create MongoDB Atlas users
+  with_items: "{{ users }}"
+  mongo_atlas_user:
+    atlas_username: "{{ _atlas_username }}"
+    atlas_api_key: "{{ _atlas_api_key }}"
+    atlas_group_id: "{{ _atlas_group_id }}"
+    user: "{{ item.user }}"
+    state: "{{ item.state }}"
+    update_password: on_create
+    roles: "{{ item.roles }}"
+    password: "{{ item.password }}"
