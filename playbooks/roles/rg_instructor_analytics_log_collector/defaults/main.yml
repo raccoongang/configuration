@@ -1,7 +1,5 @@
 ---
 
-analytics_log_watcher_addl_arguments: "--delete-logs"
-
 RG_ANALYTICS_VERSION_2_3: False
 
 analytics_log_watcher_service_name: analytics_log_watcher
