@@ -20,6 +20,9 @@ EDXAPP_XLOG_MONGO_DB_NAME: 'xlog'
 EDXAPP_ADDL_INSTALLED_APPS: []
 RG_WIKI_ENABLED: True
 EDXAPP_REMOVE_STATICFILES_DIR_DURING_UPDATE: True
+EDXAPP_CACHE_MAX_OBJECT_LENGTH: "{{ MEMCACHED_MAX_OBJECT_MB | default(1) * 1024 * 1024 }}"
+EDXAPP_CACHE_OPTIONS:
+  server_max_value_length: "{{ EDXAPP_CACHE_MAX_OBJECT_LENGTH }}"
 #
 
 EDXAPP_RG_SENTRY_DSN: "{{ COMMON_RG_SENTRY_DSN }}"
@@ -1121,6 +1124,7 @@ edxapp_generic_auth_config:  &edxapp_generic_auth
 generic_cache_config: &default_generic_cache
   BACKEND:  'django.core.cache.backends.memcached.MemcachedCache'
   KEY_FUNCTION:  'util.memcache.safe_key'
+  OPTIONS: "{{ EDXAPP_CACHE_OPTIONS }}"
 
 generic_env_config:  &edxapp_generic_env
   CREDENTIALS_INTERNAL_SERVICE_URL: "{{ EDXAPP_CREDENTIALS_INTERNAL_SERVICE_URL }}"
