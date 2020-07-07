@@ -8,3 +8,30 @@
   tags:
     - install
     - install:memcache
+
+- name: Create log directory
+  file:
+    dest: /var/log/memcached
+    state: directory
+    owner: memcache
+
+- name: Create configuration
+  template:
+    src: memcached.conf.j2
+    dest: /etc/{{ MEMCACHE_SERVICE_NAME }}.conf
+  notify:
+    - memcached_restart
+
+- name: Create systemctl service file
+  template:
+    src: systemd.memcached.j2
+    dest: /lib/systemd/system/{{ MEMCACHE_SERVICE_NAME }}.service
+  notify:
+    - memcached_restart
+
+- name: Enable and start service
+  service:
+    name: "{{ MEMCACHE_SERVICE_NAME }}"
+    state: started
+    enabled: yes
+

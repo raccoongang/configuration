@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=memcached daemon
+After=network.target
+
+[Service]
+ExecStart=/usr/share/memcached/scripts/systemd-memcached-wrapper /etc/{{ MEMCACHE_SERVICE_NAME }}.conf
+
+[Install]
+WantedBy=multi-user.target
