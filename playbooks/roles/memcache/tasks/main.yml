@@ -9,22 +9,29 @@
     - install
     - install:memcache
 
-- name: Set listen address to 0.0.0.0
-  lineinfile:
-    path: /etc/memcached.conf
-    regexp: '^-l \d+\.\d+\.\d+\.\d+'
-    line: '-l 0.0.0.0'
-  register: memcached_conf1
+- name: Create log directory
+  file:
+    dest: /var/log/memcached
+    state: directory
+    owner: memcache
 
-- name: Increase the memory limit
-  lineinfile:
-    path: /etc/memcached.conf
-    regexp: '^-m \d+'
-    line: '-m 512'
-  register: memcached_conf2
+- name: Create configuration
+  template:
+    src: memcached.conf.j2
+    dest: /etc/{{ MEMCACHE_SERVICE_NAME }}.conf
+  notify:
+    - memcached_restart
 
-- name: Restart memcached
+- name: Create systemctl service file
+  template:
+    src: systemd.memcached.j2
+    dest: /lib/systemd/system/{{ MEMCACHE_SERVICE_NAME }}.service
+  notify:
+    - memcached_restart
+
+- name: Enable and start service
   service:
-    name: memcached
-    state: restarted
-  when: memcached_conf1.changed or memcached_conf2.changed
+    name: "{{ MEMCACHE_SERVICE_NAME }}"
+    state: started
+    enabled: yes
+
