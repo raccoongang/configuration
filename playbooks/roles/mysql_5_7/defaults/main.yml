@@ -1,0 +1,6 @@
+---
+
+mysql_debian_pkgs:
+  - mysql-server-5.7
+  - python-mysqldb
+
