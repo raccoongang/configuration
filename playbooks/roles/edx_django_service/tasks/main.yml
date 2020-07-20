@@ -283,3 +283,50 @@
   tags:
     - install
     - install:vhosts
+
+- name: Creating superuser
+  command: >
+    {{ COMMON_BIN_DIR }}/python.{{ edx_django_service_name }} {{ COMMON_BIN_DIR }}/manage.{{ edx_django_service_name }}
+    createsuperuser --email {{ edx_django_service_superuser_email }}
+    --username {{ edx_django_service_superuser_username }}
+    --noinput
+  environment: "{{ edx_django_service_environment }}"
+  become_user: "{{ edx_django_service_user }}"
+  when: edx_django_service_superuser_username != ''
+  register: createsuperuser_out
+  ignore_errors: True
+  no_log: True
+  tags:
+    - install
+    - install:configuration
+
+- name: Checking output of createsuperuser command
+  fail:
+    msg: |
+      createsuperuser command fails.
+      please investigate.
+      {{ createsuperuser_out.stderr }}
+  when:
+    - edx_django_service_superuser_username != ''
+    - createsuperuser_out.rc != 0
+    - not "Duplicate entry" in createsuperuser_out.stderr
+  tags:
+    - install
+    - install:configuration
+
+- name: Setting superuser password
+  expect:
+    command: >
+      {{ COMMON_BIN_DIR }}/python.{{ edx_django_service_name }} {{ COMMON_BIN_DIR }}/manage.{{ edx_django_service_name }}
+      changepassword {{ edx_django_service_superuser_username }}
+    responses:
+      "Password": "{{ edx_django_service_superuser_password }}"
+    timeout: 30
+  environment: "{{ edx_django_service_environment }}"
+  become_user: "{{ edx_django_service_user }}"
+  when:
+    - edx_django_service_superuser_username != ''
+    - edx_django_service_superuser_password != ''
+  tags:
+    - install
+    - install:configuration
