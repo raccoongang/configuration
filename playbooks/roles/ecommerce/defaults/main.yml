@@ -30,6 +30,14 @@ ECOMMERCE_DATABASE_HOST: localhost
 
 ECOMMERCE_VERSION: "master"
 ECOMMERCE_DJANGO_SETTINGS_MODULE: "ecommerce.settings.production"
+ECOMMERCE_REPOS:
+  - PROTOCOL: '{{ COMMON_GIT_PROTOCOL }}'
+    DOMAIN: '{{ COMMON_GIT_MIRROR }}'
+    PATH: '{{ COMMON_GIT_PATH }}'
+    REPO: 'ecommerce.git'
+    VERSION: '{{ ECOMMERCE_VERSION }}'
+    DESTINATION: '{{ ecommerce_code_dir }}'
+    SSH_KEY: '{{ ECOMMERCE_GIT_IDENTITY }}'
 
 ECOMMERCE_SESSION_EXPIRE_AT_BROWSER_CLOSE: false
 ECOMMERCE_SECRET_KEY: 'Your secret key here'
