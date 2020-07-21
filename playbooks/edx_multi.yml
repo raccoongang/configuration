@@ -39,6 +39,9 @@
       when: SWAPFILE_SIZE is defined and SWAPFILE_SIZE != ''
 
     - role: mysql
+      when: ENABLE_MYSQL_VERSION_5_7 | default(False)
+    - role: mysql_5_7
+      when: ENABLE_MYSQL_VERSION_5_7 | default(False)
 
 - name: Setup mongo
   hosts: mongo

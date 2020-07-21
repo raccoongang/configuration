@@ -4,3 +4,7 @@ mysql_debian_pkgs:
   - mysql-server-5.7
   - python-mysqldb
 
+MYSQL_DATADIR: "/edx/var/mysql"
+MYSQL_BIND_ADDRESS: "127.0.0.1"
+
+MYSQL_INNODB_BUFFER_POOL_SIZE: 256M
