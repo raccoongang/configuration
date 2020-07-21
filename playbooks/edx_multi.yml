@@ -57,7 +57,7 @@
     - role: swapfile
       when: SWAPFILE_SIZE is defined and SWAPFILE_SIZE != ''
 
-    - role: mongo_3_6
+    - role: mongo_3_2
 
 - name: Setup services
   hosts: services
