@@ -30,9 +30,9 @@
       - lms
 
     - role: mysql
-      when: EDXAPP_MYSQL_HOST == 'localhost' or EDXAPP_MYSQL_HOST == '127.0.0.1' and not ENABLE_MYSQL_VERSION_5_7 | default(False)
+      when: (EDXAPP_MYSQL_HOST == 'localhost' or EDXAPP_MYSQL_HOST == '127.0.0.1') and not ENABLE_MYSQL_VERSION_5_7 | default(False)
     - role: mysql_5_7
-      when: EDXAPP_MYSQL_HOST == 'localhost' or EDXAPP_MYSQL_HOST == '127.0.0.1' and ENABLE_MYSQL_VERSION_5_7 | default(False)
+      when: (EDXAPP_MYSQL_HOST == 'localhost' or EDXAPP_MYSQL_HOST == '127.0.0.1') and ENABLE_MYSQL_VERSION_5_7 | default(False)
     - role: edxlocal
     - role: memcache
       when: "'localhost' in ' '.join(EDXAPP_MEMCACHE) or '127.0.0.1' in ' '.join(EDXAPP_MEMCACHE)"
