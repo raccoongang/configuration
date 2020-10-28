@@ -62,8 +62,8 @@ forum_environment:
 
 forum_user: "forum"
 forum_ruby_version: "1.9.3-p551"
-forum_source_repo: "https://github.com/edx/cs_comments_service.git"
-forum_version: "master"
+forum_source_repo: "https://github.com/raccoongang/cs_comments_service.git"
+forum_version: "ficus-rg"
 
 #
 # test config
