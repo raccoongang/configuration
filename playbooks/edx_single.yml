@@ -27,6 +27,8 @@
       - xqueue
       nginx_default_sites:
       - lms
+    - role: mysql
+      when: EDXAPP_MYSQL_HOST == 'localhost' or EDXAPP_MYSQL_HOST == '127.0.0.1'
     - role: edxlocal
     - role: memcache
     - role: mongo_2_6-3_2
