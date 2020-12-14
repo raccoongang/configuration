@@ -127,6 +127,9 @@ old_python_debian_pkgs:
 common_pip_pkgs:
   - pip==8.1.2
   - setuptools==24.0.3
+  - configparser==3.8.1
+  - zipp==0.5.2
+  - importlib-metadata==1.7.0
   - virtualenv==15.0.2
   - virtualenvwrapper==4.7.1
 
