@@ -2,6 +2,10 @@
 edxlocal_debian_pkgs:
   - postfix
   - libjpeg-dev
+  - python-mysqldb
+
+mysql_host: "localhost"
+edxlocal_host: "{{ mysql_host if mysql_host == 'localhost' or mysql_host == '127.0.0.1' else '%' }}"
 
 edxlocal_databases:
   - "{{ ECOMMERCE_DEFAULT_DB_NAME | default(None) }}"
@@ -14,6 +18,8 @@ edxlocal_databases:
   - "{{ ANALYTICS_API_REPORTS_DB_NAME | default(None) }}"
   - "{{ CREDENTIALS_DEFAULT_DB_NAME | default(None) }}"
   - "{{ DISCOVERY_DEFAULT_DB_NAME | default(None) }}"
+
+edxlocal_extra_databases: []
 
 edxlocal_database_users:
   - {
@@ -61,3 +67,5 @@ edxlocal_database_users:
       user: "{{ DISCOVERY_MYSQL_USER | default(None) }}",
       pass: "{{ DISCOVERY_MYSQL_PASSWORD | default(None) }}"
     }
+
+edxlocal_extra_database_users: []

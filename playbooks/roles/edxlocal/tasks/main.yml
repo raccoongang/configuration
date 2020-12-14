@@ -3,10 +3,9 @@
 ---
 - name: Install packages needed for single server
   apt:
-    name: "{{ item }}"
+    name: "{{ edxlocal_debian_pkgs }}"
     install_recommends: yes
     state: present
-  with_items: "{{ edxlocal_debian_pkgs }}"
 
 # TODO: Add a test to make sure mysql is running.
 
@@ -15,63 +14,95 @@
     db: "{{ item }}"
     state: present
     encoding: utf8
+    login_host: "{{ mysql_host }}"
+    login_user: "{{ COMMON_MYSQL_ADMIN_USER }}"
+    login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
   when: item != None and item != ''
-  with_items: "{{ edxlocal_databases }}"
+  with_items: "{{ edxlocal_databases }} + {{ edxlocal_extra_databases }}"
+  run_once: True
 
 - name: create database users
   mysql_user:
     name: "{{ item.user }}"
     password: "{{ item.pass }}"
-    priv: "{{ item.db }}.*:ALL"
+    priv: "{{ item.priv | default(item.db~'.*:ALL') }}"
+    host: "{{ item.host | default(edxlocal_host) }}"
     append_privs: yes
+    login_host: "{{ mysql_host }}"
+    login_user: "{{ COMMON_MYSQL_ADMIN_USER }}"
+    login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
   when: item.db != None and item.db != ''
-  with_items: "{{ edxlocal_database_users }}"
+  with_items: "{{ edxlocal_database_users }} + {{ edxlocal_extra_database_users }}"
+  run_once: True
 
 - name: setup the migration db user
   mysql_user:
     name: "{{ COMMON_MYSQL_MIGRATE_USER }}"
     password: "{{ COMMON_MYSQL_MIGRATE_PASS }}"
     priv: "{{ item }}.*:ALL"
+    host: "{{ edxlocal_host }}"
     append_privs: yes
+    login_host: "{{ mysql_host }}"
+    login_user: "{{ COMMON_MYSQL_ADMIN_USER }}"
+    login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
   when: item != None and item != ''
-  with_items: "{{ edxlocal_databases }}"
+  with_items: "{{ edxlocal_databases }} + {{ edxlocal_extra_databases }}"
+  run_once: True
 
 - name: create api user for the analytics api
   mysql_user:
-    name: "api001"
+    name: "{{ ANALYTICS_API_DATABASES.default.USER }}"
     password: "{{ ANALYTICS_API_DATABASES.default.PASSWORD }}"
     priv: '{{ ANALYTICS_API_DATABASES.default.NAME }}.*:ALL/reports.*:SELECT'
-  when: ANALYTICS_API_SERVICE_CONFIG is defined
+    host: "{{ edxlocal_host }}"
+    login_host: "{{ mysql_host }}"
+    login_user: "{{ COMMON_MYSQL_ADMIN_USER }}"
+    login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
+  when: ANALYTICS_API_DATABASES is defined and ANALYTICS_API_DATABASES.default is defined
+  run_once: True
 
 - name: create read-only reports user for the analytics-api
   mysql_user:
-    name: reports001
+    name: "{{ ANALYTICS_API_DATABASES.reports.USER }}"
     password: "{{ ANALYTICS_API_DATABASES.reports.PASSWORD }}"
     priv: '{{ ANALYTICS_API_DATABASES.reports.NAME }}.*:SELECT'
-  when: ANALYTICS_API_SERVICE_CONFIG is defined
+    host: "{{ edxlocal_host }}"
+    login_host: "{{ mysql_host }}"
+    login_user: "{{ COMMON_MYSQL_ADMIN_USER }}"
+    login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
+  when: ANALYTICS_API_DATABASES is defined and ANALYTICS_API_DATABASES.reports is defined
+  run_once: True
 
 - name: create a database for the hive metastore
   mysql_db:
     db: "{{ HIVE_METASTORE_DATABASE.name }}"
     state: "present"
     encoding: "latin1"
+    login_host: "{{ mysql_host }}"
+    login_user: "{{ COMMON_MYSQL_ADMIN_USER }}"
+    login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
   when: HIVE_METASTORE_DATABASE is defined
+  run_once: True
 
 - name: setup the edx-notes-api db user
   mysql_user:
     name: "{{ EDX_NOTES_API_MYSQL_DB_USER }}"
     password: "{{ EDX_NOTES_API_MYSQL_DB_PASS }}"
     priv: "{{ EDX_NOTES_API_MYSQL_DB_NAME }}.*:SELECT,INSERT,UPDATE,DELETE"
+    host: "{{ edxlocal_host }}"
+    login_host: "{{ mysql_host }}"
+    login_user: "{{ COMMON_MYSQL_ADMIN_USER }}"
+    login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
   when: EDX_NOTES_API_MYSQL_DB_USER is defined
+  run_once: True
 
 - name: setup the read-only db user
   mysql_user:
     name: "{{ COMMON_MYSQL_READ_ONLY_USER }}"
     password: "{{ COMMON_MYSQL_READ_ONLY_PASS }}"
-    priv: "*.*:ALL"
-
-- name: setup the admin db user
-  mysql_user:
-    name: "{{ COMMON_MYSQL_ADMIN_USER }}"
-    password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
-    priv: "*.*:CREATE USER"
+    priv: "*.*:SELECT,SHOW VIEW,PROCESS,REPLICATION CLIENT"
+    host: "{{ edxlocal_host }}"
+    login_host: "{{ mysql_host }}"
+    login_user: "{{ COMMON_MYSQL_ADMIN_USER }}"
+    login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
+  run_once: True

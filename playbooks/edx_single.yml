@@ -28,9 +28,9 @@
       nginx_default_sites:
       - lms
     - role: mysql
-      when: not ENABLE_MYSQL_VERSION_5_7 | default(False) | bool
+      when: (EDXAPP_MYSQL_HOST == 'localhost' or EDXAPP_MYSQL_HOST == '127.0.0.1') and not ENABLE_MYSQL_VERSION_5_7 | default(False) | bool
     - role: mysql_5_7
-      when: ENABLE_MYSQL_VERSION_5_7 | default(False) | bool
+      when: (EDXAPP_MYSQL_HOST == 'localhost' or EDXAPP_MYSQL_HOST == '127.0.0.1') and ENABLE_MYSQL_VERSION_5_7 | default(False) | bool
     - role: edxlocal
     - role: memcache
     - role: mongo
