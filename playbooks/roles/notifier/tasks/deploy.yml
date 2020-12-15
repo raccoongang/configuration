@@ -70,6 +70,17 @@
     - "install"
     - "install:configuration"
 
+- name: Install python2 specific requirements
+  pip:
+    name: "{{ common_pip_pkgs + ['astroid==1.5.3'] }}"
+    virtualenv: "{{ NOTIFIER_VENV_DIR }}"
+    state: present
+  become: true
+  become_user: "{{ notifier_user }}"
+  tags:
+    - "install"
+    - "install:app-requirements"
+
 - name: Install application requirements
   pip:
     requirements: "{{ NOTIFIER_REQUIREMENTS_FILE }}"
