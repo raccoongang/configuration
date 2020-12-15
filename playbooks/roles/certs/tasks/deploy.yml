@@ -73,6 +73,14 @@
     state: absent
   when: CERTS_GIT_IDENTITY != "none"
 
+- name: Install python2 specific requirements
+  pip:
+    name: "{{ common_pip_pkgs + ['Pillow==4.2.1'] }}"
+    virtualenv: "{{ certs_venv_dir }}"
+    state: present
+    extra_args: "-i {{ COMMON_PYPI_MIRROR_URL }}"
+  become_user: "{{ certs_user }}"
+
 - name: Install python requirements
   pip:
     requirements: "{{ certs_requirements_file }}"
