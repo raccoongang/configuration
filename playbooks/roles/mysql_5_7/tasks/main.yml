@@ -1,0 +1,139 @@
+---
+
+- name: Install mysql and dependencies
+  apt:
+    name: "{{ mysql_debian_pkgs }}"
+    install_recommends: yes
+    state: present
+  register: mysql_apt_install
+
+- name: Set default character sets and collations
+  template:
+    src: default_character_sets_and_collations.cnf.j2
+    dest: "{{ mysql_dir }}/mysql.conf.d/default_character_sets_and_collations.cnf"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Start mysql
+  service:
+    name: mysql
+    state: started
+
+- name: Start mysql_upgrade
+  command: mysql_upgrade
+  register: mysql_upgrade
+  failed_when: mysql_upgrade.rc == 1
+  when: mysql_apt_install.changed
+
+- name: Move mysql datadir to edx partition
+  stat:
+    path: /var/lib/mysql
+  register: datadir
+  when: MYSQL_DATADIR != "/var/lib/mysql"
+
+- name: Move. Stop mysql service
+  service:
+    name: mysql
+    state: stopped
+  when:
+    - not datadir.stat.islnk
+    - MYSQL_DATADIR != "/var/lib/mysql"
+
+- name: Move /var/lib/mysql to new location and create symlink /var/lib/mysql
+  shell: "mv /var/lib/mysql {{ MYSQL_DATADIR }} ; ln -s {{ MYSQL_DATADIR }} /var/lib/mysql"
+  when:
+    - not datadir.stat.islnk
+    - MYSQL_DATADIR != "/var/lib/mysql"
+
+- name: Deploy mysqld.cnf
+  template:
+    src: mysqld.cnf.j2
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+  register: mysqld_conf
+
+- name: Patch apparmor mysqld restrictions
+  replace:
+    path: /etc/apparmor.d/usr.sbin.mysqld
+    regexp: '^(.*)/var/lib/mysql/(.*)$'
+    replace: '\1{{ MYSQL_DATADIR }}\2'
+  register: apparmor_mysqld
+
+- name: Reload apparmor service
+  service:
+    name: apparmor
+    state: reloaded
+  when: apparmor_mysqld.changed
+
+- name: Restart mysql service
+  service:
+    name: mysql
+    state: restarted
+  when: mysqld_conf.changed
+
+- name: Enable mysql service
+  service:
+    name: mysql
+    state: started
+    enabled: yes
+
+- name: Set root password
+  mysql_user:
+    name: 'root'
+    login_host: localhost
+    password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
+    host: "{{ item }}"
+  ignore_errors: True
+  with_items:
+    - "{{ ansible_hostname }}"
+    - "{{ COMMON_HOSTNAME | default(omit) }}"
+    - "%"
+    - "::1"
+    - 127.0.0.1
+    - localhost
+
+- name: Create /root/.my.cnf
+  copy:
+    dest: /root/.my.cnf
+    owner: root
+    mode: 0600
+    content: |
+      [client]
+      user = root
+      password = {{ COMMON_MYSQL_ADMIN_PASS }}
+
+- name: Start mysql_upgrade
+  command: mysql_upgrade
+  register: mysql_upgrade
+  failed_when: mysql_upgrade.rc == 1
+  when: mysql_apt_install.changed
+
+- name: Ensure Anonymous user(s) does not exist
+  mysql_user:
+    name: ''
+    host: "{{ item }}"
+    state: absent
+    login_user: root
+    login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
+  with_items:
+    - "{{ ansible_hostname }}"
+    - "{{ COMMON_HOSTNAME | default(omit) }}"
+    - "%"
+    - "::1"
+    - 127.0.0.1
+    - localhost
+
+- name: setup the admin db user
+  mysql_user:
+    name: "{{ COMMON_MYSQL_ADMIN_USER }}"
+    password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
+    priv: "*.*:ALL,GRANT"
+    host: "{{ item }}"
+    login_user: root
+    login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
+  with_items:
+    - localhost
+    - "%"
+
+- name: applying fix for mysql timezone information
+  shell: "mysql_tzinfo_to_sql /usr/share/zoneinfo | sed -e 's/Local time zone must be set--see zic manual page/local/' | mysql -u root mysql"

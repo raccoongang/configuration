@@ -1,0 +1,17 @@
+---
+
+mysql_debian_pkgs:
+  - mysql-server-5.7
+  - python-mysqldb
+
+mysql_dir: /etc/mysql
+
+DEFAULT_MYSQL_CHARACTER_SET: utf8
+DEFAULT_MYSQL_COLLATION: utf8_general_ci
+
+MYSQL_DATADIR: "{{ COMMON_BASE_DIR }}/var/mysql"
+MYSQL_BIND_ADDRESS: "127.0.0.1"
+
+# can be set to greater value for dedicated database instances
+# for example 2G or 4G
+MYSQL_INNODB_BUFFER_POOL_SIZE: 256M

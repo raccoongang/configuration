@@ -61,11 +61,57 @@
     name: mysql
     state: started
 
+- name: Set root password
+  mysql_user:
+    name: 'root'
+    login_host: localhost
+    password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
+    host: "{{ item }}"
+  ignore_errors: True
+  with_items:
+    - "{{ ansible_hostname }}"
+    - "{{ COMMON_HOSTNAME | default(omit) }}"
+    - "%"
+    - "::1"
+    - 127.0.0.1
+    - localhost
+
+- name: Create /root/.my.cnf
+  copy:
+    dest: /root/.my.cnf
+    owner: root
+    mode: 0600
+    content: |
+      [client]
+      user = root
+      password = {{ COMMON_MYSQL_ADMIN_PASS }}
+
 - name: Ensure Anonymous user(s) does not exist
   mysql_user:
     name: ''
     host: "{{ item }}"
     state: absent
+    login_user: root
+    login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
+  with_items:
+    - "{{ ansible_hostname }}"
+    - "{{ COMMON_HOSTNAME | default(omit) }}"
+    - "%"
+    - "::1"
+    - 127.0.0.1
+    - localhost
+
+- name: setup the admin db user
+  mysql_user:
+    name: "{{ COMMON_MYSQL_ADMIN_USER }}"
+    password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
+    priv: "*.*:ALL,GRANT"
+    host: "{{ item }}"
+    login_user: root
+    login_password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
   with_items:
     - localhost
-    - "{{ ansible_hostname }}"
+    - "%"
+
+- name: applying fix for mysql timezone information
+  shell: "mysql_tzinfo_to_sql /usr/share/zoneinfo | sed -e 's/Local time zone must be set--see zic manual page/local/' | mysql -u root mysql"
