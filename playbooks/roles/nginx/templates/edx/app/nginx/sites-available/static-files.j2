@@ -5,7 +5,7 @@
   }
 
   location ~ ^/static/(?P<file>.*) {
-    root {{ edxapp_data_dir }};
+    root {{ edxapp_staticfile_dir }};
     try_files /staticfiles/$file /staticfiles-prev/$file /course_static/$file =404;
 
     # return a 403 for static files that shouldn't be
