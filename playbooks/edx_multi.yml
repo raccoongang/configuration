@@ -138,6 +138,7 @@
       - lms
       nginx_default_sites:
       - lms
+      tags: ["nginx"]
 
     - role: edxlocal
 
